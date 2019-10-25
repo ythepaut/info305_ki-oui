@@ -1,6 +1,6 @@
 # ki-oui
 
-Tu vais mega.nz ?
+Tu vois mega.nz ?
 Bah voila
 
 # A propos
