@@ -16,11 +16,15 @@
 
 
 	<nav class="navbar sticky-top navbar-dark">
-		<a href="/" class="title navbar-brand"><i class="fas fa-kiwi-bird"></i> &nbsp; KI-OUI.FR</a>
-		<form class="form-inline">
-			<a href="#"><span><i class="fas fa-sign-in-alt"></i> &nbsp; Me connecter</span></a>
-			<a href="#"><span><i class="fas fa-user-plus"></i> &nbsp; Créer mon compte</span></a>
-		</form>
+        <div class="col-lg-4">
+            <a href="/" class="title navbar-brand"><i class="fas fa-kiwi-bird"></i> &nbsp; KI-OUI.FR</a>
+        </div>
+        <div class="col-lg-6">
+            <form class="form-inline">
+                <a href="#"><span><i class="fas fa-tachometer-alt"></i> &nbsp; Espace utilisateur</span></a>
+                <a href="#"><span><i class="fas fa-globe-americas"></i> &nbsp; EN</span></a>
+            </form>
+        </div>
 	</nav>
 
 
