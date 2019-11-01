@@ -1,7 +1,7 @@
-# ki-oui
+# KI-OUI
 
-Tu vois mega.nz ?
-Bah voila
+KI-OUI est un outil de partage de fichier ultra-simple et complet.
+https://ki-oui.ythepaut.com/
 
 # A propos
 
