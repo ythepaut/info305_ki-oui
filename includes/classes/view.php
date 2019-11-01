@@ -4,10 +4,6 @@ include("./includes/pages/header.php");
 
 $page = (isset($_GET['page'])) ? $_GET['page'] : "";
 
-<<<<<<< HEAD
-
-=======
->>>>>>> Structure global + Accueil + CSS
 switch ($page) {
     #Pages "vitrine"
     case "":
@@ -16,8 +12,6 @@ switch ($page) {
         include("./includes/pages/accueil.php");
         break;
 
-<<<<<<< HEAD
-=======
     case "ajout":
         include("./includes/pages/ajout.php");
         break;
@@ -34,14 +28,9 @@ switch ($page) {
     default:
         include("./includes/pages/404.php");
         break;
->>>>>>> Structure global + Accueil + CSS
 }
 
 
 #Footer
 include("./includes/pages/footer.php");
-<<<<<<< HEAD
 ?>
-=======
-?>
->>>>>>> Structure global + Accueil + CSS

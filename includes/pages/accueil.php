@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-<img src="./ressources/img/accueil.jpg" alt="accueil-img"/>
-
-<button>S'inscrire !</button>
-=======
 	<section class="pair">
 
         <div >
@@ -43,4 +38,3 @@
         <a href="/ajout">Ajouter fichier</a>
     </section>
 
->>>>>>> Structure global + Accueil + CSS

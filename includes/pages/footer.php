@@ -1,11 +1,5 @@
 	</main>
 
-<<<<<<< HEAD
-	<footer>
-
-		<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a> - TEAM KI-OUI<br />
-		
-=======
 	<footer class="container-fluid">
 
 		<div class="footer row justify-content-center">
@@ -58,7 +52,6 @@
         
         <span class="copy">Cette œuvre est mise à disposition selon les termes de la Licence Creative Commons « CC BY-NC-SA 4.0 » &nbsp; | &nbsp; <a href="https://github.com/ythepaut/info305_ki-oui" target="_blank">Code source <i style="position: relative; top:-.3em; font-size: 9px;" class="fas fa-external-link-alt"></i></a></span>
 
->>>>>>> Structure global + Accueil + CSS
 	</footer>
 
 </body>
