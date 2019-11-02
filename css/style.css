@@ -71,6 +71,19 @@ main > section {
     padding: 50px 0px;
 }
 
+/* Pages d'erreur */
+
+div.errorpage {
+	box-shadow: 0 3px 5px rgba(0,0,0,0.1);
+	margin: 100px 100px 400px 100px;
+    padding: 50px 75px;
+}
+
+div.errorpage h1 {
+	font-size: 72px;
+	color: #e74c3c;
+}
+
 
 /* Inputs */
 
