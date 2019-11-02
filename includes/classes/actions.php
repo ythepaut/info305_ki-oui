@@ -121,7 +121,7 @@ function register($username, $email, $passwd, $passwd2, $cgu, $connection) {
 
             if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
-                if (strlen($passwd) >= 8) {
+                if (strlen($passwd) >= 8 && preg_match("#[0-9]+#", $passwd) && preg_match("#[a-zA-Z]+#", $passwd)) {
 
                     if ($passwd == $passwd2) {
 
@@ -171,7 +171,7 @@ function register($username, $email, $passwd, $passwd2, $cgu, $connection) {
                     }
 
                 } else {
-                    $result = "ERROR_INVALID_PASSWD#Votre mot de passe doit faire au moins 8 caractères.";
+                    $result = "ERROR_INVALID_PASSWD#Votre mot de passe doit faire au moins 8 caractères, contenir au moins une lettre et un chiffre.";
                 }
 
             } else {
