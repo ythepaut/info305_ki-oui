@@ -2,6 +2,7 @@
 <div class="modal fade" id="modalLogin" tabindex="-1" role="dialog" aria-labelledby="modalLogin" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
+
             <div class="modal-body">
 
                 <div class="container-fluid" style="text-align: center;">
@@ -17,7 +18,7 @@
 
                             <div class="input-group mb-3">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text label-icon" id="icon_email"><i class="fas fa-envelope-open"></i></span>
+                                    <span class="input-group-text label-icon" id="icon_email"><i class="fas fa-at"></i></span>
                                 </div>
                                 <input type="email" name="login_email" class="form-control" placeholder="Adresse e-mail" aria-describedby="icon_email" required />
                             </div>
@@ -32,9 +33,7 @@
                             <input type="hidden" name="action" value="login">
                             <input type="submit" value="Me connecter">
 
-                            <br />
-                            <br />
-                            <span class="hint" id="hint_login"></span>
+                            <div style="display: hidden;" id="hint_login"></div>
 
                         </form>
                     </div>
@@ -45,11 +44,20 @@
                         
                     </div>
 
+
+
                 
                 </div>
                 </div>
 
             </div>
+
+            <div class="modal-footer" style="background-color: #eaeaea; display: initial; text-align: center;">
+                <span>Pas encore enregistré ? <a href="#" data-dismiss="modal" data-toggle="modal" data-target="#modalRegister" class="link">Créer un compte</a>.</span>
+            </div>
+
         </div>
+
     </div>
 </div>
+

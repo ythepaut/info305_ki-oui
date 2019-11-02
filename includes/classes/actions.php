@@ -65,7 +65,7 @@ function login($email, $passwd, $connection) {
                 $_SESSION['Data'] = $userData;
                 $_SESSION['LoggedIn'] = true;
 
-                $result = "SUCCESS#Redirection...";
+                $result = "SUCCESS#Bienvenue " . $_SESSION['Data']['username'];
 
             } else {
 
@@ -117,6 +117,5 @@ function upload($files) {
 
     return true;
 }
-
 
 ?>

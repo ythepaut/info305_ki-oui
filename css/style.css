@@ -7,6 +7,9 @@
 a, a:hover, a:visited, a:active {
 	text-decoration: none;
 }
+a.link {
+	color: #3498db;
+}
 
 /* Header */
 
@@ -82,6 +85,7 @@ a.button {
     position: absolute;
 }
 
+
 button:not(.close), input[type="submit"], a.button {
 	color: #fff;
 	background-color: #1dd1a1;
@@ -93,12 +97,17 @@ button:not(.close), input[type="submit"], a.button {
 	font-weight: bold;
 	font-size: 15px;
 	margin-bottom: 10px;
-	transition: all 0.30s;
+	transition: all 0.15s;
 	cursor: pointer;
 }
 
-button:hover:not(.close), button:active:not(.close), input[type="submit"]:hover, a.button:hover {
+button:hover:not(.close), input[type="submit"]:hover, a.button:hover {
 	background-color: #5adfbb;
+}
+
+button:active:not(.close), input[type="submit"]:active, a.button:active {
+    box-shadow: none;
+    transform: translateY(3px);
 }
 
 button:disabled:not(.close), input[type="submit"]:disabled, a.button:disabled {
@@ -115,6 +124,31 @@ h4.modal-title {
     color: #1dd1a1;
     margin-bottom: 25px;
 }
+
+
+div.alert {
+	border-radius: .10rem;
+	font-size: 15px;
+	margin-top: 10px;
+	padding: 5px;
+    box-shadow: 0 3px 5px rgba(0,0,0,0.1);
+    border-left: solid 4px #34495e;
+}
+
+div.alert.alert-warning {
+    border-left: solid 4px #e74c3c;
+}
+.alert-warning i {
+    color: #e74c3c;
+}
+
+div.alert.alert-success {
+    border-left: solid 4px #2ecc71;
+}
+.alert-success i {
+    color: #2ecc71;
+}
+
 
 /* Footer */
 

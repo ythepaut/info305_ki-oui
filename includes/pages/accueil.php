@@ -46,4 +46,7 @@
 
     </section>
 
-<?php include("./includes/pages/modals/login.php"); ?>
+<?php
+    include("./includes/pages/modals/login.php");
+    include("./includes/pages/modals/register.php");
+?>
