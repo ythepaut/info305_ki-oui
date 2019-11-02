@@ -1,12 +1,12 @@
 <div class="accueil container-fluid">
 	<div class="row justify-content-center">
-		<div class="errorpage col-auto row" style="min-width: 620px;">
+		<div class="errorpage col-auto row">
             
-            <div class="col-3">
+            <div class="col-lg-3">
                 <h1><i class="fas fa-exclamation-triangle"></i></h1>
             </div>
 
-            <div class="col-9">
+            <div class="col-lg-9">
 
                 <h2>Ressource introuvable </h2>
 
