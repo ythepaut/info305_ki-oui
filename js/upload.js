@@ -25,8 +25,26 @@ function updateLabelTitle() {
     title_tab.innerHTML = "Ajouter des fichiers (" + files_compt + " sélectionnés)";
 }
 
+function recreateTab() {
+    var content_tab = "";
+
+    for (var f of all_files) {
+        content_tab += fileTabInfos(f);
+    }
+
+    return content_tab;
+}
+
+function addFiles(files) {
+    if (files !== undefined) {
+        for (var f of files) {
+            all_files.push(f);
+        }
+    }
+}
+
 function fileAdded(e) {
-    if (this.files != null) {
+    if (this.files !== undefined) {
         files_compt += this.files.length;
     }
 
@@ -36,23 +54,39 @@ function fileAdded(e) {
 
     var files_tab = document.querySelector("#files_tab");
 
-    var content_tab = files_tab.innerHTML;
-
-    if (this.files != null) {
-        for (var f of this.files) {
-            content_tab += fileTabInfos(f);
-        }
+    if (all_files.length === 0) {
+        basic_files_tab = files_tab.innerHTML;
     }
 
-    files_tab.innerHTML = content_tab;
+    addFiles(this.files);
+
+    var content_tab = recreateTab();
+
+    files_tab.innerHTML = basic_files_tab + content_tab;
 
     // fileName = e.target.value.split('\\').pop();
 }
 
-var input = document.querySelector('#inputFile');
+function init() {
+    input = document.querySelector('#inputFile');
 
+    files_compt = 0;
+
+    input.addEventListener('change', fileAdded);
+
+    fileAdded(null);
+}
+
+var input = undefined;
 var files_compt = 0;
+var all_files = [];
+var basic_files_tab = "";
 
-input.addEventListener('change', fileAdded);
 
-fileAdded(null);
+
+
+
+
+
+
+console.log("Salut, ce message vient de upload.js (dernière ligne) et ne devrait PAS se retrouver ailleurs que sur /ajout pour éviter des soucis (cf. footer.php ligne 64)");

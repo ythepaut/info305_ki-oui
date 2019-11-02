@@ -52,7 +52,26 @@
         
         <span class="copy">Cette œuvre est mise à disposition selon les termes de la Licence Creative Commons « CC BY-NC-SA 4.0 » &nbsp; | &nbsp; <a href="https://github.com/ythepaut/info305_ki-oui" target="_blank">Code source <i style="position: relative; top:-.3em; font-size: 9px;" class="fas fa-external-link-alt"></i></a></span>
 
-	</footer>
+    </footer>
+    
+    
+    <!--Ajax-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
 
+    <!--Nos JS-->
+    <script src="./js/index.js"></script>
+    <script src="./js/upload.js"></script>
+    <script src="./js/ajax.js"></script>
+    
+    <!--FontAwesome-->
+    <script src="https://kit.fontawesome.com/902b444792.js" crossorigin="anonymous"></script>
+
+    <!--Bootstrap-->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    
+    <!--Google Sign-In-->
+    <script src="https://apis.google.com/js/platform.js"></script>
+    
 </body>
 </html>

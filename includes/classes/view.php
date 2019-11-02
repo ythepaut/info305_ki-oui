@@ -11,9 +11,22 @@ switch ($page) {
     case "accueil":
         include("./includes/pages/accueil.php");
         break;
+    
+    case "espace-utilisateur":
+        include("./includes/pages/espace-utilisateur.php");
+        break;
 
     case "ajout":
         include("./includes/pages/ajout.php");
+        break;
+
+    case "ajout-ok":
+        include("./includes/pages/ajout-ok.php");
+        break;
+
+    case "ajout-nok":
+        echo "e";
+        include("./includes/pages/ajout-nok.php");
         break;
 
     case "403":

@@ -1,15 +1,12 @@
 * {
 	padding: 0px;
 	margin: 0px;
-	
+
 }
-
-
 
 a, a:hover, a:visited, a:active {
 	text-decoration: none;
 }
-
 
 /* Header */
 
@@ -39,7 +36,7 @@ nav form > a {
 	height: 44px;
 	margin: 5px;
     display: inline-block;
-    border-radius: 5px;
+    border-radius: 0.25rem;
     text-align: center;
     text-decoration: none;
     transition: all 0.30s;
@@ -57,7 +54,6 @@ nav form > a > span {
 	font-size: 15px;
 }
 
-
 /* Accueil */
 
 main > section[class="pair"] {
@@ -72,73 +68,27 @@ main > section {
     padding: 50px 0px;
 }
 
-/* Tableau */
 
-table {
-    border-collapse: collapse;
+/* Inputs */
+
+.label-icon {
+    width: 42px;
 }
-
-table, th, td {
-    border: 1px solid rgba(0,0,0,0.2);
-}
-
-th {
-    font-weight: bold;
-    background: #1dd1a1;
-    color: #fff;
-}
-
-th, td {
-    text-align: center;
-    padding: 10px 10px 10px 10px;
-}
-
-/* Input */
-
-
-
-input[type="file"] {
-    width: 0.1px;
-	height: 0.1px;
-	opacity: 0;
-	overflow: hidden;
-	position: absolute;
-	z-index: -1;
-}
-
-input[type="file"]+label {
-    color: #fff;
-	background-color: #1dd1a1;
-	border: none;
-	border-radius: 2px;
-	box-shadow: 0 5px rgba(0,0,0,0.2);
-	padding: 15px 20px;
-	text-align: center;
-	font-weight: bold;
-	font-size: 15px;
-    margin-bottom: 10px;
-}
-
-input[type="file"]+label:hover {
-    color: black;
-	background-color: #fff;
-}
-
-input[type="file"]+label:active {
-    color: #1dd1a1;
-	background-color: #fff;
-}
-
 
 /* Boutons */
 
-button, input[type="submit"] {
+a.button {
+    margin: 10px 0px;
+    position: absolute;
+}
+
+button:not(.close), input[type="submit"], a.button {
 	color: #fff;
 	background-color: #1dd1a1;
 	border: none;
-	border-radius: 5px;
+	border-radius: 0.25rem;
 	box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2);
-	padding: 15px 20px;
+    padding: 12px 15px;
 	text-align: center;
 	font-weight: bold;
 	font-size: 15px;
@@ -147,17 +97,24 @@ button, input[type="submit"] {
 	cursor: pointer;
 }
 
-button:hover, button:active, input[type="submit"]:hover {
+button:hover:not(.close), button:active:not(.close), input[type="submit"]:hover, a.button:hover {
 	background-color: #5adfbb;
 }
 
-button:disabled, input[type="submit"]:disabled {
+button:disabled:not(.close), input[type="submit"]:disabled, a.button:disabled {
 	background-color: #c8d6e5;
 	color: #222f3e;
 	cursor: not-allowed;
 }
 
+/* Modals */
 
+h4.modal-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #1dd1a1;
+    margin-bottom: 25px;
+}
 
 /* Footer */
 
