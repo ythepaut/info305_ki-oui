@@ -33,7 +33,6 @@
                             <input type="hidden" name="action" value="login">
                             <input type="submit" value="Me connecter">
 
-                            <div style="display: hidden;" id="hint_login"></div>
 
                         </form>
                     </div>
@@ -45,6 +44,11 @@
                     </div>
 
 
+                    <div class="col-lg-12">
+
+                        <div style="display: hidden;" id="hint_login"></div>
+                        
+                    </div>
 
                 
                 </div>
