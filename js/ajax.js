@@ -41,7 +41,7 @@ $('form.ajax').on('submit', function() {
                     alertDiv.setAttribute('class', 'alert alert-success');
                     alertDiv.innerHTML = '<i class="fas fa-check-circle"></i>  &nbsp; ' + responseArray[1];
 
-                    setTimeout(function() { window.location.href = "/espace-utilisateur"; }, 1500);
+                    setTimeout(function() { window.location.href = "/espace-utilisateur"; }, 1000);
                 } else {
                     alertDiv.setAttribute('class', 'alert alert-warning');
                     alertDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i>  &nbsp; ' + responseArray[1];

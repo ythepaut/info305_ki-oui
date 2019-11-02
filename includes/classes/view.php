@@ -29,6 +29,11 @@ switch ($page) {
         include("./includes/pages/ajout-nok.php");
         break;
 
+    case "cgu":
+    case "mentions-legales":
+        include("./includes/pages/cgu.php");
+        break;
+
     case "403":
         include("./includes/pages/403.php");
         break;

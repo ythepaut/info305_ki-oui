@@ -25,7 +25,7 @@
                 <h3>LIENS UTILS</h3>
                 <ul>
                     <li><a href="/">Accueil</a></li>
-                    <li><a href="/">Espace utilisateur</a></li>
+                    <li><a href="/espace-utilisateur">Espace utilisateur</a></li>
                     <li><a href="/mentions-legales">Mentions légales</a></li>
                     <li><a href="/cgu">Conditions génerales d'utilisation</a></li>
                 </ul>

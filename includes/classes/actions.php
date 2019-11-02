@@ -91,7 +91,7 @@ function login($email, $passwd, $connection) {
         $result = "ERROR_MISSING_FIELDS#Veuillez remplir tous les champs.";
     }
 
-    return $result;
+    return $result . "#<script>window.href.location = '/';</script>";
 }
 
 /**

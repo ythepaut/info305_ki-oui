@@ -52,7 +52,7 @@
 
                         <div class="custom-control custom-checkbox">
                             <input type="checkbox" class="custom-control-input" name="register_cgu" id="register_cgu" required />
-                            <label class="custom-control-label" for="register_cgu">J'ai lu, compris, accepté et appris par coeur les <a target="_blank" href="/cgu" class="link">Conditions Générales d'Utilisation <i style="position: relative; top:-.3em; font-size: 9px;" class="fas fa-external-link-alt"></i></a>.</label>
+                            <label class="custom-control-label" for="register_cgu">J'ai lu, compris, accepté et appris par cœur les <a target="_blank" href="/cgu" class="link">Conditions Générales d'Utilisation <i style="position: relative; top:-.3em; font-size: 9px;" class="fas fa-external-link-alt"></i></a>.</label>
                         </div>
 
                         
