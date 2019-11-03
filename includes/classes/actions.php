@@ -15,25 +15,21 @@ switch ($action) {
         break;
 
     case "upload":
-        $res = upload($_FILES['files']);
+        $res = upload();
 
         if ($res) {
-            $loc = "/ajout-ok";
+            header("location:/ajout-ok");
         }
         else {
-            $loc = "/ajout-nok";
+            header("location:/ajout-nok");
         }
 
-        // header("location:$loc");
         break;
 
     default:
         throw new Exception("Action invalide : " . '$action' . " = '$action'");
         break;
 }
-
-
-
 
 /**
  * Connexion de l'utilisateur : Methode e-mail + mot de passe
@@ -90,7 +86,6 @@ function login($email, $passwd, $connection) {
         } else {
             $result = "ERROR_INVALID_CREDENTIALS#Identifiants de connexion invalides";
         }
-
     } else {
         $result = "ERROR_MISSING_FIELDS#Veuillez remplir tous les champs.";
     }
@@ -189,33 +184,58 @@ function register($username, $email, $passwd, $passwd2, $cgu, $connection) {
     return $result . "#<script>window.href.location = '/';</script>";
 }
 
-
-
-
-
-
 /**
  * Upload des fichiers
  *
- * @param array             $files              -   Fichiers envoyés
- *
  * @return boolean                              -   Si l'opération s'est bien passée ou non
  */
-function upload($files) {
-    var_dump($files["name"][0]);
+function upload() {
+    $TARGET_DIR = "../../uploads/";
 
-    echo "Débug en cours <br />";
+    $files = $_FILES['files'];
 
-    for ($i=0; $i<count($files["name"]); $i++) {
-        echo "Nom : " . $files["name"][$i] . " <br />";
-        echo "Type : " . $files["type"][$i] . " <br />";
-        echo "Tmp name : " . $files["tmp_name"][$i] . " <br />";
-        echo "Error : " . $files["error"][$i] . "<br />";
-        echo "Size : " . $files["size"][$i] . "<br />";
-        echo "<br />";
+    var_dump($files);
+
+    for ($i=0; $i<count($files["name"])-1; $i++) {
+        $txt = "";
+
+        $txt .= "Nom : " . $files["name"][$i] . " <br />";
+        $txt .= "Type : " . $files["type"][$i] . " <br />";
+        $txt .= "Tmp name : " . $files["tmp_name"][$i] . " <br />";
+        $txt .= "Error : " . $files["error"][$i] . "<br />";
+        $txt .= "Size : " . $files["size"][$i] . "<br />";
+
+        $file_name = $files["name"][$i]; // <-- Changer ici pour changer le nom
+
+        $target_file = $TARGET_DIR . $file_name;
+
+        $success = move_uploaded_file($files["tmp_name"][$i], $target_file);
+
+        if ($success) {
+            $txt .= "Success";
+        }
+        else {
+            $txt .= "Failure";
+        }
+
+        $txt .= "<br />";
+
+        echo $txt;
     }
 
     return true;
 }
+
+/*
+<?php
+  $currfile = $_FILES['file']['tmp_name'];
+  $filename = $_FILES['file']['name'];
+  // ...
+  if($filename!='') {
+    $bin_data = addslashes(fread(fopen($currfile), "rb"), filesize($currfile)));
+  }
+  // ... database INSERT statements
+?>
+ */
 
 ?>
