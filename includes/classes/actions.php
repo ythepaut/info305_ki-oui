@@ -1,13 +1,13 @@
 <?php
 //Fichier qui gère l'ensemble des formulaire POST
 
-
 include_once(getcwd() . "/config-db.php");
 include_once(getcwd() . "/config-email.php");
 include_once(getcwd() . "/utils.php");
 require_once(getcwd() . '/PHPMailer/PHPMailerAutoload.php');
 
 $action = (isset($_POST['action'])) ? $_POST['action'] : "";
+$action = ($action == "" && isset($_GET['action']) && $_GET['action'] != "") ? $_GET['action'] : $action;
 
 switch ($action) {
     case "login":
@@ -16,8 +16,11 @@ switch ($action) {
     case "register":
         die(register($_POST['register_username'], $_POST['register_email'], $_POST['register_passwd'], $_POST['register_passwd2'], $_POST['register_cgu'], $connection, $em));
         break;
+    case "verif-email":
+        die(verifEmail($_GET['token'], $connection));
+        break;
 
-    case "upload":
+        case "upload":
         $res = upload();
 
         if ($res) {
@@ -30,12 +33,16 @@ switch ($action) {
         break;
 
     default:
-        throw new Exception("Action invalide : " . '$action' . " = '$action'");
+        //throw new Exception("ERROR_MISSING_ACTION#Action invalide : " . '$action' . " = '$action'");
         break;
 }
 
+
+
+
 /**
  * Connexion de l'utilisateur : Methode e-mail + mot de passe
+ * (Formulaire AJAX)
  *
  * @param string            $email              -   Adresse e-mail de l'utilisateur
  * @param string            $passwd             -   Mot de passe de l'utilisateur
@@ -89,6 +96,7 @@ function login($email, $passwd, $connection) {
         } else {
             $result = "ERROR_INVALID_CREDENTIALS#Identifiants de connexion invalides";
         }
+
     } else {
         $result = "ERROR_MISSING_FIELDS#Veuillez remplir tous les champs.";
     }
@@ -98,6 +106,7 @@ function login($email, $passwd, $connection) {
 
 /**
  * Enregistrement d'un nouvel utilisateur
+ * (Formulaire AJAX)
  *
  * @param string            $username           -   Nom d'utilisateur
  * @param string            $email              -   Adresse e-mail de l'utilisateur
@@ -150,12 +159,13 @@ function register($username, $email, $passwd, $passwd2, $cgu, $connection, $em) 
                                 $accesslevel = "USER";
                                 $ip = $_SERVER['REMOTE_ADDR'];
                                 $registrationDate = time();
+                                $emailToken = randomString(64);
 
-                                $query = $connection->prepare("INSERT INTO kioui_accounts (email, username, password, salt, access_level, status, ip, registration_date) VALUES (?,?,?,?,?,?,?,?)");
-                                $query->bind_param("sssssssi", $email, $username, $password_salted_hashed, $salt, $accesslevel, $status, $ip, $registrationDate);
+                                $query = $connection->prepare("INSERT INTO kioui_accounts (email, username, password, salt, access_level, status, ip, registration_date, email_token) VALUES (?,?,?,?,?,?,?,?,?)");
+                                $query->bind_param("sssssssi", $email, $username, $password_salted_hashed, $salt, $accesslevel, $status, $ip, $registrationDate, $emailToken);
                                 $query->execute();
 
-                                sendMail($em, $email, "Bienvenue sur KI-OUI. Verifiez votre e-mail.", "Bienvenue !", "Merci de vous être inscrit " . $username . ".<br />Veuillez confirmer votre adresse e-mail pour pouvoir commencer à utiliser nos services en cliquant sur le lien ci-dessous.<br /><br />Si vous n'êtes pas à l'origine de cette action, ignorez cet e-mail.", "https://ki-oui.ythepaut.com/verif?token=TODO", "Vérifier mon e-mail");
+                                sendMail($em, $email, "Bienvenue sur KI-OUI. Verifiez votre e-mail.", "Bienvenue !", "Merci de vous être inscrit " . $username . ".<br />Veuillez confirmer votre adresse e-mail pour pouvoir commencer à utiliser nos services en cliquant sur le lien ci-dessous.<br /><br />Si vous n'êtes pas à l'origine de cette action, ignorez cet e-mail.", "https://ki-oui.ythepaut.com/verif-email/" . $emailToken, "Vérifier mon e-mail");
 
                                 $result = "SUCCESS#Compte créé. Veuillez confirmer votre e-mail avant de vous connecter.#null";
 
@@ -189,6 +199,40 @@ function register($username, $email, $passwd, $passwd2, $cgu, $connection, $em) 
 
     return $result . "#<script>window.href.location = '/';</script>";
 }
+
+
+/**
+ * Verification d'email après enregistrement
+ *
+ * @param string            $token              -   Jeton de verification e-mail
+ * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return void
+ */
+function verifEmail($token, $connection) {
+
+    $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE email_token = ?");
+    $query->bind_param("s", $token);
+    $query->execute();
+    $result = $query->get_result();
+    $query->close();
+    $userData = $result->fetch_assoc();
+
+    if ($userData['status'] == "REGISTRATION") {
+
+        $newStatus = "ALIVE";
+
+        $query = $connection->prepare("UPDATE kioui_accounts SET status = ? , email_token = NULL WHERE email_token = ?");
+        $query->bind_param("ss", $newStatus, $token);
+        $query->execute();
+        $query->close();
+
+    }
+
+    header("Location: /");
+
+}
+
 
 /**
  * Upload des fichiers
