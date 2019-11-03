@@ -58,7 +58,7 @@ input[type="file"] {
 	z-index: -1;
 }
 
-input[type="file"]+label {
+label#inputLabel {
     margin-top: 50px;
     color: #fff;
 	background-color: #1dd1a1;

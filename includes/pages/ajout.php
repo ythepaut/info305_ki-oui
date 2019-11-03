@@ -6,8 +6,9 @@
     <div class="row justify-content-center">
         <div class="col-5 align-self-center box" style="text-align:center;">
             <form action="./includes/classes/actions.php" method="post" enctype="multipart/form-data">
-                <input type="file" name="files[]" id="inputFile" multiple="multiple" />
-                <label for="inputFile"></label>
+                <div id="allInputs"></div>
+
+                <label for="inputFile" id="inputLabel"></label>
 
                 <table id="files_tab">
                     <tr>
@@ -32,16 +33,11 @@
 </div>
 
 <!--
-    TODO:
-    upload
-    vérif si upload même fichier ?
+    Chaque input de fichier ne peut être set qu'une seule fois, il nous faut donc recréer un input
+    à chaque nouvelle sélection. Les input ont le même nom afin d'être regroupés dans la même
+    variable tableau dans la partie PHP.
+-->
 
-    BUG:
-    dans le JS la fonction est exécutée que lors d'un changement (donc un seul upload de fichiers)
-    dans l'upload seul le 1er upload compte
-
-    HACK:
-    plein de boutons et de label hidden à chaque nouvel upload ? value marche pas donc pas trop le choix
-
-
+<!--
+    TODO: vérif si upload même fichier ?
 -->
