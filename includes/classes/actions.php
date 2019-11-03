@@ -226,16 +226,4 @@ function upload() {
     return true;
 }
 
-/*
-<?php
-  $currfile = $_FILES['file']['tmp_name'];
-  $filename = $_FILES['file']['name'];
-  // ...
-  if($filename!='') {
-    $bin_data = addslashes(fread(fopen($currfile), "rb"), filesize($currfile)));
-  }
-  // ... database INSERT statements
-?>
- */
-
 ?>
