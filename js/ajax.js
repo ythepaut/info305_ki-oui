@@ -73,6 +73,27 @@ $('form.ajax').on('submit', function() {
                 }
 
             }, 100);
+
+        },
+        //Fonction executée en cas d'erreur
+        error: function() {
+
+            var alertDiv = document.querySelector('#hint_' + data['action']);
+            
+            alertDiv.setAttribute('class', 'alert alert-warning');
+            alertDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i>  &nbsp; ' + "Une erreur est survenue lors de la requête. Veuillez réessayer ulterieurement.";
+
+            //Affichage du div message
+            alertDiv.removeAttribute('style');
+            
+            //Réactivation des champs
+            document.querySelector('input[type="submit"]').removeAttribute('disabled');
+            document.querySelector('input[type="submit"]').setAttribute('value', 'Me connecter');
+            document.querySelector('input[type="password"]').value = "";
+
+            for (let inputDisabled of document.querySelectorAll("input[disabled='disabled']")) {
+                inputDisabled.removeAttribute('disabled');
+            }
         }
 
     });

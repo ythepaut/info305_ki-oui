@@ -9,13 +9,13 @@ error_reporting(E_ALL);
 
 
 #Configurations
-include("./includes/classes/config-db.php");
+include_once("./includes/classes/config-db.php");
 #include("./includes/classes/config-recaptcha.php");
-#include("./includes/classes/config-email.php");
+include_once("./includes/classes/config-email.php");
 
 
 #Fonctions utiles
-include("./includes/classes/utils.php");
+include_once("./includes/classes/utils.php");
 
 
 #Affichage de la page web

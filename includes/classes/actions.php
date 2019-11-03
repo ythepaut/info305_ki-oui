@@ -1,8 +1,11 @@
 <?php
 //Fichier qui gère l'ensemble des formulaire POST
 
-include("./config-db.php");
-include("./utils.php");
+
+include_once(getcwd() . "/config-db.php");
+include_once(getcwd() . "/config-email.php");
+include_once(getcwd() . "/utils.php");
+require_once(getcwd() . '/PHPMailer/PHPMailerAutoload.php');
 
 $action = (isset($_POST['action'])) ? $_POST['action'] : "";
 
@@ -11,7 +14,7 @@ switch ($action) {
         die(login($_POST['login_email'], $_POST['login_passwd'], $connection));
         break;
     case "register":
-        die(register($_POST['register_username'], $_POST['register_email'], $_POST['register_passwd'], $_POST['register_passwd2'], $_POST['register_cgu'], $connection));
+        die(register($_POST['register_username'], $_POST['register_email'], $_POST['register_passwd'], $_POST['register_passwd2'], $_POST['register_cgu'], $connection, $em));
         break;
 
     case "upload":
@@ -107,15 +110,16 @@ function login($email, $passwd, $connection) {
  * @param string            $passwd2            -   Mot de passe de l'utilisateur (confirmation)
  * @param string            $cgu                -   Utilisateur a accepté les cgu
  * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php
+ * @param array             $em                 -   Identifiants email de config-email.php
  *
  * @return string
  */
-function register($username, $email, $passwd, $passwd2, $cgu, $connection) {
+function register($username, $email, $passwd, $passwd2, $cgu, $connection, $em) {
 
     $result = "ERROR_UNKNOWN#Une erreur est survenue.";
 
     //Verification des champs
-    if (isset($username, $email, $passwd, $passwd2, $cgu, $connection) && $email != "" && $passwd != "" && $passwd2 != "" && $username != "" && $cgu == "on") {
+    if (isset($username, $email, $passwd, $passwd2, $cgu, $connection, $em) && $email != "" && $passwd != "" && $passwd2 != "" && $username != "" && $cgu == "on") {
 
         if (strlen($username) <= 16 && strlen($username) >= 3) {
 
@@ -155,6 +159,8 @@ function register($username, $email, $passwd, $passwd2, $cgu, $connection) {
                                 $query = $connection->prepare("INSERT INTO kioui_accounts (email, username, password, salt, access_level, status, ip, registration_date) VALUES (?,?,?,?,?,?,?,?)");
                                 $query->bind_param("sssssssi", $email, $username, $password_salted_hashed, $salt, $accesslevel, $status, $ip, $registrationDate);
                                 $query->execute();
+
+                                sendMail($em, $email, "Bienvenue sur KI-OUI. Verifiez votre e-mail.", "Bienvenue !", "Merci de vous être inscrit " . $username . ".<br />Veuillez confirmer votre adresse e-mail pour pouvoir commencer à utiliser nos services en cliquant sur le lien ci-dessous.<br /><br />Si vous n'êtes pas à l'origine de cette action, ignorez cet e-mail.", "https://ki-oui.ythepaut.com/verif?token=TODO", "Vérifier mon e-mail");
 
                                 $result = "SUCCESS#Compte créé. Veuillez confirmer votre e-mail avant de vous connecter.#null";
 
