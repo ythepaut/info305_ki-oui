@@ -20,7 +20,7 @@ switch ($action) {
         die(verifEmail($_GET['token'], $connection));
         break;
 
-        case "upload":
+    case "upload":
         $res = upload();
 
         if ($res) {
