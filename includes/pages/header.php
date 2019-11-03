@@ -6,21 +6,21 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
 	<title>Ki-Oui</title>
     <link rel="icon" type="image/png" href="./ressources/img/favicon.png" />
-    
+
     <!--Bootstrap-->
 	<link rel="stylesheet" type="text/css" href="./css/bootstrap.css" />
     <link rel="stylesheet" type="text/css" href="./css/bootstrap-grid.css" />
-    
+
     <link rel="stylesheet" type="text/css" href="./css/style.css" />
-    
+
 
     <!--Google Sign-In-->
     <meta name="google-signin-scope" content="profile email">
     <meta name="google-signin-client_id" content="667256788124-sd9d3c8ei23muvqkfu2835l457nh318u.apps.googleusercontent.com">
-    
+
 </head>
 <body>
-	
+
 
 
 	<nav class="navbar sticky-top navbar-dark">
@@ -38,6 +38,7 @@
     <?php
     include("./includes/pages/modals/login.php");
     include("./includes/pages/modals/register.php");
+    include("./includes/pages/modals/upload-file-error.php");
     ?>
 
 	<main>

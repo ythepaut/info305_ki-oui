@@ -1,5 +1,4 @@
 
-
 <div class="modal fade" id="modalRegister" tabindex="-1" role="dialog" aria-labelledby="modalRegister" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
@@ -13,7 +12,7 @@
                     <div class="col-lg-12">
                         <h4 class="modal-title">INSCRIPTION</h4>
                     </div>
-                    
+
                     <div class="col-lg-6">
 
                         <div class="input-group mb-3">
@@ -29,7 +28,7 @@
                             </div>
                             <input type="email" name="register_email" class="form-control" placeholder="Adresse e-mail" aria-describedby="icon_register_email" required />
                         </div>
-                        
+
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
                                 <span class="input-group-text label-icon" id="icon_register_passwd"><i class="fas fa-unlock"></i></span>
@@ -47,7 +46,7 @@
                             </div>
                             <input type="password" name="register_passwd2" class="form-control" placeholder="Mot de passe (confirmation)" aria-describedby="icon_register_passwd2" required />
                         </div>
-     
+
                         <br />
 
                         <div class="custom-control custom-checkbox">
@@ -55,7 +54,7 @@
                             <label class="custom-control-label" for="register_cgu">J'ai lu, compris, accepté et appris par cœur les <a target="_blank" href="/cgu" class="link">Conditions Générales d'Utilisation <i style="position: relative; top:-.3em; font-size: 9px;" class="fas fa-external-link-alt"></i></a>.</label>
                         </div>
 
-                        
+
                     </div>
 
 
@@ -68,7 +67,7 @@
                         
                     </div>
 
-                
+
                 </div>
                 </div>
                 </form>
