@@ -237,10 +237,12 @@ function verifEmail($token, $connection) {
 /**
  * Upload des fichiers
  *
- * @return boolean                              -   Si l'opération s'est bien passée ou non
+ * @return boolean          $res                -   Si l'opération s'est bien passée ou non
  */
 function upload() {
     $TARGET_DIR = "../../uploads/";
+    $MAX_SIZE = 50 * 10**6;
+    $res = true;
 
     $files = $_FILES['files'];
 
@@ -255,11 +257,16 @@ function upload() {
         $txt .= "Error : " . $files["error"][$i] . "<br />";
         $txt .= "Size : " . $files["size"][$i] . "<br />";
 
-        $file_name = $files["name"][$i]; // <-- Changer ici pour changer le nom
+        if ($files["size"][$i] < $MAX_SIZE) {
+            $file_name = $files["name"][$i]; // <-- Changer ici pour changer le nom
 
-        $target_file = $TARGET_DIR . $file_name;
+            $target_file = $TARGET_DIR . $file_name;
 
-        $success = move_uploaded_file($files["tmp_name"][$i], $target_file);
+            $success = move_uploaded_file($files["tmp_name"][$i], $target_file);
+        }
+        else {
+            $success = false;
+        }
 
         if ($success) {
             $txt .= "Success";
@@ -273,7 +280,7 @@ function upload() {
         echo $txt;
     }
 
-    return true;
+    return $res;
 }
 
 ?>

@@ -19,7 +19,7 @@ function updateLabelTitle() {
 /**
  * Configure l'input suivante
  */
-function setInput() {
+function setNewInput() {
     var old_input = document.querySelector('#inputFile');
 
     if (old_input !== null) {
@@ -41,6 +41,17 @@ function setInput() {
     var div_files_select = document.querySelector("#allInputs");
     div_files_select.appendChild(current_input);
     // On ajoute cette sélection au div contenant les autres sélections
+}
+
+/**
+ * Supprime l'input courante si elle est invalide
+ */
+function resetInput() {
+    var current_input = document.querySelector('#inputFile');
+
+    if (current_input !== null) {
+        current_input.setAttribute("disabled", "1");
+    }
 }
 
 /**
@@ -89,14 +100,35 @@ function transformSize(size) {
 }
 
 /**
+ * Vérifie la validité des fichiers
+ *
+ * @param  {file[]} files       Fichiers ajoutés
+ *
+ * @return {bool}   ok          Si les fichiers sont valides ou non
+ */
+function checkFiles(files) {
+    var ok = true;
+
+    for (var file of files) {
+        if (file.size >= MAX_SIZE) {
+            ok = false;
+        }
+    }
+
+    if (!ok) {
+        $('#modalUploadFileError').modal();
+    }
+
+    return ok;
+}
+
+/**
  * Met à jour le tableau des fichiers
  *
  * @param  {file[]}  files      Tableau des nouveaux fichiers
  */
 function updateTab(files) {
     for (var file of files) {
-        all_files.push(file);
-
         var row = files_tab.insertRow(-1);
 
         var name_cell = row.insertCell(0);
@@ -116,14 +148,21 @@ function updateTab(files) {
  * @param  {event}  e           Événement d'ajout
  */
 function fileAdded(e) {
-    setInput();
+    var ok = checkFiles(this.files);
 
-    if (e !== null) {
+    if (ok) {
+        for (var file of this.files) {
+            all_files.push(file);
+        }
+
         updateTab(this.files);
     }
+    else {
+        resetInput();
+    }
 
+    setNewInput();
     updateLabelTitle();
-
     updateFirstLineTab();
 }
 
@@ -131,7 +170,13 @@ function fileAdded(e) {
  * Initialisation de l'ajout de fichiers
  */
 function init() {
-    fileAdded(null);
+    setNewInput();
+    updateLabelTitle();
+    updateFirstLineTab();
 }
 
-var all_files = []; // Tous les fichiers
+var all_files = [];
+// Tous les fichiers
+
+var MAX_SIZE = 50 * Math.pow(10, 6);
+// Qu'on ne peut pas mettre en const car le script est importé 2 fois, merci
