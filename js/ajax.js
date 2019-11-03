@@ -28,9 +28,10 @@ $('form.ajax').on('submit', function() {
         beforeSend: function(){
 
             //Desactivation des champs
-            document.querySelector('input[type="submit"]').setAttribute('disabled', 'disabled');
-            document.querySelector('input[type="submit"]').setAttribute('value', ' • • • ');
-
+            for (let submit of document.querySelectorAll('input[type="submit"]')) {
+                submit.setAttribute('value', ' • • • ');
+            }
+            
             for (let inputDisabled of document.querySelectorAll('input:not([disabled])')) {
                 inputDisabled.setAttribute('disabled', 'disabled');
             }
@@ -64,8 +65,11 @@ $('form.ajax').on('submit', function() {
                 alertDiv.removeAttribute('style');
                 
                 //Réactivation des champs
-                document.querySelector('input[type="submit"]').removeAttribute('disabled');
-                document.querySelector('input[type="submit"]').setAttribute('value', 'Me connecter');
+                for (let submit of document.querySelectorAll('input[type="submit"]')) {
+                    submit.removeAttribute('disabled');
+                    submit.setAttribute('value', 'Valider');
+                }
+                
                 document.querySelector('input[type="password"]').value = "";
 
                 for (let inputDisabled of document.querySelectorAll("input[disabled='disabled']")) {

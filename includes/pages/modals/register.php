@@ -18,23 +18,23 @@
 
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text label-icon" id="icon_username"><i class="fas fa-hashtag"></i></span>
+                                <span class="input-group-text label-icon" id="icon_register_username"><i class="fas fa-hashtag"></i></span>
                             </div>
-                            <input type="text" name="register_username" class="form-control" placeholder="Nom d'utilisateur" aria-describedby="icon_username" required />
+                            <input type="text" name="register_username" class="form-control" placeholder="Nom d'utilisateur" aria-describedby="icon_register_username" required />
                         </div>
 
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text label-icon" id="icon_email"><i class="fas fa-at"></i></span>
+                                <span class="input-group-text label-icon" id="icon_register_email"><i class="fas fa-at"></i></span>
                             </div>
-                            <input type="email" name="register_email" class="form-control" placeholder="Adresse e-mail" aria-describedby="icon_email" required />
+                            <input type="email" name="register_email" class="form-control" placeholder="Adresse e-mail" aria-describedby="icon_register_email" required />
                         </div>
                         
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text label-icon" id="icon_passwd"><i class="fas fa-unlock"></i></span>
+                                <span class="input-group-text label-icon" id="icon_register_passwd"><i class="fas fa-unlock"></i></span>
                             </div>
-                            <input type="password" name="register_passwd" class="form-control" placeholder="Mot de passe" aria-describedby="icon_passwd" required />
+                            <input type="password" name="register_passwd" class="form-control" placeholder="Mot de passe" aria-describedby="icon_register_passwd" required />
                         </div>
 
                     </div>
@@ -43,9 +43,9 @@
 
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text label-icon" id="icon_passwd2"><i class="fas fa-unlock"></i></span>
+                                <span class="input-group-text label-icon" id="icon_register_passwd2"><i class="fas fa-unlock"></i></span>
                             </div>
-                            <input type="password" name="register_passwd2" class="form-control" placeholder="Mot de passe (confirmation)" aria-describedby="icon_passwd2" required />
+                            <input type="password" name="register_passwd2" class="form-control" placeholder="Mot de passe (confirmation)" aria-describedby="icon_register_passwd2" required />
                         </div>
      
                         <br />
@@ -62,9 +62,9 @@
                     <div class="col-lg-12">
 
                         <input type="hidden" name="action" value="register">
-                        <input type="submit" value="M'inscrire">
+                        <input type="submit" value="Valider">
 
-                        <div style="display: hidden;" id="hint_register"></div>
+                        <div style="display: none;" id="hint_register"></div>
                         
                     </div>
 
