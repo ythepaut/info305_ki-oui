@@ -13,11 +13,6 @@
 
     <link rel="stylesheet" type="text/css" href="./css/style.css" />
 
-
-    <!--Google Sign-In-->
-    <meta name="google-signin-scope" content="profile email">
-    <meta name="google-signin-client_id" content="667256788124-sd9d3c8ei23muvqkfu2835l457nh318u.apps.googleusercontent.com">
-
 </head>
 <body>
 

@@ -12,7 +12,11 @@
                         <h4 class="modal-title">CONNEXION</h4>
                     </div>
                     
-                    <div class="col-lg-6">
+                    <div class="col-lg-2">
+
+                    </div>
+
+                    <div class="col-lg-8">
 
                         <form action="./includes/classes/actions.php" method="POST" class="ajax">
 
@@ -30,6 +34,21 @@
                                 <input type="password" name="login_passwd" class="form-control" placeholder="Mot de passe" aria-describedby="icon_login_passwd" required />
                             </div>
 
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" name="login_remember" id="login_remember" disabled />
+                                        <label class="custom-control-label" for="login_remember">Se souvenir de moi <i class="fas fa-info-circle" title="Fortement déconseillé sur un ordinateur qui n'est pas le vôtre."></i></label>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <a href="#" class="link">Mot de passe oublié</a>
+                                </div>
+                            </div>
+                            <br />
+
+
                             <input type="hidden" name="action" value="login">
                             <input type="submit" value="Valider">
 
@@ -37,10 +56,8 @@
                         </form>
                     </div>
 
-                    <div class="col-lg-6">
+                    <div class="col-lg-2">
 
-                        <div class="g-signin2" data-onsuccess="onSignIn" data-theme="light"></div>
-                        
                     </div>
 
 

@@ -1,5 +1,6 @@
 <?php
 //Fichier qui gère l'ensemble des formulaire POST
+session_start();
 
 include_once(getcwd() . "/config-db.php");
 include_once(getcwd() . "/config-email.php");
@@ -20,7 +21,7 @@ switch ($action) {
         die(verifEmail($_GET['token'], $connection));
         break;
 
-    case "upload":
+        case "upload":
         $res = upload();
 
         if ($res) {

@@ -13,7 +13,12 @@ switch ($page) {
         break;
     
     case "espace-utilisateur":
-        include("./includes/pages/espace-utilisateur.php");
+        if (isset($_SESSION['LoggedIn']) && $_SESSION['LoggedIn']) {
+            include("./includes/pages/espace-utilisateur.php");
+        } else {
+            include("./includes/pages/401.php");
+            $openLoginModal = true;
+        }
         break;
 
     case "ajout":
@@ -51,4 +56,8 @@ switch ($page) {
 
 #Footer
 include("./includes/pages/footer.php");
+
+if (isset($openLoginModal) && $openLoginModal) {
+    echo("<script>$('#modalLogin').modal('show')</script>");
+}
 ?>

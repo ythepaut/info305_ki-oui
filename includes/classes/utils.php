@@ -93,7 +93,7 @@ function sendMail($em, $to, $subject, $title, $body, $button_link, $button_text)
 
 
 /**
- * Envoyer un e-mail sans passer par PHPMailer (Expediteur visible, sans html). (Eviter d'utiliser dans la mesure du possible)
+ * Envoyer un e-mail sans passer par PHPMailer (Expediteur ovh visible, sans html). (Eviter d'utiliser dans la mesure du possible)
  * 
  * @param string        $to         -   Adresse e-mail destination.
  * @param string        $subject    -   Sujet du message.
