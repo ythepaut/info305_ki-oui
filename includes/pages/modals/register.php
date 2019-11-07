@@ -61,6 +61,7 @@
                     <div class="col-lg-12">
 
                         <input type="hidden" name="action" value="register">
+                        <input type="hidden" name="register_recaptchatoken" class="recaptcha" value="recaptcha">
                         <input type="submit" value="Valider">
 
                         <div style="display: none;" id="hint_register"></div>

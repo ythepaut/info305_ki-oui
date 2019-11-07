@@ -35,6 +35,15 @@ $('form.ajax').on('submit', function() {
             for (let inputDisabled of document.querySelectorAll('input:not([disabled])')) {
                 inputDisabled.setAttribute('disabled', 'disabled');
             }
+
+
+            //Validation re-captcha
+            grecaptcha.execute('6LcikMEUAAAAAIzTpwihiSatPxk_MV8h3n6NI99l', {action: 'homepage'}).then(function(token) {
+                for (let tokeninput of document.querySelectorAll('input[class="recaptcha"]')) {
+                    tokeninput.setAttribute('value', token);
+                }
+            });
+
         },
         //Fonction executée lorsque l'on reçoit une reponse du php
         success: function(response) {
@@ -76,7 +85,7 @@ $('form.ajax').on('submit', function() {
                     inputDisabled.removeAttribute('disabled');
                 }
 
-            }, 100);
+            }, 200);
 
         },
         //Fonction executée en cas d'erreur
@@ -105,4 +114,14 @@ $('form.ajax').on('submit', function() {
 
 
     return false;
+});
+
+
+//Init page re-captcha
+grecaptcha.ready(function() {
+    grecaptcha.execute('6LcikMEUAAAAAIzTpwihiSatPxk_MV8h3n6NI99l', {action: 'homepage'}).then(function(token) {
+        for (let tokeninput of document.querySelectorAll('input[class="recaptcha"]')) {
+            tokeninput.setAttribute('value', token);
+        }
+    });
 });

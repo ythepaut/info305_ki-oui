@@ -10,7 +10,7 @@ error_reporting(E_ALL);
 
 #Configurations
 include_once("./includes/classes/config-db.php");
-#include("./includes/classes/config-recaptcha.php");
+include("./includes/classes/config-recaptcha.php");
 include_once("./includes/classes/config-email.php");
 
 

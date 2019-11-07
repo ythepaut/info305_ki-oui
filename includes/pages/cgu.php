@@ -18,8 +18,8 @@
         <br />
     <h5>ARTICLE 2 : Mentions légales</h5>
         <br />
-        Editeur du site Internet « ki-oui.ythepaut.com » :<br />
-            Equipe KI-OUI : THEODET Romain, CARMAGNAC Christophe, CHARDONNET Lucas et THEPAUT Yohann.<br />
+        <b>Éditeur</b> du site Internet « ki-oui.ythepaut.com » :<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;Equipe KI-OUI : THEODET Romain, CARMAGNAC Christophe, CHARDONNET Lucas et THEPAUT Yohann.<br />
         <br />
         Hebergeur :<br />
         &nbsp;&nbsp;&nbsp;&nbsp;Les sites Internet « ythepaut.com » et « ythepaut.fr » sont hébergés par la société OVH.<br />
@@ -40,7 +40,7 @@
         Les <b>Services</b> suivants sont accessibles par l’<b>Utilisateur</b> uniquement lorsqu'il est authentifié à l’aide de
         ses identifiants de connexion :<br />
 
-        &nbsp;&nbsp;&nbsp;&nbsp;• <b>Service</b> de partage de documents entre <b>Utilisateur</b>s.<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;• <b>Service</b> de partage de documents entre <b>Utilisateurs</b>.<br />
         &nbsp;&nbsp;&nbsp;&nbsp;• <b>Service</b> d'assistance technique.<br />
         <br />
         Le site et ses différents <b>Services</b> peuvent être interrompus ou suspendus par l’<b>Éditeur</b>, notamment à
@@ -63,14 +63,9 @@
         • Différents types de fichiers informatiques (texte, image, documents, audio, vidéo, etc.)<br />
         • Messages texte.<br />
         <br />
-        Le membre s’engage à tenir des propos respectueux des autres et de la loi et accepte que ces
-        publications soient modérées ou refusées par l’<b>Éditeur</b>, sans obligation de justification.<br />
+        L'<b>Utilisateur</b> s'engage à respecter les lois sur le droit d'auteur. Il est strictement interdit d'utiliser la plateforme pour mettre à disposition des fichiers, les données ou les contenus qui portent atteinte aux droits d’auteur ou autres droits de propriété de toute personne ou entité.<br />
         <br />
-        En publiant sur le site, l’<b>Utilisateur</b> cède à la société éditrice le droit non exclusif et gratuit de
-        représenter, reproduire, adapter, modifier, diffuser et distribuer sa publication, directement ou par un
-        tiers autorisé.<br />
-        <br />
-        L’<b>Éditeur</b> s'engage toutefois à citer l'<b>Utilisateur</b> en cas d’utilisation de sa publication.<br />
+        L'<b>Éditeur</b> se reserve le droit de modérer les publications des <b>Utilisateurs</b> à tout moment, et ce sans préavis ni justification.<br />
         <br />
         <br />
     <h5>ARTICLE 5 : Responsabilité de l’<b>Éditeur</b></h5>
@@ -100,7 +95,7 @@
         porter atteinte à un tiers.<br />
         <br />
         L’<b>Éditeur</b> du site se réserve le droit de modérer ou de supprimer librement et à tout moment les
-        contenus mis en ligne par les <b>Utilisateur</b>s, et ce sans justification.<br />
+        contenus mis en ligne par les <b>Utilisateurs</b>, et ce sans justification.<br />
         <br />
         <br />
     <h5>ARTICLE 7 : Données personnelles</h5>
@@ -111,7 +106,7 @@
         L’adresse électronique (e-mail) de l’<b>Utilisateur</b> pourra notamment être utilisée par le <b>Service</b> pour la
         communication d’informations diverses et la gestion du compte.<br />
         <br />
-        L’Editeur garantit le respect de la vie privée de l’<b>Utilisateur</b>, conformément à la loi n°78-17 du 6 janvier
+        L’<b>Éditeur</b> garantit le respect de la vie privée de l’<b>Utilisateur</b>, conformément à la loi n°78-17 du 6 janvier
         1978 relative à l'informatique, aux fichiers et aux libertés.<br />
         <br />
         En vertu des articles 39 et 40 de la loi en date du 6 janvier 1978, l'<b>Utilisateur</b> dispose d'un droit
