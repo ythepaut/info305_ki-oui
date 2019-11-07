@@ -1,5 +1,5 @@
 <?php
-
+include_once("./includes/classes/config-db.php");
 /**
  * Fonction qui retourne une chaîne de caractères aléatoire de longueur n.
  * 
@@ -110,6 +110,75 @@ function sendMailwosmtp($to,$subject,$message) {
 
 }
 
+/**
+ * Récupération de l'espace occuper par un utilisateur
+ *
+ * @param string             $nom_utilisateur   -   nom de l'utilisateur
+ * @param mysqlconnection    $connection        -   Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return integer                              -   Espace occupé par l'utilisateur en octets
+ */
+function recup_espace_occuper($nom_utilisateur,$connection){
+	$espace_occuper=0;
+	echo(var_dump(isset($connection)));
+    //on récupère tout les fichiers
+    $fichiers = mysqli_query($connection, "SELECT * FROM kioui_files");
 
+    while ($fichier = mysqli_fetch_assoc($fichiers)) {
+        if($fichier['owner']==$nom_utilisateur){
+            $espace_occuper+=$fichier['size'];
+        }
+    }
 
+    return $espace_occuper;
+}
+
+/**
+ * Récupération des fichiers d'un utilisateur
+ * 
+ * @param string             $nom_utilisateur   -   nom de l'utilisateur
+ * @param mysqlconnection    $connection        -   Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return array                                -   Tableau des fichiers accesibles à l'utilisateur
+ */
+function recup_fichiers($nom_utilisateur,$connection){
+	$fichiers_utilisateur=[];
+	//on récupère tout les fichiers
+    $fichiers = mysqli_query($connection, "SELECT * FROM kioui_files");
+
+    while ($fichier = mysqli_fetch_assoc($fichiers)) {
+        if($fichier['owner']==$nom_utilisateur){
+            $fichiers_utilisateur[]=$fichier;
+        }
+    }
+
+    return $fichiers_utilisateur;
+}
+/**
+ * Conversion d'une taille de fichier en octets en une chaine de charactères
+ * 
+ * @param interger             $taille       	- taille en octets d'un fichier
+ * 
+ * @return string			   $taille_string	- taille arrondi avec unitées
+ */
+function conversion_unitees($taille){
+	$unitee='';
+	$taille_arondie=NULL;
+	if ($taille/10**6 > 0){
+		$unitee=' Mo';
+		$taille_arondie=round($taille/10**6,2);
+	}
+	else if ($taille/10**3 > 0){
+		$unitee=' Ko';
+		$taille_arondie=round($taille/10**3,2);
+	}
+	else{
+		$unitee=' octets';
+		$taille_arondie=$taille;
+	}
+
+	$taille_string=((string)$taille_arondie).$unitee;
+
+	return $taille_string;
+}
 ?>
