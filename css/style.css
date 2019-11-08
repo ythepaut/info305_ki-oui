@@ -189,7 +189,15 @@ table tr:last-child {
     border-bottom-right-radius: 6px;
     border-bottom-left-radius: 6px;
 }
-
+/* Espace Utilisateur */
+.coter{
+	background-color: #404040;
+	margin:0px;
+	padding:0px;
+}
+main> ul > a, a:hover, a:visited, a:active {
+	color:#FFFFFF;
+}
 /* Input file */
 
 input[type="file"] {
