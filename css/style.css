@@ -137,11 +137,11 @@ button:not(.close), input[type="submit"], a.button {
 	font-weight: bold;
 	font-size: 15px;
 	margin-bottom: 10px;
-	transition: all 0.15s;
+	transition: all 0.30s;
 	cursor: pointer;
 }
 
-button:hover:not(.close), input[type="submit"]:hover, a.button:hover {
+button:hover:not(.close), button:active:not(.close), input[type="submit"]:hover, a.button:hover {
 	background-color: #5adfbb;
 }
 
@@ -213,7 +213,7 @@ table tr:last-child {
 	margin:0px;
 	padding:0px;
 }
-main > ul > a, main > ul > a:hover, main > ul > a:visited, main > ul > a:active {
+main > ul.white > a, main > ul.white > a:hover, main > ul.white > a:visited, main > ul.white > a:active {
 	color:#fff;
 }
 
