@@ -39,6 +39,8 @@
 </section>
 
 
+<<<<<<< HEAD
+=======
 
 <section class="pair container-fluid">
 	<div class="row ligne2">
@@ -55,4 +57,5 @@
 </section>
 
 
+>>>>>>> 680459a64e46fcb8f86b42ae8515d45f297ab0a9
 <?php include("./includes/pages/modals/login.php"); ?>

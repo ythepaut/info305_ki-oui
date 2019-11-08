@@ -111,74 +111,71 @@ function sendMailwosmtp($to,$subject,$message) {
 }
 
 /**
- * Récupération de l'espace occuper par un utilisateur
+ * Fonction qui renvoie l'espace occuper par un utilisateur
  *
- * @param string             $nom_utilisateur   -   nom de l'utilisateur
+ * @param string             $idUser   			-   identifiant de l'utilisateur
  * @param mysqlconnection    $connection        -   Connexion BDD effectuée dans le fichier config-db.php
  *
  * @return integer                              -   Espace occupé par l'utilisateur en octets
  */
-function recup_espace_occuper($nom_utilisateur,$connection){
-	$espace_occuper=0;
-	echo(var_dump(isset($connection)));
+function getSize($idUser,$connection){
+	$size=0;
     //on récupère tout les fichiers
-    $fichiers = mysqli_query($connection, "SELECT * FROM kioui_files");
+    $folders = getFolders($idUser,$connection);
 
-    while ($fichier = mysqli_fetch_assoc($fichiers)) {
-        if($fichier['owner']==$nom_utilisateur){
-            $espace_occuper+=$fichier['size'];
-        }
+    foreach($folders as $folder){
+        $size+=$folder['size'];
     }
 
-    return $espace_occuper;
+    return $size;
 }
 
 /**
- * Récupération des fichiers d'un utilisateur
+ * Fonction qui renvoie les fichiers de l'utilisateur
  * 
- * @param string             $nom_utilisateur   -   nom de l'utilisateur
+ * @param string             $idUser   			-   identifiant de l'utilisateur
  * @param mysqlconnection    $connection        -   Connexion BDD effectuée dans le fichier config-db.php
  *
- * @return array                                -   Tableau des fichiers accesibles à l'utilisateur
+ * @return array
  */
-function recup_fichiers($nom_utilisateur,$connection){
-	$fichiers_utilisateur=[];
+function getFolders($idUser,$connection){
+	$foldersUser=[];
 	//on récupère tout les fichiers
-    $fichiers = mysqli_query($connection, "SELECT * FROM kioui_files");
+    $folders = mysqli_query($connection, "SELECT * FROM kioui_files");
 
-    while ($fichier = mysqli_fetch_assoc($fichiers)) {
-        if($fichier['owner']==$nom_utilisateur){
-            $fichiers_utilisateur[]=$fichier;
+    while ($folder = mysqli_fetch_assoc($folders)) {
+        if($folder['owner']==$idUser){
+            $foldersUser[]=$folder;
         }
     }
 
-    return $fichiers_utilisateur;
+    return $foldersUser;
 }
 /**
- * Conversion d'une taille de fichier en octets en une chaine de charactères
+ * Fonction qui renvoie la conversion d'une taille de fichier en octets en une chaine de charactères avec les unitées
  * 
- * @param interger             $taille       	- taille en octets d'un fichier
+ * @param interger             $size       		- taille en octets d'un fichier
  * 
- * @return string			   $taille_string	- taille arrondi avec unitées
+ * @return string
  */
-function conversion_unitees($taille){
-	$unitee='';
-	$taille_arondie=NULL;
-	if ($taille/10**6 > 0){
-		$unitee=' Mo';
-		$taille_arondie=round($taille/10**6,2);
+function convertUnits($size){
+	$unit='';
+	$stringSize=NULL;
+	if (floor($size/10**6) > 0){
+		$unit=' Mb';
+		$stringSize=round($size/10**6,2);
 	}
-	else if ($taille/10**3 > 0){
-		$unitee=' Ko';
-		$taille_arondie=round($taille/10**3,2);
+	else if (floor($size/10**3) > 0){
+		$unit=' Kb';
+		$stringSize=round($size/10**3,2);
 	}
 	else{
-		$unitee=' octets';
-		$taille_arondie=$taille;
+		$unit=' bytes';
+		$stringSize=$size;
 	}
 
-	$taille_string=((string)$taille_arondie).$unitee;
+	$stringSize=((string)$stringSize).$unit;
 
-	return $taille_string;
+	return $stringSize;
 }
 ?>

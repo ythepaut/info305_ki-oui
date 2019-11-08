@@ -24,7 +24,13 @@
         </div>
         <div class="col-lg-6">
             <form class="form-inline">
-                <a href="#" data-toggle="modal" data-target="#modalLogin"><span><i class="fas fa-tachometer-alt"></i> &nbsp; Espace utilisateur</span></a>
+                <?php
+                if (isset($_SESSION['LoggedIn']) && $_SESSION['LoggedIn']) {
+                    echo('<a href="/espace-utilisateur"><span><i class="fas fa-tachometer-alt"></i> &nbsp; Espace utilisateur</span></a>');
+                }else{
+                    echo('<a href="#" data-toggle="modal" data-target="#modalLogin"><span><i class="fas fa-tachometer-alt"></i> &nbsp; Espace utilisateur</span></a>');
+                }
+                ?>
                 <a href="#"><span><i class="fas fa-globe-americas"></i> &nbsp; EN</span></a>
             </form>
         </div>
