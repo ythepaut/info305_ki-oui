@@ -1,7 +1,3 @@
-<style>
-    <?php include 'css/ajout.css'; ?>
-</style>
-
 <div class="accueil container-fluid">
     <div class="row justify-content-center">
         <div class="col-5 align-self-center box" style="text-align:center;">
