@@ -195,7 +195,7 @@ table tr:last-child {
 	margin:0px;
 	padding:0px;
 }
-main> ul > a, a:hover, a:visited, a:active {
+main> ul > a,main> ul > a:hover, main> ul > a:visited, main> ul > a:active {
 	color:#FFFFFF;
 }
 /* Input file */
