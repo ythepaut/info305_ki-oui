@@ -3,7 +3,7 @@
 
 		<div class="inner col-lg-5">
 			<h1>Partagez vos fichiers en toute <strong>sécurité</strong></h1>
-			<i class="fas fa-file-alt"></i>
+			<br/>
 			<p><a href="" class="button"><i class="fas fa-pen"></i> &nbsp; S'inscrire</a></p>
 		</div>
 
@@ -32,7 +32,7 @@
 		<div class="inner col-lg-4">
 			<h2>Authentification Simple</h2>
 			<i class="fas fa-user"></i>
-			<p>Une adresse mail,<br/>un mote de passe.<br/>Rien de plus.</p>
+			<p>Une adresse mail,<br/>un mot de passe.<br/>Rien de plus.</p>
 		</div>
 
 
