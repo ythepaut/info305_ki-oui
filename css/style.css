@@ -131,6 +131,92 @@ button:disabled:not(.close), input[type="submit"]:disabled, a.button:disabled {
 	cursor: not-allowed;
 }
 
+/* Tableaux */
+
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+    min-width: 100%;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+table th, table td {
+    border-right: 1px solid rgb(0,0,0,0.2);
+    border-bottom: 1px solid rgb(0,0,0,0.2);
+    padding: 10px;
+}
+
+table th:first-child, table td:first-child {
+    border-left: 1px solid rgb(0,0,0,0.2);
+}
+
+table th {
+    font-weight: bold;
+    background: #1dd1a1;
+    color: #fff;
+    border-top: 1px solid rgb(0,0,0,0.2);
+}
+
+table tr:first-child th:first-child {
+    border-top-left-radius: 6px;
+}
+
+table tr:first-child th:last-child {
+    border-top-right-radius: 6px;
+}
+
+table tr:last-child td:first-child {
+    border-bottom-left-radius: 6px;
+}
+
+table tr:last-child td:last-child {
+    border-bottom-right-radius: 6px;
+}
+
+table tr:last-child {
+    box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2);
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+}
+
+/* Input file */
+
+input[type="file"] {
+    width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+}
+
+label#inputLabel {
+    margin-top: 50px;
+    color: #fff;
+	background-color: #1dd1a1;
+	border: none;
+	border-radius: 5px;
+	box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2);
+    padding: 12px 15px;
+	text-align: center;
+	font-weight: bold;
+	font-size: 15px;
+	margin-bottom: 10px;
+	transition: all 0.30s;
+	cursor: pointer;
+}
+
+input[type="file"]+label:hover, input[type="file"]+label:active {
+    background-color: #5adfbb;
+}
+
+input[type="file"]+label:disabled {
+	background-color: #c8d6e5;
+	color: #222f3e;
+	cursor: not-allowed;
+}
+
 /* Modals */
 
 h4.modal-title {
