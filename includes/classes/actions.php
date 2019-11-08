@@ -22,21 +22,27 @@ switch ($action) {
         die(verifEmail($_GET['token'], $connection));
         break;
 
-        case "upload":
-        $res = upload();
+    case "upload":
+        if (isset($_SESSION["LoggedIn"]) && $_SESSION['LoggedIn']) {
+            $res = upload();
 
-        if ($res) {
-            header("location:/ajout-ok");
+            if ($res) {
+                // header("location:/ajout-ok");
+            }
+            else {
+                header("location:/ajout-nok");
+            }
         }
         else {
-            header("location:/ajout-nok");
+            header("location:/espace-utilisateur");
         }
+
 
         break;
 
     default:
-        //throw new Exception("ERROR_MISSING_ACTION#Action invalide : " . '$action' . " = '$action'");
-        break;
+        # throw new Exception("ERROR_MISSING_ACTION#Action invalide : " . '$action' . " = '$action'");
+        die();
 }
 
 
@@ -258,40 +264,73 @@ function upload() {
     $MAX_SIZE = 50 * 10**6;
     $res = true;
 
-    $files = $_FILES['files'];
+    if (isset($_FILES["files"])) {
+        $files = $_FILES["files"];
+        $nbFiles = count($files["name"]);
+    }
+    else {
+        $files = null;
+        $nbFiles = 0;
+    }
 
     var_dump($files);
 
-    for ($i=0; $i<count($files["name"])-1; $i++) {
-        $txt = "";
+    $success = true;
 
+    $txt = "";
+
+    for ($i=0; $i<$nbFiles-1; $i++) {
         $txt .= "Nom : " . $files["name"][$i] . " <br />";
         $txt .= "Type : " . $files["type"][$i] . " <br />";
         $txt .= "Tmp name : " . $files["tmp_name"][$i] . " <br />";
         $txt .= "Error : " . $files["error"][$i] . "<br />";
         $txt .= "Size : " . $files["size"][$i] . "<br />";
 
-        if ($files["size"][$i] < $MAX_SIZE) {
-            $file_name = $files["name"][$i]; // <-- Changer ici pour changer le nom
-
-            $target_file = $TARGET_DIR . $file_name;
-
-            $success = move_uploaded_file($files["tmp_name"][$i], $target_file);
-        }
-        else {
-            $success = false;
-        }
-
-        if ($success) {
-            $txt .= "Success";
-        }
-        else {
-            $txt .= "Failure";
+        if ($files["error"][$i] == UPLOAD_ERR_OK && is_uploaded_file($files["tmp_name"][$i])) {
+            $txt .= "Content :";
+            $txt .= file_get_contents($files["tmp_name"][$i]);
+            $txt .= "<br />";
         }
 
         $txt .= "<br />";
 
-        echo $txt;
+        if ($files["size"][$i] > $MAX_SIZE) {
+            $success = false;
+        }
+    }
+
+    if ($success) {
+        $txt .= "Success";
+    }
+    else {
+        $txt .= "Failure";
+    }
+
+    echo $txt;
+
+    if ($success && isset($_SESSION["LoggedIn"]) && $_SESSION['LoggedIn']) {
+        for ($i=0; $i<count($files["name"])-1; $i++) {
+            $originalName = $files["name"][$i];
+            $newFileName;
+            $ownerId = $userData['id'];
+            $salt;
+            $size = $files["size"][$i];
+            $ip = $_SERVER['REMOTE_ADDR'];
+
+            $text;
+
+            $targetFile = $TARGET_DIR . $newFileName;
+            $fileMoved = move_uploaded_file($files["tmp_name"][$i], $targetFile);
+
+
+            $query = $connection->prepare("INSERT INTO kioui_files(original_name, path, owner, salt, size, ip) VALUES (?,?,?,?,?,?)");
+            $query->bind_param("ssisis", $originalName, $newFileName, $ownerId, $salt, $size, $ip);
+            $query->execute();
+
+
+
+
+        }
     }
 
     return $res;

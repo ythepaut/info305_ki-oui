@@ -12,3 +12,5 @@ RewriteRule ^verif-email/([A-Za-z0-9_.]+)$ includes/classes/actions.php?action=v
 RewriteRule ^([a-z0-9-]+)$ index.php?page=$1 [L]
 
 Options -Indexes
+
+php_flag output_buffering on

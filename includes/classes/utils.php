@@ -1,10 +1,15 @@
 <?php
-include_once("./includes/classes/config-db.php");
+
+$AES_METHOD = "AES-256-CBC";
+$SIZE_INIT_VECTOR = 64;
+$SIZE_FILE_NAME = 64;
+$SIZE_SALT = 64;
+
 /**
  * Fonction qui retourne une chaîne de caractères aléatoire de longueur n.
- * 
+ *
  * @param int           $n                  -       Longueur de la chaîne a generer
- * 
+ *
  * @return string
  */
 function randomString($n) {
@@ -17,18 +22,37 @@ function randomString($n) {
     return $randomString;
 }
 
+function encryptText($text, $key) {
+    $initVector = openssl_random_pseudo_bytes($SIZE_INIT_VECTOR);
+
+    $cryptedText = openssl_encrypt($text, $AES_METHOD, $key, OPENSSL_RAW_DATA, $initVector);
+    $hash = hash_hmac('sha256', $initVector . $text, $key, true);
+
+    return array($cryptedText, $initVector, $hash);
+}
+
+function decrypt($cryptedText, $key, $initVector, $hash) {
+    $text = openssl_decrypt($cryptedText, $AES_METHOD, $key, OPENSSL_RAW_DATA, $initVector);
+
+    if (hash_equals(hash_hmac('sha256', $initVector . $text, $key, true), $hash)) {
+        return $text;
+    }
+    else {
+        return null;
+    }
+}
 
 /**
  * Fonction qui retourne la source relative d'un fichier en fonction de l'emplacement actuel.
- * 
+ *
  * @param string        $relative_src       -       Chemin d'accès relatif par défaut
- * 
+ *
  * @return string
  */
 function getSrc($relative_src) {
     $result_src = $relative_src;
     $nb = substr_count($_SERVER['REQUEST_URI'], "/", 0, strlen($_SERVER['REQUEST_URI']));
-    
+
     return str_repeat("../", $nb - 1) . "." . $relative_src;
 }
 
@@ -38,7 +62,7 @@ if (file_exists(getcwd() . '/includes/classes/PHPMailer/PHPMailerAutoload.php'))
 }
 /**
  * Envoyer un e-mail.
- * 
+ *
  * @param array         $em         -   Identifiants de compte e-mail d'envoi de notifications.
  * @param string        $to         -   Adresse e-mail destination.
  * @param string        $subject    -   Sujet du message.
@@ -46,7 +70,7 @@ if (file_exists(getcwd() . '/includes/classes/PHPMailer/PHPMailerAutoload.php'))
  * @param string        $body       -   Texte du message.
  * @param string        $button_link-   Lien du bouton.
  * @param string        $button_text-   Texte du bouton.
- * 
+ *
  * @return void
  */
 function sendMail($em, $to, $subject, $title, $body, $button_link, $button_text) {
@@ -59,10 +83,10 @@ function sendMail($em, $to, $subject, $title, $body, $button_link, $button_text)
 
 
 
-	$phpmail = new PHPMailer(true); 
+	$phpmail = new PHPMailer(true);
 	try {
-		
-		
+
+
 		//Server settings
 		$phpmail->SMTPDebug = 0;                                 // Enable verbose debug output
 		$phpmail->isSMTP();                                      // Set mailer to use SMTP
@@ -75,7 +99,7 @@ function sendMail($em, $to, $subject, $title, $body, $button_link, $button_text)
 
 		//Recipients
 		$phpmail->setFrom('ki-oui@ythepaut.com', 'KI-OUI');
-		$phpmail->addAddress($to);     
+		$phpmail->addAddress($to);
 		$phpmail->addReplyTo('noreply@ythepaut.com', 'Ne pas repondre');
 
 		//Content
@@ -94,11 +118,11 @@ function sendMail($em, $to, $subject, $title, $body, $button_link, $button_text)
 
 /**
  * Envoyer un e-mail sans passer par PHPMailer (Expediteur ovh visible, sans html). (Eviter d'utiliser dans la mesure du possible)
- * 
+ *
  * @param string        $to         -   Adresse e-mail destination.
  * @param string        $subject    -   Sujet du message.
  * @param string        $message    -   Texte du message.
- * 
+ *
  * @return void
  */
 function sendMailwosmtp($to,$subject,$message) {
@@ -132,7 +156,7 @@ function getSize($idUser,$connection){
 
 /**
  * Fonction qui renvoie les fichiers de l'utilisateur
- * 
+ *
  * @param string             $idUser   			-   identifiant de l'utilisateur
  * @param mysqlconnection    $connection        -   Connexion BDD effectuée dans le fichier config-db.php
  *
@@ -153,9 +177,9 @@ function getFolders($idUser,$connection){
 }
 /**
  * Fonction qui renvoie la conversion d'une taille de fichier en octets en une chaine de charactères avec les unitées
- * 
+ *
  * @param interger             $size       		- taille en octets d'un fichier
- * 
+ *
  * @return string
  */
 function convertUnits($size){

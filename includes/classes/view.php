@@ -11,7 +11,7 @@ switch ($page) {
     case "accueil":
         include("./includes/pages/accueil.php");
         break;
-    
+
     case "espace-utilisateur":
         if (isset($_SESSION['LoggedIn']) && $_SESSION['LoggedIn']) {
             include("./includes/pages/espace-utilisateur.php");
@@ -23,6 +23,10 @@ switch ($page) {
 
     case "ajout":
         include("./includes/pages/ajout.php");
+
+        if (!(isset($_SESSION['LoggedIn']) && $_SESSION['LoggedIn'])) {
+            $openLoginModal = true;
+        }
         break;
 
     case "ajout-ok":
@@ -30,7 +34,6 @@ switch ($page) {
         break;
 
     case "ajout-nok":
-        echo "e";
         include("./includes/pages/ajout-nok.php");
         break;
 
