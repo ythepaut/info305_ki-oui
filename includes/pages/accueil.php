@@ -2,9 +2,21 @@
 	<div class="row ligne0">
 
 		<div class="inner col-lg-5">
-			<h1>Partagez vos fichiers en toute <strong>sécurité</strong></h1>
+
+            <div style="display:flex;">
+            <h1 style="margin-top: 0.35rem;margin-bottom: 0px;">Partagez vos fichiers </h1>
+            <div class="animate-contain">
+                <div class="animated-text">
+                    <span> &nbsp;simplement.</span>
+                    <span> &nbsp;en toute sécurité.</span>
+                    <span> &nbsp;gratuitement.</span>
+                </div>
+            </div>
+            </div>
+
+
 			<br/>
-			<p><a href="" class="button"><i class="fas fa-pen"></i> &nbsp; S'inscrire</a></p>
+			<p><a href="#" data-toggle="modal" data-target="#modalRegister" class="button"><i class="fas fa-pen"></i> &nbsp; S'inscrire</a></p>
 		</div>
 
 		<div class="inner col-lg-1"></div>
@@ -18,21 +30,21 @@
 	<div class="row ligne1">
 
 		<div class="inner col-lg-4">
-			<h2>Hébergement Sécurisé</h2>
-			<i class="fas fa-unlock-alt"></i>
-			<p>Chez Ki-Oui, les données de vos fichiers sont cryptées.<br/>Nous ne pourront pas accéder à votre contenue.</p>
+			<h2>Chiffrement de bout en bout</h2>
+			<i class="fas fa-lock"></i>
+			<p>Chez Ki-Oui, les données de vos fichiers sont cryptées.<br />Vous seul avez la main sur vos données.</p>
 		</div>
 
-		<div class="inner col-lg-4">
-			<h2>Partage Par Lien</h2>
-			<i class="fas fa-link"></i>
-			<p>Partagez vos fichiers avec un lien auto-généré.<br/>Chaque lien est unique à chaque fichier.</p>
-		</div>
+        <div class="inner col-lg-4">
+            <h2>Complet, mais simple d'utilisation</h2>
+            <i class="fas fa-link"></i>
+            <p>Un simple lien suffit pour partager vos fichiers.</p>
+        </div>
 
 		<div class="inner col-lg-4">
-			<h2>Authentification Simple</h2>
-			<i class="fas fa-user"></i>
-			<p>Une adresse mail,<br/>un mot de passe.<br/>Rien de plus.</p>
+			<h2>Transparance</h2>
+			<i class="fab fa-github-alt"></i>
+			<p>Le code source de Ki-Oui est disponible.<br />Vous pouvez vérifier comment vos données sont sécurisées à tout moment.</p>
 		</div>
 
 

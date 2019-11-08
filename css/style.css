@@ -59,6 +59,34 @@ nav form > a > span {
 
 /* Accueil */
 
+
+
+/*Titre animé*/
+.animate-contain {
+    height: 52px;
+    overflow: hidden;
+    font-size: 40px;
+}
+.animated-text {
+	display: inline-block;
+	transition: 300ms all;
+	margin-top: 0;
+	animation: slide 7s infinite alternate ease-in-out;
+}
+.animated-text span {
+    display: block;
+    text-align: left;
+}
+@keyframes slide{
+	0%{margin-top:0px;}
+	27%{margin-top:0px;}
+	32%{margin-top:-60px;}
+	77%{margin-top:-60px;}
+	82%{margin-top:-120px;}
+	100%{margin-top:-120px;}
+}
+/**/
+
 main > section.pair {
 	background-color: #fff;
 }
