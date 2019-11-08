@@ -1,7 +1,7 @@
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-lg-2 coter">
-				<ul>
+				<ul class="white">
 					<li><a href="">Tableau de bord</a></li>
 					<li><a href="">Mon compte</a></li>
 					<li><a href="">Aide</a></li>
