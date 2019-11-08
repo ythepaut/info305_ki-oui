@@ -7,9 +7,6 @@
 a, a:hover, a:visited, a:active {
 	text-decoration: none;
 }
-a.link {
-	color: #3498db;
-}
 
 /* Header */
 
@@ -59,29 +56,41 @@ nav form > a > span {
 
 /* Accueil */
 
-main > section[class="pair"] {
+main > section.pair {
 	background-color: #fff;
 }
 
-main > section[class="impair"] {
+main > section.impair {
 	background-color: #f1f1f1;
 }
 
-main > section {
-    padding: 50px 0px;
+main > section > .ligne0 {
+	background-image: url("../ressources/img/accueil.jpg");
+	background-size: 100%;
+	background-attachment: fixed;
 }
 
-/* Pages d'erreur */
-
-div.errorpage {
-	box-shadow: 0 3px 5px rgba(0,0,0,0.1);
-	margin: 100px 100px 400px 100px;
-    padding: 50px 75px;
+main > section .inner {
+	text-align: center;
+	padding: 30px;
 }
 
-div.errorpage h1 {
-	font-size: 72px;
-	color: #e74c3c;
+main > section > .ligne0 > .col-lg-5 {
+	background-color: #fff;
+}
+
+main > section > .ligne0 > .col-lg-1 {
+	transform: skew(-25deg) scale(2.2,1.0);
+	background-color: #fff;
+}
+
+main > section > .ligne0 > .inner > p {
+	margin: 20px 0;
+}
+
+main > section > .ligne1 > .inner > i {
+	font-size: 80px;
+	margin: 20px 0;
 }
 
 
@@ -95,9 +104,7 @@ div.errorpage h1 {
 
 a.button {
     margin: 10px 0px;
-    position: absolute;
 }
-
 
 button:not(.close), input[type="submit"], a.button {
 	color: #fff;
@@ -110,17 +117,12 @@ button:not(.close), input[type="submit"], a.button {
 	font-weight: bold;
 	font-size: 15px;
 	margin-bottom: 10px;
-	transition: all 0.15s;
+	transition: all 0.30s;
 	cursor: pointer;
 }
 
-button:hover:not(.close), input[type="submit"]:hover, a.button:hover {
+button:hover:not(.close), button:active:not(.close), input[type="submit"]:hover, a.button:hover {
 	background-color: #5adfbb;
-}
-
-button:active:not(.close), input[type="submit"]:active, a.button:active {
-    box-shadow: none;
-    transform: translateY(3px);
 }
 
 button:disabled:not(.close), input[type="submit"]:disabled, a.button:disabled {
@@ -137,31 +139,6 @@ h4.modal-title {
     color: #1dd1a1;
     margin-bottom: 25px;
 }
-
-
-div.alert {
-	border-radius: .10rem;
-	font-size: 15px;
-	margin-top: 10px;
-	padding: 5px;
-    box-shadow: 0 3px 5px rgba(0,0,0,0.1);
-    border-left: solid 4px #34495e;
-}
-
-div.alert.alert-warning {
-    border-left: solid 4px #e74c3c;
-}
-.alert-warning i {
-    color: #e74c3c;
-}
-
-div.alert.alert-success {
-    border-left: solid 4px #2ecc71;
-}
-.alert-success i {
-    color: #2ecc71;
-}
-
 
 /* Footer */
 
