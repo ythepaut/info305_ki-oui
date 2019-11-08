@@ -3,7 +3,11 @@
 
 		<div class="inner col-lg-5">
 
-            <div style="display:flex;">
+            <div class="d-lg-none">
+                <h1 style="margin-top: 0.35rem;margin-bottom: 0px;">Partagez vos fichiers en toute sécurité.</h1>
+            </div>
+
+            <div class="d-none d-lg-block" style="display:flex;">
             <h1 style="margin-top: 0.35rem;margin-bottom: 0px;">Partagez vos fichiers </h1>
             <div class="animate-contain">
                 <div class="animated-text">
@@ -42,7 +46,7 @@
         </div>
 
 		<div class="inner col-lg-4">
-			<h2>Transparance</h2>
+			<h2>Transparant</h2>
 			<i class="fab fa-github-alt"></i>
 			<p>Le code source de Ki-Oui est disponible.<br />Vous pouvez vérifier comment vos données sont sécurisées à tout moment.</p>
 		</div>
@@ -63,5 +67,3 @@
 	</div>
 </section>
 
-
-<?php include("./includes/pages/modals/login.php"); ?>

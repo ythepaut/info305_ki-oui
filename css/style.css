@@ -75,7 +75,6 @@ nav form > a > span {
 }
 .animated-text span {
     display: block;
-    text-align: left;
 }
 @keyframes slide{
 	0%{margin-top:0px;}
