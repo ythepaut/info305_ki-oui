@@ -1,15 +1,37 @@
 * {
 	padding: 0px;
 	margin: 0px;
-
 }
+
 
 a, a:hover, a:visited, a:active {
 	text-decoration: none;
 }
 a.link {
-	color: #3498db;
+    color: #3498db;
 }
+
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 0px;
+}
+::-webkit-scrollbar-track {
+    background: #fff; 
+}
+::-webkit-scrollbar-thumb {
+    background: #1dd1a1;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #10ac84; 
+}
+::-webkit-scrollbar-thumb:active {
+    background: #0e9674; 
+}
+body {
+    overflow-y: scroll;
+}
+
 
 /* Header */
 
@@ -103,7 +125,16 @@ main > section > .ligne0 {
 	background-image: url("../ressources/img/accueil.jpg");
 	background-size: 100%;
 	background-attachment: fixed;
-	min-height: 300px;
+	min-height: 400px;
+}
+
+main > section > .ligne0 #titrecentre {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
 }
 
 main > section > .ligne0 > .col-lg-5 {

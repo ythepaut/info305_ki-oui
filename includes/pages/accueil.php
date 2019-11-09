@@ -2,6 +2,7 @@
 	<div class="row ligne0">
 
 		<div class="inner col-lg-5">
+        <div id="titrecentre">
 
             <div class="d-lg-none">
                 <h1 style="margin-top: 0.35rem;margin-bottom: 0px;">Partagez vos fichiers en toute sécurité.</h1>
@@ -18,9 +19,11 @@
             </div>
             </div>
 
-
-			<br/>
+            <br />
+			<br />
 			<p><a href="#" data-toggle="modal" data-target="#modalRegister" class="button"><i class="fas fa-pen"></i> &nbsp; S'inscrire</a></p>
+
+        </div>
 		</div>
 
 		<div class="inner col-lg-1"></div>
