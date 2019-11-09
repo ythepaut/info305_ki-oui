@@ -1,9 +1,9 @@
 <?php
 
-$AES_METHOD = "AES-256-CBC";
-$SIZE_INIT_VECTOR = 64;
-$SIZE_FILE_NAME = 64;
-$SIZE_SALT = 64;
+define("AES_METHOD", "AES-256-CBC");
+define("SIZE_FILE_NAME", 64);
+define("TARGET_DIR", "../../uploads/");
+define("MAX_FILE_SIZE", 50 * 10**6);
 
 /**
  * Fonction qui retourne une chaîne de caractères aléatoire de longueur n.
@@ -22,17 +22,19 @@ function randomString($n) {
     return $randomString;
 }
 
-function encryptText($text, $key) {
-    $initVector = openssl_random_pseudo_bytes($SIZE_INIT_VECTOR);
+function encryptText($text, $key, $initVector = null) {
+    if ($initVector == null) {
+        $initVector = substr(hash_hmac('sha256', openssl_random_pseudo_bytes(64), $key, false), 0, 16);
+    }
 
-    $cryptedText = openssl_encrypt($text, $AES_METHOD, $key, OPENSSL_RAW_DATA, $initVector);
+    $cryptedText = openssl_encrypt($text, AES_METHOD, $key, OPENSSL_RAW_DATA, $initVector);
     $hash = hash_hmac('sha256', $initVector . $text, $key, true);
 
     return array($cryptedText, $initVector, $hash);
 }
 
-function decrypt($cryptedText, $key, $initVector, $hash) {
-    $text = openssl_decrypt($cryptedText, $AES_METHOD, $key, OPENSSL_RAW_DATA, $initVector);
+function decryptText($cryptedText, $key, $initVector, $hash) {
+    $text = openssl_decrypt($cryptedText, AES_METHOD, $key, OPENSSL_RAW_DATA, $initVector);
 
     if (hash_equals(hash_hmac('sha256', $initVector . $text, $key, true), $hash)) {
         return $text;

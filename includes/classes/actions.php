@@ -23,30 +23,27 @@ switch ($action) {
         break;
 
     case "upload":
-        if (isset($_SESSION["LoggedIn"]) && $_SESSION['LoggedIn']) {
-            $res = upload();
+        if (true || isset($_SESSION["LoggedIn"]) && $_SESSION['LoggedIn']) {
+            $res = upload($connection);
 
             if ($res) {
-                // header("location:/ajout-ok");
+                header("location:/ajout-ok");
             }
             else {
                 header("location:/ajout-nok");
             }
         }
         else {
-            header("location:/espace-utilisateur");
+            header("location:/ajout-nok");
         }
 
+        die();
 
         break;
 
     default:
-        # throw new Exception("ERROR_MISSING_ACTION#Action invalide : " . '$action' . " = '$action'");
-        die();
+        throw new Exception("ERROR_MISSING_ACTION - Action invalide - " . 'action' . ":'$action'");
 }
-
-
-
 
 /**
  * Connexion de l'utilisateur : Methode e-mail + mot de passe
@@ -59,7 +56,6 @@ switch ($action) {
  * @return string
  */
 function login($email, $passwd, $connection) {
-
     $result = "ERROR_UNKNOWN#Une erreur est survenue.";
 
     //Verification des champs
@@ -259,9 +255,7 @@ function verifEmail($token, $connection) {
  *
  * @return boolean          $res                -   Si l'opération s'est bien passée ou non
  */
-function upload() {
-    $TARGET_DIR = "../../uploads/";
-    $MAX_SIZE = 50 * 10**6;
+function upload($connection) {
     $res = true;
 
     if (isset($_FILES["files"])) {
@@ -294,7 +288,7 @@ function upload() {
 
         $txt .= "<br />";
 
-        if ($files["size"][$i] > $MAX_SIZE) {
+        if ($files["size"][$i] > MAX_FILE_SIZE) {
             $success = false;
         }
     }
@@ -306,34 +300,71 @@ function upload() {
         $txt .= "Failure";
     }
 
-    echo $txt;
+    $res = $success;
+
+    $newFileName = "";
+
+    $_SESSION["LoggedIn"] = true;
+    //!
 
     if ($success && isset($_SESSION["LoggedIn"]) && $_SESSION['LoggedIn']) {
-        for ($i=0; $i<count($files["name"])-1; $i++) {
+        for ($i=0; $i<$nbFiles-1; $i++) {
             $originalName = $files["name"][$i];
-            $newFileName;
-            $ownerId = $userData['id'];
-            $salt;
             $size = $files["size"][$i];
-            $ip = $_SERVER['REMOTE_ADDR'];
+            $content = file_get_contents($files["tmp_name"][$i]);
 
-            $text;
+            $key = "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08";
+            //!
 
-            $targetFile = $TARGET_DIR . $newFileName;
-            $fileMoved = move_uploaded_file($files["tmp_name"][$i], $targetFile);
-
-
-            $query = $connection->prepare("INSERT INTO kioui_files(original_name, path, owner, salt, size, ip) VALUES (?,?,?,?,?,?)");
-            $query->bind_param("ssisis", $originalName, $newFileName, $ownerId, $salt, $size, $ip);
-            $query->execute();
-
-
-
-
+            $newFileName = createCryptedZipFile($connection, $key, $originalName, $size, $content);
         }
     }
 
+    $key = "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08";
+    //!
+
+    $content = unzipCryptedFile($connection, $key, $newFileName);
+
+    echo $content;
+
     return $res;
 }
+
+function unzipCryptedFile($connection, $key, $newFileName) {
+    $content = "";
+
+    return $content;
+}
+
+function createCryptedZipFile($connection, $key, $originalName, $size, $content) {
+    $userData['id'] = 1;
+
+    echo "<h1>À REMPLACER ! (cf. code)</h1>";
+
+    $ownerId = $userData['id'];
+    $ip = $_SERVER['REMOTE_ADDR'];
+
+    $newFileName = randomString(SIZE_FILE_NAME);
+
+    $zipFile = new ZipArchive;
+
+    if ($zipFile->open(TARGET_DIR.$newFileName, ZipArchive::CREATE) === TRUE) {
+        $zipFile->addFromString($newFileName, $content);
+        $zipFile->close();
+    }
+
+    $zipText = file_get_contents(TARGET_DIR.$newFileName);
+
+    list($encryptedText, $salt, $hash) = encryptText($zipText, $key, null);
+
+    file_put_contents(TARGET_DIR.$newFileName, $encryptedText);
+
+    $query = $connection->prepare("INSERT INTO kioui_files (original_name, path, owner, salt, size, ip) VALUES (?,?,?,?,?,?)");
+    $query->bind_param("ssisis", $originalName, $newFileName, $ownerId, $salt, $size, $ip);
+    $query->execute();
+
+    return $newFileName;
+}
+
 
 ?>
