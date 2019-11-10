@@ -55,16 +55,18 @@
 							<tr><td class="head">Nom Fichier</td><td class="head">Taille du fichier</td></tr>
 							<?php
 								$folders=getFolders($_SESSION['Data']['id'],$connection);
+								$res="";
 		                        foreach($folders as $folder){
-		                            echo("<tr>");
-		                                echo("<td>");
-		                                echo($folder["original_name"]);
-		                                echo("</td>");
-		                                echo("<td>");
-		                                echo(convertUnits($folder["size"]));
-		                                echo("</td>");
-		                            echo("</tr>");
-		                        }
+									$res="<tr>";
+									$res.="<td>";
+		                            $res.=$folder["original_name"];
+		                            $res.="</td>";
+		                            $res.="<td>";
+		                            $res.=convertUnits($folder["size"]);
+		                            $res.="</td>";
+									$res.="</tr>";
+									echo($res);
+								}
 							?>
 						</table>
 					</div>

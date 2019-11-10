@@ -189,15 +189,15 @@ function convertUnits($size){
 	$unit='';
 	$stringSize=NULL;
 	if (floor($size/10**6) > 0){
-		$unit=' Mb';
+		$unit=' Mo';
 		$stringSize=round($size/10**6,2);
 	}
 	else if (floor($size/10**3) > 0){
-		$unit=' Kb';
+		$unit=' Ko';
 		$stringSize=round($size/10**3,2);
 	}
 	else{
-		$unit=' bytes';
+		$unit=' octets';
 		$stringSize=$size;
 	}
 

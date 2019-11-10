@@ -274,7 +274,14 @@ table tr:last-child {
 main > ul.white > a, main > ul.white > a:hover, main > ul.white > a:visited, main > ul.white > a:active {
 	color:#fff;
 }
+/*Graphiques pour l'espace utilisateur*/
 
+.chart-container {
+	-webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
 /* Input file */
 
 input[type="file"] {
