@@ -13,10 +13,20 @@ switch ($page) {
         break;
 
     case "espace-utilisateur":
-    case "compte-utilisateur":
-    case "aide-utilisateur":
         if (isset($_SESSION['LoggedIn']) && $_SESSION['LoggedIn']) {
-            include("./includes/classes/espace-utilisateur.php");
+            $sousPage = (isset($_GET['sp']) ? $_GET['sp'] : "accueil");
+            switch ($sousPage) {
+                case "compte":
+                    include("./includes/pages/espace-utilisateur/compte-utilisateur.php");
+                    break;
+                case "assistance":
+                    include("./includes/pages/espace-utilisateur/assistance-utilisateur.php");
+                    break;
+                case "accueil":
+                default:
+                    include("./includes/pages/espace-utilisateur/accueil-utilisateur.php");
+                    break;
+            }
         } else {
             include("./includes/pages/401.php");
             $openLoginModal = true;

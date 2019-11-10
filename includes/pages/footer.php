@@ -63,9 +63,9 @@
     <script src="https://www.google.com/recaptcha/api.js?render=<?php echo($recaptcha['public']); ?>"></script>
 
     <!--Nos JS-->
-    <script src="./js/index.js"></script>
-    <script src="./js/upload.js"></script>
-    <script src="./js/ajax.js"></script>
+    <script src="<?php echo(getSrc('./js/index.js')); ?>"></script>
+    <script src="<?php echo(getSrc('./js/upload.js')); ?>"></script>
+    <script src="<?php echo(getSrc('./js/ajax.js')); ?>"></script>
     
     <!--FontAwesome-->
     <script src="https://kit.fontawesome.com/902b444792.js" crossorigin="anonymous"></script>

@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
 	<title>Ki-Oui</title>
-    <link rel="icon" type="image/png" href="./ressources/img/favicon.png" />
+    <link rel="icon" type="image/png" href="<?php echo(getSrc('./ressources/img/favicon.png')); ?>" />
 
     <!--Bootstrap-->
-	<link rel="stylesheet" type="text/css" href="./css/bootstrap.css" />
-    <link rel="stylesheet" type="text/css" href="./css/bootstrap-grid.css" />
+	<link rel="stylesheet" type="text/css" href="<?php echo(getSrc('./css/bootstrap.css')); ?>" />
+    <link rel="stylesheet" type="text/css" href="<?php echo(getSrc('./css/bootstrap-grid.css')); ?>" />
 
-    <link rel="stylesheet" type="text/css" href="./css/style.css" />
+    <link rel="stylesheet" type="text/css" href="<?php echo(getSrc('./css/style.css')); ?>" />
     
     <!--Chart.js(pour les graphiques)-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
