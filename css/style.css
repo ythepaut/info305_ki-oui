@@ -17,16 +17,16 @@ a.link {
     width: 0px;
 }
 ::-webkit-scrollbar-track {
-    background: #fff; 
+    background: #fff;
 }
 ::-webkit-scrollbar-thumb {
     background: #1dd1a1;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: #10ac84; 
+    background: #10ac84;
 }
 ::-webkit-scrollbar-thumb:active {
-    background: #0e9674; 
+    background: #0e9674;
 }
 body {
     overflow-y: scroll;
@@ -264,17 +264,19 @@ table tr:last-child {
     border-bottom-left-radius: 6px;
 }
 
-/* Espace Utilisateur */
+/* Espace utilisateur */
 
-.coter{
-	background-color: #404040;
-	margin:0px;
-	padding:0px;
+.cote {
+    background-color: #404040;
+    margin: 0px;
+    padding: 0px;
 }
-main > ul.white > a, main > ul.white > a:hover, main > ul.white > a:visited, main > ul.white > a:active {
-	color:#fff;
+
+ul.white a, ul.white a:hover, ul.white a:visited, ul.white  a:active {
+	color : #fff;
 }
-/*Graphiques pour l'espace utilisateur*/
+
+/* Graphiques pour l'espace utilisateur */
 
 .chart-container {
 	-webkit-user-select: none;

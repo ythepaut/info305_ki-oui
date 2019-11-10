@@ -12,7 +12,7 @@
     <link rel="stylesheet" type="text/css" href="<?php echo(getSrc('./css/bootstrap-grid.css')); ?>" />
 
     <link rel="stylesheet" type="text/css" href="<?php echo(getSrc('./css/style.css')); ?>" />
-    
+
     <!--Chart.js(pour les graphiques)-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
 </head>
@@ -28,7 +28,7 @@
             <form class="form-inline">
                 <?php
                 if (isset($_SESSION['LoggedIn']) && $_SESSION['LoggedIn']) {
-                    echo('<a href="/espace-utilisateur"><span><i class="fas fa-tachometer-alt"></i> &nbsp; Espace utilisateur</span></a>');
+                    echo('<a href="/espace-utilisateur/accueil"><span><i class="fas fa-tachometer-alt"></i> &nbsp; Espace utilisateur</span></a>');
                 }else{
                     echo('<a href="#" data-toggle="modal" data-target="#modalLogin"><span><i class="fas fa-tachometer-alt"></i> &nbsp; Espace utilisateur</span></a>');
                 }
