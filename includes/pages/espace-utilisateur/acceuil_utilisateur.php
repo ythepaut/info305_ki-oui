@@ -2,9 +2,9 @@
 		<div class="row">
 			<div class="col-lg-2 coter">
 				<ul class="white">
-					<li><a href="">Tableau de bord</a></li>
-					<li><a href="">Mon compte</a></li>
-					<li><a href="">Aide</a></li>
+					<li><a href="/espace-utilisateur">Tableau de bord</a></li>
+					<li><a href="/compte-utilisateur">Mon compte</a></li>
+					<li><a href="/aide-utilisateur">Aide</a></li>
 				</ul>
 			</div>
 
@@ -17,6 +17,32 @@
 								$size =getSize($_SESSION['Data']['id'],$connection);
 								echo(convertUnits($size));
 							?>
+							<div class="chart-container">
+								<canvas id="chart-js-1" class="chartjs"></canvas>
+							</div>
+							<script>
+								var options = {
+									maintainAspectRatio: false,
+								};
+								//variable contenant l'espace utiliser par l'utilisateur
+								var sizeUser="<?php echo(getSize($_SESSION['Data']['id'],$connection));?>";
+								var data = {
+									datasets: [{
+										data:[sizeUser,200*10**6-sizeUser],
+										backgroundColor:["rgb(255,0,0)","rgb(0,0,255)"],
+									}],
+									labels: [
+										'Espace Utiliser',
+										'Espace Restant'
+									]
+								};
+
+								new Chart(document.getElementById("chart-js-1"),{
+									type: 'pie',
+									data: data,
+									options: options,
+								});
+							</script>
 						</p>
 					</div>
 					<div class="col-lg-3 inner">

@@ -13,8 +13,10 @@ switch ($page) {
         break;
 
     case "espace-utilisateur":
+    case "compte-utilisateur":
+    case "aide-utilisateur":
         if (isset($_SESSION['LoggedIn']) && $_SESSION['LoggedIn']) {
-            include("./includes/pages/espace-utilisateur.php");
+            include("./includes/classes/espace-utilisateur.php");
         } else {
             include("./includes/pages/401.php");
             $openLoginModal = true;
