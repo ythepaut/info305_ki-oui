@@ -29,7 +29,7 @@ function encryptText($text, $password, $salt = null) {
         $salt = randomString(16);
     }
 
-    $hash = hash_hmac('sha512', $text, $password . $salt, true);
+    $hash = hash_hmac('sha512', $text, $password . $salt, false);
 
     $initVector = substr($salt, 0, 16);
     $cryptedText = openssl_encrypt($text, AES_METHOD, $password . $salt, OPENSSL_RAW_DATA, $initVector);
@@ -41,7 +41,7 @@ function decryptText($cryptedText, $password, $salt, $hash = null) {
     $initVector = substr($salt, 0, 16);
     $text = openssl_decrypt($cryptedText, AES_METHOD, $password . $salt, OPENSSL_RAW_DATA, $initVector);
 
-    if ($hash === null || hash_equals(hash_hmac('sha512', $text, $password . $salt, true), $hash)) {
+    if ($hash === null || hash_equals(hash_hmac('sha512', $text, $password . $salt, false), $hash)) {
         return $text;
     }
     else {
