@@ -258,90 +258,178 @@ function verifEmail($token, $connection) {
 function upload($connection) {
     $res = true;
 
-    if (isset($_FILES["files"])) {
-        $files = $_FILES["files"];
-        $nbFiles = count($files["name"]);
-    }
-    else {
-        $files = null;
-        $nbFiles = 0;
+    if (!isset($_FILES["files"]) || !isset($_SESSION["Data"]) || !isset($_SESSION["LoggedIn"])) {
+        return false;
     }
 
-    var_dump($files);
+    $nbFiles = count($_FILES["files"]["name"]);
 
     $success = true;
 
-    $txt = "";
+    $log = "";
 
     for ($i=0; $i<$nbFiles-1; $i++) {
-        $txt .= "Nom : " . $files["name"][$i] . " <br />";
-        $txt .= "Type : " . $files["type"][$i] . " <br />";
-        $txt .= "Tmp name : " . $files["tmp_name"][$i] . " <br />";
-        $txt .= "Error : " . $files["error"][$i] . "<br />";
-        $txt .= "Size : " . $files["size"][$i] . "<br />";
+        $log .= "Nom : "      . $_FILES["files"]["name"][$i]     . " <br />";
+        $log .= "Type : "     . $_FILES["files"]["type"][$i]     . " <br />";
+        $log .= "Tmp name : " . $_FILES["files"]["tmp_name"][$i] . " <br />";
+        $log .= "Error : "    . $_FILES["files"]["error"][$i]    . "<br />";
+        $log .= "Size : "     . $_FILES["files"]["size"][$i]     . "<br />";
 
-        if ($files["error"][$i] == UPLOAD_ERR_OK && is_uploaded_file($files["tmp_name"][$i])) {
-            $txt .= "Content :";
-            $txt .= file_get_contents($files["tmp_name"][$i]);
-            $txt .= "<br />";
+        if ($_FILES["files"]["error"][$i] == UPLOAD_ERR_OK && is_uploaded_file($_FILES["files"]["tmp_name"][$i])) {
+            $log .= "Content : ";
+            $log .= file_get_contents($_FILES["files"]["tmp_name"][$i]);
+            $log .= "<br />";
         }
 
-        $txt .= "<br />";
+        $log .= "<br />";
 
-        if ($files["size"][$i] > MAX_FILE_SIZE) {
+        if ($_FILES["files"]["size"][$i] > MAX_FILE_SIZE) {
             $success = false;
         }
     }
 
     if ($success) {
-        $txt .= "Success";
+        $log .= "Success";
     }
     else {
-        $txt .= "Failure";
+        $log .= "Failure";
     }
+
+    $log .= "<br /><br />";
+
+    // echo $log;
 
     $res = $success;
 
-    $newFileName = "";
-
-    $_SESSION["LoggedIn"] = true;
-    //!
-
-    if ($success && isset($_SESSION["LoggedIn"]) && $_SESSION['LoggedIn']) {
+    if ($success) {
         for ($i=0; $i<$nbFiles-1; $i++) {
-            $originalName = $files["name"][$i];
-            $size = $files["size"][$i];
-            $content = file_get_contents($files["tmp_name"][$i]);
+            $originalName = $_FILES["files"]["name"][$i];
+            $content = file_get_contents($_FILES["files"]["tmp_name"][$i]);
+            $size = $_FILES["files"]["size"][$i];
 
-            $key = "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08";
-            //!
-
-            $newFileName = createCryptedZipFile($connection, $key, $originalName, $size, $content);
+            $newFileName = createCryptedZipFile($connection, $originalName, $content, $size);
         }
+
+
+        $passwd = $_SESSION["Data"]["password"];
+
+        $content = unzipCryptedFile($connection, $newFileName, $passwd);
+
+        $query = $connection->prepare("SELECT original_name FROM kioui_files WHERE path = ?");
+        $query->bind_param("s", $newFileName);
+        $query->execute();
+        $result = $query->get_result();
+        $query->close();
+        $result = $result->fetch_assoc();
+        $originalName = $result["original_name"];
+
+        $filename = TEMP_DIR . $originalName;
+
+        file_put_contents($filename, $content);
+
+        downloadFile($filename, $originalName);
+
+        unlink($filename);
+
     }
-
-    $key = "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08";
-    //!
-
-    $content = unzipCryptedFile($connection, $key, $newFileName);
-
-    echo $content;
 
     return $res;
 }
 
-function unzipCryptedFile($connection, $key, $newFileName) {
-    $content = "";
+function downloadFile($file, $name, $mimeType='') {
+    if (!is_readable($file)) {
+        die("Fichier inaccessible !");
+    }
+
+    $size = filesize($file);
+    $name = rawurldecode($name);
+
+    $knownMimeTypes = array(
+        "htm"  => "text/html",
+        "exe"  => "application/octet-stream",
+        "zip"  => "application/zip",
+        "doc"  => "application/msword",
+        "jpg"  => "image/jpg",
+        "php"  => "text/plain",
+        "xls"  => "application/vnd.ms-excel",
+        "ppt"  => "application/vnd.ms-powerpoint",
+        "gif"  => "image/gif",
+        "pdf"  => "application/pdf",
+        "txt"  => "text/plain",
+        "html" => "text/html",
+        "png"  => "image/png",
+        "jpeg" => "image/jpg",
+    );
+
+    if ($mimeType == '') {
+        $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
+
+        if (array_key_exists($fileExtension, $knownMimeTypes)) {
+            $mime_type = $knownMimeTypes[$fileExtension];
+        }
+        else {
+            $mimeType = "application/force-download";
+        }
+    }
+
+    @ob_end_clean();
+    header("Content-Type: " . $mimeType);
+    header('Content-Disposition: attachment; filename="' . $name . '"');
+    header("Content-Transfer-Encoding: binary");
+    header("Accept-Ranges: bytes");
+
+    header("Content-Length: " . $size);
+
+    $chunksize = 1*(1024*1024);
+    $bytes_send = 0;
+
+    if ($file = fopen($file, 'r')) {
+        while (!feof($file) && !connection_aborted() && $bytes_send<$size) {
+            $buffer = fread($file, $chunksize);
+            echo($buffer);
+            flush();
+            $bytes_send += strlen($buffer);
+        }
+
+        fclose($file);
+    }
+    else {
+        die("Erreur : impossible d'ouvrir le fichier");
+    }
+}
+
+function unzipCryptedFile($connection, $newFileName, $key) {
+    $query = $connection->prepare("SELECT * FROM kioui_files WHERE path = ?");
+    $query->bind_param("s", $newFileName);
+    $query->execute();
+    $result = $query->get_result();
+    $query->close();
+    $fileData = $result->fetch_assoc();
+
+    $zipTextEncrypted = file_get_contents(TARGET_DIR.$newFileName);
+
+    $zipText = decryptText($zipTextEncrypted, $key, $fileData["salt"], null);
+
+    file_put_contents(TEMP_DIR.$newFileName, $zipText);
+
+    $zipFile = new ZipArchive;
+
+    if ($zipFile->open(TEMP_DIR.$newFileName) === true) {
+        $zipFile->extractTo(TEMP_DIR."zip/");
+        $zipFile->close();
+    }
+
+    $content = file_get_contents(TEMP_DIR."zip/".$newFileName);
+
+    unlink(TEMP_DIR.$newFileName);
+    unlink(TEMP_DIR."zip/".$newFileName);
 
     return $content;
 }
 
-function createCryptedZipFile($connection, $key, $originalName, $size, $content) {
-    $userData['id'] = 1;
-
-    echo "<h1>À REMPLACER ! (cf. code)</h1>";
-
-    $ownerId = $userData['id'];
+function createCryptedZipFile($connection, $originalName, $content, $size) {
+    $key = $_SESSION["Data"]["password"];
+    $ownerId = $_SESSION["Data"]["id"];
     $ip = $_SERVER['REMOTE_ADDR'];
 
     $newFileName = randomString(SIZE_FILE_NAME);
@@ -351,6 +439,9 @@ function createCryptedZipFile($connection, $key, $originalName, $size, $content)
     if ($zipFile->open(TARGET_DIR.$newFileName, ZipArchive::CREATE) === TRUE) {
         $zipFile->addFromString($newFileName, $content);
         $zipFile->close();
+    }
+    else {
+        throw new Exception("Le zip n'a pas pu être créé");
     }
 
     $zipText = file_get_contents(TARGET_DIR.$newFileName);
@@ -362,9 +453,9 @@ function createCryptedZipFile($connection, $key, $originalName, $size, $content)
     $query = $connection->prepare("INSERT INTO kioui_files (original_name, path, owner, salt, size, ip) VALUES (?,?,?,?,?,?)");
     $query->bind_param("ssisis", $originalName, $newFileName, $ownerId, $salt, $size, $ip);
     $query->execute();
+    $query->close();
 
     return $newFileName;
 }
-
 
 ?>

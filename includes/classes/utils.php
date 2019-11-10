@@ -3,6 +3,7 @@
 define("AES_METHOD", "AES-256-CBC");
 define("SIZE_FILE_NAME", 64);
 define("TARGET_DIR", "../../uploads/");
+define("TEMP_DIR", "../../uploads/tmp/");
 define("MAX_FILE_SIZE", 50 * 10**6);
 
 /**
@@ -36,7 +37,7 @@ function encryptText($text, $key, $initVector = null) {
 function decryptText($cryptedText, $key, $initVector, $hash) {
     $text = openssl_decrypt($cryptedText, AES_METHOD, $key, OPENSSL_RAW_DATA, $initVector);
 
-    if (hash_equals(hash_hmac('sha256', $initVector . $text, $key, true), $hash)) {
+    if ($hash === null || hash_equals(hash_hmac('sha256', $initVector . $text, $key, true), $hash)) {
         return $text;
     }
     else {
