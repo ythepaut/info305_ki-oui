@@ -1,7 +1,7 @@
 <?php
 
 define("AES_METHOD", "AES-256-CBC");
-define("SIZE_FILE_NAME", 64);
+define("SIZE_FILE_NAME", 16);
 define("TARGET_DIR", "../../uploads/");
 define("TEMP_DIR", "../../uploads/tmp/");
 define("MAX_FILE_SIZE", 50 * 10**6);
@@ -14,30 +14,34 @@ define("MAX_FILE_SIZE", 50 * 10**6);
  * @return string
  */
 function randomString($n) {
-    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     $charactersLength = strlen($characters);
-    $randomString = '';
+    $randomString = "";
     for ($i = 0; $i < $n; $i++) {
-        $randomString .= $characters[rand(0, $charactersLength - 1)];
+        $randomString .= $characters[random_int(0, $charactersLength - 1)];
     }
     return $randomString;
 }
 
-function encryptText($text, $key, $initVector = null) {
-    if ($initVector == null) {
-        $initVector = substr(hash_hmac('sha256', openssl_random_pseudo_bytes(64), $key, false), 0, 16);
+function encryptText($text, $password, $salt = null) {
+    if ($salt == null) {
+        // $salt = hash_hmac('sha512', openssl_random_pseudo_bytes(64), $password, false);
+        $salt = randomString(16);
     }
 
-    $cryptedText = openssl_encrypt($text, AES_METHOD, $key, OPENSSL_RAW_DATA, $initVector);
-    $hash = hash_hmac('sha256', $initVector . $text, $key, true);
+    $hash = hash_hmac('sha512', $text, $password . $salt, true);
 
-    return array($cryptedText, $initVector, $hash);
+    $initVector = substr($salt, 0, 16);
+    $cryptedText = openssl_encrypt($text, AES_METHOD, $password . $salt, OPENSSL_RAW_DATA, $initVector);
+
+    return array($cryptedText, $salt, $hash);
 }
 
-function decryptText($cryptedText, $key, $initVector, $hash) {
-    $text = openssl_decrypt($cryptedText, AES_METHOD, $key, OPENSSL_RAW_DATA, $initVector);
+function decryptText($cryptedText, $password, $salt, $hash = null) {
+    $initVector = substr($salt, 0, 16);
+    $text = openssl_decrypt($cryptedText, AES_METHOD, $password . $salt, OPENSSL_RAW_DATA, $initVector);
 
-    if ($hash === null || hash_equals(hash_hmac('sha256', $initVector . $text, $key, true), $hash)) {
+    if ($hash === null || hash_equals(hash_hmac('sha512', $text, $password . $salt, true), $hash)) {
         return $text;
     }
     else {

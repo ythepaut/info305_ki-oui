@@ -70,7 +70,7 @@ function login($email, $passwd, $connection) {
         $userData = $result->fetch_assoc();
 
         //Identifiants correct ?
-        if (isset($userData['id']) && $userData['id'] != null && password_verify(hash('sha512', $passwd . $userData['salt']), $userData['password'])) {
+        if (isset($userData['id']) && $userData['id'] != null && password_verify(hash('sha512', hash('sha512', $passwd . $userData['salt'])), $userData['password'])) {
 
             //Verification du compte
             if ($userData['access_level'] != "" && $userData['status'] == "ALIVE") {
@@ -78,6 +78,7 @@ function login($email, $passwd, $connection) {
                 #Attribution des données de session
                 $_SESSION['Data'] = $userData;
                 $_SESSION['LoggedIn'] = true;
+                $_SESSION['UserPassword'] = hash('sha512', $passwd . $userData['salt']);
 
                 $result = "SUCCESS#Bienvenue " . $_SESSION['Data']['username'] . "#/espace-utilisateur";
 
@@ -166,7 +167,7 @@ function register($username, $email, $passwd, $passwd2, $cgu, $recaptchatoken, $
                                 if ($userData['id'] == "") {
 
                                     $salt = randomString(16);
-                                    $password_salted_hashed = password_hash(hash('sha512', $passwd . $salt), PASSWORD_DEFAULT, ['cost' => 12]);
+                                    $password_salted_hashed = password_hash(hash('sha512', hash('sha512', $passwd . $salt)), PASSWORD_DEFAULT, ['cost' => 12]);
                                     $status = "REGISTRATION";
                                     $accesslevel = "USER";
                                     $ip = $_SERVER['REMOTE_ADDR'];
@@ -310,7 +311,6 @@ function upload($connection) {
             $newFileName = createCryptedZipFile($connection, $originalName, $content, $size);
         }
 
-
         $passwd = $_SESSION["Data"]["password"];
 
         $content = unzipCryptedFile($connection, $newFileName, $passwd);
@@ -398,6 +398,46 @@ function downloadFile($file, $name, $mimeType='') {
     }
 }
 
+function createCryptedZipFile($connection, $originalName, $content, $size) {
+    $compt = 0;
+
+    do {
+        $newFileName = randomString(SIZE_FILE_NAME);
+        $compt ++;
+    } while (file_exists(TARGET_DIR.$newFileName) && $compt < 100);
+
+    if (file_exists(TARGET_DIR.$newFileName)) {
+        return null;
+    }
+
+    $password = $_SESSION["UserPassword"];
+    $ownerId = $_SESSION["Data"]["id"];
+    $ip = $_SERVER["REMOTE_ADDR"];
+
+    $zipFile = new ZipArchive;
+
+    if ($zipFile->open(TARGET_DIR.$newFileName, ZipArchive::CREATE) === TRUE) {
+        $zipFile->addFromString($newFileName, $content);
+        $zipFile->close();
+    }
+    else {
+        throw new Exception("Le fichier zip n'a pas pu être créé");
+    }
+
+    $zipText = file_get_contents(TARGET_DIR.$newFileName);
+
+    list($encryptedText, $salt, $hash) = encryptText($zipText, $password);
+
+    file_put_contents(TARGET_DIR.$newFileName, $encryptedText);
+
+    $query = $connection->prepare("INSERT INTO kioui_files (original_name, path, owner, salt, size, ip, content_hash) VALUES (?,?,?,?,?,?,?)");
+    $query->bind_param("ssisiss", $originalName, $newFileName, $ownerId, $salt, $size, $ip, $hash);
+    $query->execute();
+    $query->close();
+
+    return $newFileName;
+}
+
 function unzipCryptedFile($connection, $newFileName, $key) {
     $query = $connection->prepare("SELECT * FROM kioui_files WHERE path = ?");
     $query->bind_param("s", $newFileName);
@@ -408,7 +448,7 @@ function unzipCryptedFile($connection, $newFileName, $key) {
 
     $zipTextEncrypted = file_get_contents(TARGET_DIR.$newFileName);
 
-    $zipText = decryptText($zipTextEncrypted, $key, $fileData["salt"], null);
+    $zipText = decryptText($zipTextEncrypted, $_SESSION["UserPassword"], $fileData["salt"], $fileData["hash"]);
 
     file_put_contents(TEMP_DIR.$newFileName, $zipText);
 
@@ -425,37 +465,6 @@ function unzipCryptedFile($connection, $newFileName, $key) {
     unlink(TEMP_DIR."zip/".$newFileName);
 
     return $content;
-}
-
-function createCryptedZipFile($connection, $originalName, $content, $size) {
-    $key = $_SESSION["Data"]["password"];
-    $ownerId = $_SESSION["Data"]["id"];
-    $ip = $_SERVER['REMOTE_ADDR'];
-
-    $newFileName = randomString(SIZE_FILE_NAME);
-
-    $zipFile = new ZipArchive;
-
-    if ($zipFile->open(TARGET_DIR.$newFileName, ZipArchive::CREATE) === TRUE) {
-        $zipFile->addFromString($newFileName, $content);
-        $zipFile->close();
-    }
-    else {
-        throw new Exception("Le zip n'a pas pu être créé");
-    }
-
-    $zipText = file_get_contents(TARGET_DIR.$newFileName);
-
-    list($encryptedText, $salt, $hash) = encryptText($zipText, $key, null);
-
-    file_put_contents(TARGET_DIR.$newFileName, $encryptedText);
-
-    $query = $connection->prepare("INSERT INTO kioui_files (original_name, path, owner, salt, size, ip) VALUES (?,?,?,?,?,?)");
-    $query->bind_param("ssisis", $originalName, $newFileName, $ownerId, $salt, $size, $ip);
-    $query->execute();
-    $query->close();
-
-    return $newFileName;
 }
 
 ?>
