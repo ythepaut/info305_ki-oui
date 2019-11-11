@@ -47,11 +47,22 @@
                             <input type="password" name="register_passwd2" class="form-control" placeholder="Mot de passe (confirmation)" aria-describedby="icon_register_passwd2" required />
                         </div>
 
-                        <br />
-
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" name="register_cgu" id="register_cgu" required />
-                            <label class="custom-control-label" for="register_cgu">J'ai lu, compris, accepté et appris par cœur les <a target="_blank" href="/cgu" class="link">Conditions Générales d'Utilisation <i style="position: relative; top:-.3em; font-size: 9px;" class="fas fa-external-link-alt"></i></a>.</label>
+                        <div style="text-align: left;">
+                            <span>J'ai lu, compris, accepté et appris par cœur :</span>
+                            <ul style="list-style-type: none; margin: 5px 0px;">
+                                <li>
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" name="register_cgu" id="register_cgu" required />
+                                        <label class="custom-control-label" for="register_cgu">les <a target="_blank" href="/cgu" class="link">Conditions Générales d'Utilisation <i style="position: relative; top:-.3em; font-size: 9px;" class="fas fa-external-link-alt"></i></a>.</label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" name="register_polcon" id="register_polcon" required />
+                                        <label class="custom-control-label" for="register_polcon">la <a target="_blank" href="/cgu" class="link">Politique de confidentialité <i style="position: relative; top:-.3em; font-size: 9px;" class="fas fa-external-link-alt"></i></a>.</label>
+                                    </div>
+                                </li>
+                            </ul>
                         </div>
 
 
