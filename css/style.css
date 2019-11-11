@@ -20,13 +20,13 @@ a.link {
     background: #fff;
 }
 ::-webkit-scrollbar-thumb {
-    background: #1dd1a1;
-}
-::-webkit-scrollbar-thumb:hover {
     background: #10ac84;
 }
-::-webkit-scrollbar-thumb:active {
+::-webkit-scrollbar-thumb:hover {
     background: #0e9674;
+}
+::-webkit-scrollbar-thumb:active {
+    background: #128568;
 }
 body {
     overflow-y: scroll;
@@ -352,6 +352,26 @@ div.alert.alert-success {
 }
 .alert-success i {
     color: #2ecc71;
+}
+
+
+/* Styles CGU */
+
+.cgu {
+    min-height: 700px;
+}
+
+.cgu h3, .cgu h5 {
+    font-weight: bold;
+}
+.cgu h6 {
+    font-size: 18px;
+}
+.cgu p, .cgu h3, .cgu h5, .cgu h6 {
+    margin: 0px;
+}
+.cgu button {
+    width: 100%;
 }
 
 /* Footer */

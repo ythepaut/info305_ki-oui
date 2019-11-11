@@ -21,7 +21,7 @@
 
             <br />
 			<br />
-			<p><a href="#" data-toggle="modal" data-target="#modalRegister" class="button"><i class="fas fa-pen"></i> &nbsp; S'inscrire</a></p>
+			<p><button data-toggle="modal" data-target="#modalRegister"><i class="fas fa-pen"></i> &nbsp; S'inscrire</button></p>
 
         </div>
 		</div>
