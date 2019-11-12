@@ -123,7 +123,8 @@ main > section .inner {
 
 main > section > .ligne0 {
 	background-image: url("../ressources/img/accueil.jpg");
-	background-size: 100%;
+    background-repeat: repeat;
+	background-size: 25%;
 	background-attachment: fixed;
 	min-height: 400px;
 }
