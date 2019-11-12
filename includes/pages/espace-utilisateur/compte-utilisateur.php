@@ -78,5 +78,6 @@
 </div>
 
 <?php
+$backupKey = randomString(16); 
 include("./includes/pages/modals/backup-key.php");
 ?>

@@ -141,9 +141,6 @@ main > section > .ligne0 > .col-lg-5 {
 	background-color: #fff
 }
 
-main > section > .ligne0 > .col-lg-5 > .button {
-}
-
 main > section > .ligne0 > .col-lg-1 {
 	background: linear-gradient( to left top, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 50%, #fff 50%, #fff 100%);
 }

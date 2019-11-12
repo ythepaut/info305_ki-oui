@@ -21,6 +21,9 @@ switch ($action) {
     case "verif-email":
         die(verifEmail($_GET['token'], $connection));
         break;
+    case "backup-key":
+        die(backupKey($_POST['backup-key_key'], $connection));
+        break;
 
     case "upload":
         if (true || isset($_SESSION["LoggedIn"]) && $_SESSION['LoggedIn']) {
@@ -42,7 +45,7 @@ switch ($action) {
         break;
 
     default:
-        throw new Exception("ERROR_MISSING_ACTION - Action invalide - " . 'action' . ":'$action'");
+        throw new Exception("ERROR_MISSING_ACTION#Action invalide - " . 'action' . ":'$action'");
 }
 
 /**
@@ -248,6 +251,34 @@ function verifEmail($token, $connection) {
 
     header("Location: /");
 
+}
+
+
+/**
+ * Ajout d'une clé de secours au compte / la remplace si déjà existante
+ *
+ * @param string            $key                -   Clé de cryptage
+ * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return string
+ */
+function backupKey($key, $connection) {
+
+    $result = "ERROR_UNKNOWN#Une erreur est survenue.";
+
+    if (isset($key) && strlen($key) == 16) {
+
+        $backup_password = base64_encode(encryptText($_SESSION['UserPassword'], $key, $_SESSION['Data']['salt'])[0]);
+
+        $query = $connection->prepare("UPDATE kioui_accounts SET backup_password = ? WHERE id = ?");
+        $query->bind_param("si", $backup_password, $_SESSION['Data']['id']);
+        $query->execute();
+        $query->close();
+
+        $result = "SUCCESS#Votre clé a été sauvegardée.#/espace-utilisateur/compte";
+    }
+
+    return $result;
 }
 
 

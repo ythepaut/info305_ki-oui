@@ -45,8 +45,8 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <table>
-                        <tr><th>Nom du fichier</th><th>Taille du fichier</th></tr>
+                    <table class="table">
+                    <thead class="thead-light"><th>Nom du fichier</th><th>Taille du fichier</th></thead>
                         <?php
                             $folders=getFolders($_SESSION['Data']['id'],$connection);
                             $res="";

@@ -63,6 +63,25 @@ function getSrc($relative_src) {
     return str_repeat("../", $nb - 1) . "." . $relative_src;
 }
 
+/**
+ * Fonction qui rafraichit la variable de session.
+ * 
+ * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return void
+ */
+function refreshSession($connection) {
+
+    $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE id = ?");
+    $query->bind_param("s", $_SESSION['Data']['id']);
+    $query->execute();
+    $result = $query->get_result();
+    $query->close();
+    $userData = $result->fetch_assoc();
+
+    $_SESSION['Data'] = $userData;
+}
+
 
 if (file_exists(getcwd() . '/includes/classes/PHPMailer/PHPMailerAutoload.php')) {
     require_once(getcwd() . '/includes/classes/PHPMailer/PHPMailerAutoload.php');
