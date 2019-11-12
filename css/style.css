@@ -177,6 +177,56 @@ div.errorpage h1 {
     width: 42px;
 }
 
+
+/* Icones */
+
+i.info {
+    color: #2e86de;
+}
+
+i.success {
+    color: #10ac84;
+}
+
+i.warning {
+    color: #ff9f43;
+}
+
+i.error {
+    color: #ee5253;
+}
+
+
+i.enabled {
+    color: #10ac84;
+    cursor: pointer;
+    transition: all 0.5s;
+}
+i.enabled:hover {
+    color: #ee5253;
+}
+
+i.disabled {
+    color: #ee5253;
+    cursor: pointer;
+    transition: all 0.5s;
+}
+i.disabled:hover {
+    color: #10ac84;
+}
+
+
+i.edit {
+    color: #54a0ff;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+i.edit:hover {
+    color: #2e86de;
+}
+
+
 /* Boutons */
 
 a.button {
@@ -214,55 +264,6 @@ button:disabled:not(.close), input[type="submit"]:disabled, a.button:disabled {
 	cursor: not-allowed;
 }
 
-
-/* Tableaux */
-
-table {
-    border-collapse: separate;
-    border-spacing: 0;
-    min-width: 100%;
-    margin-top: 50px;
-    margin-bottom: 50px;
-}
-
-table th, table td {
-    border-right: 1px solid rgb(0,0,0,0.2);
-    border-bottom: 1px solid rgb(0,0,0,0.2);
-    padding: 10px;
-}
-
-table th:first-child, table td:first-child {
-    border-left: 1px solid rgb(0,0,0,0.2);
-}
-
-table th {
-    font-weight: bold;
-    background: #1dd1a1;
-    color: #fff;
-    border-top: 1px solid rgb(0,0,0,0.2);
-}
-
-table tr:first-child th:first-child {
-    border-top-left-radius: 6px;
-}
-
-table tr:first-child th:last-child {
-    border-top-right-radius: 6px;
-}
-
-table tr:last-child td:first-child {
-    border-bottom-left-radius: 6px;
-}
-
-table tr:last-child td:last-child {
-    border-bottom-right-radius: 6px;
-}
-
-table tr:last-child {
-    box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2);
-    border-bottom-right-radius: 6px;
-    border-bottom-left-radius: 6px;
-}
 
 /* Espace utilisateur */
 

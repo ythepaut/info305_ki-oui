@@ -18,7 +18,7 @@
 
                     <div class="col-lg-8">
 
-                        <form action="./includes/classes/actions.php" method="POST" class="ajax">
+                        <form action="<?php echo(getSrc('./includes/classes/actions.php')); ?>" method="POST" class="ajax">
 
                             <div class="input-group mb-3">
                                 <div class="input-group-prepend">

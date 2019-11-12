@@ -4,7 +4,7 @@
         <div class="modal-content">
             <div class="modal-body">
 
-                <form action="./includes/classes/actions.php" method="POST" class="ajax">
+                <form action="<?php echo(getSrc('./includes/classes/actions.php')); ?>" method="POST" class="ajax">
 
                 <div class="container-fluid" style="text-align: center;">
                 <div class="row">
