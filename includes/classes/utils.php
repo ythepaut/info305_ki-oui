@@ -23,7 +23,7 @@ function randomString($n) {
     return $randomString;
 }
 
-function encryptText($text, $password, $salt = null) {
+function encryptText($text, $password, $salt = null, $raw = true) {
     if ($salt == null) {
         // $salt = hash_hmac('sha512', openssl_random_pseudo_bytes(64), $password, false);
         $salt = randomString(16);
@@ -34,10 +34,18 @@ function encryptText($text, $password, $salt = null) {
     $initVector = substr($salt, 0, 16);
     $cryptedText = openssl_encrypt($text, AES_METHOD, $password . $salt, OPENSSL_RAW_DATA, $initVector);
 
+    if (!$raw) {
+        $cryptedText = base64_encode($cryptedText);
+    }
+
     return array($cryptedText, $salt, $hash);
 }
 
-function decryptText($cryptedText, $password, $salt, $hash = null) {
+function decryptText($cryptedText, $password, $salt, $hash = null, $raw = true) {
+    if (!$raw) {
+        $cryptedText = base64_decode($cryptedText);
+    }
+
     $initVector = substr($salt, 0, 16);
     $text = openssl_decrypt($cryptedText, AES_METHOD, $password . $salt, OPENSSL_RAW_DATA, $initVector);
 
@@ -65,7 +73,7 @@ function getSrc($relative_src) {
 
 /**
  * Fonction qui rafraichit la variable de session.
- * 
+ *
  * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php
  *
  * @return void
