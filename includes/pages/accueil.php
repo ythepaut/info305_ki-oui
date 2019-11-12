@@ -1,3 +1,7 @@
+<noscript>
+    <meta http-equiv="refresh" content="0;url=/no-script">
+</noscript>
+
 <section class="pair container-fluid">
 	<div class="row ligne0">
 
@@ -69,4 +73,3 @@
 
 	</div>
 </section>
-

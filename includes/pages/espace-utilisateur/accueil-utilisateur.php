@@ -59,8 +59,8 @@
                                 $res.=convertUnits($folder["size"]);
                                 $res.="</td>";
                                 $res.="</tr>";
-                                echo($res);
                             }
+                            echo($res);
                         ?>
                     </table>
                 </div>
