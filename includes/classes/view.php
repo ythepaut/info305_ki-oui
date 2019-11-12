@@ -54,6 +54,10 @@ switch ($page) {
         include("./includes/pages/cgu.php");
         break;
 
+    case "no-script":
+        include("./includes/pages/no-script.php");
+        break;
+
     case "403":
         include("./includes/pages/403.php");
         break;
