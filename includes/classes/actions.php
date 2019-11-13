@@ -268,7 +268,7 @@ function backupKey($key, $connection) {
 
     if (isset($key) && strlen($key) == 16) {
 
-        $backup_password = base64_encode(encryptText($_SESSION['UserPassword'], $key, $_SESSION['Data']['salt'])[0]);
+        $backup_password = encryptText($_SESSION['UserPassword'], $key, $_SESSION['Data']['salt'], $raw=false)[0];
 
         $query = $connection->prepare("UPDATE kioui_accounts SET backup_password = ? WHERE id = ?");
         $query->bind_param("si", $backup_password, $_SESSION['Data']['id']);
