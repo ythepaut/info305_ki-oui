@@ -133,7 +133,7 @@ function createCryptedZipFile($connection, $content, $size, $oldName, $newName =
  * @param   string          $content            -   Contenu déchiffré du fichier
  */
 function unzipCryptedFile($connection, $cryptedFileName, $key) {
-    $query = $connection->prepare("SELECT * FROM _files WHERE path = ?");
+    $query = $connection->prepare("SELECT * FROM kioui_files WHERE path = ?");
     $query->bind_param("s", $cryptedFileName);
     $query->execute();
     $result = $query->get_result();
