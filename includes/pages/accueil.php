@@ -13,14 +13,14 @@
             </div>
 
             <div class="d-none d-lg-block" style="display:flex;">
-                <h1 style="margin-top: 0.35rem;margin-bottom: 0px;">Partagez vos fichiers </h1>
-                <div class="animate-contain">
-                    <div class="animated-text">
-                        <span> &nbsp;simplement.</span>
-                        <span> &nbsp;en toute sécurité.</span>
-                        <span> &nbsp;gratuitement.</span>
-                    </div>
+            <h1 style="margin-top: 0.35rem;margin-bottom: 0px;">Partagez vos fichiers </h1>
+            <div class="animate-contain">
+                <div class="animated-text">
+                    <span> &nbsp;simplement.</span>
+                    <span> &nbsp;en toute sécurité.</span>
+                    <span> &nbsp;gratuitement.</span>
                 </div>
+            </div>
             </div>
 
             <br />
@@ -30,7 +30,7 @@
         </div>
 		</div>
 
-		<div class="inner col-lg-1"></div>
+		<div class="inner col-lg-1 d-none d-lg-block"></div>
 
 	</div>
 </section>
@@ -58,7 +58,6 @@
 			<p>Le code source de Ki-Oui est disponible.<br />Vous pouvez vérifier comment vos données sont sécurisées à tout moment.</p>
 		</div>
 
-
 	</div>
 </section>
 
@@ -66,6 +65,41 @@
 
 <section class="pair container-fluid">
 	<div class="row ligne2">
+
+		<div class="inner col-lg-4">
+			<h2>Nombres d'utilisateurs</h2>
+			<span class="stats">
+				<?php
+				echo(getNbUsers($connection));
+				?>	
+			</span>
+		</div>
+
+		<div class="inner col-lg-4">
+			<h2>Taille totale</h2>
+			<span class="stats">
+				<?php
+				echo(getNbSize($connection));
+				?>
+			</span>
+		</div>
+
+		<div class="inner col-lg-4">
+			<h2>Nombres de fichiers</h2>
+			<span class="stats">
+				<?php
+				echo(getNbFiles($connection));
+				?>	
+			</span>
+		</div>
+
+	</div>
+</section>
+
+
+
+<section class="impair container-fluid">
+	<div class="row ligne3">
 
 		<div class="inner col">
 			<a href="/ajout" class="button"><i class="fas fa-file-import"></i> &nbsp; Ajouter un fichier</a>

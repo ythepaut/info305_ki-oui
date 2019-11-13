@@ -286,4 +286,53 @@ function changePassword($userId, $oldPassword, $newPassword, $connection) {
 
 }
 
+
+/**
+ * Fonction qui renvoie le nombre total d'utilisateurs stockés
+ *
+ * @param mysqlconnection    $connection        -   Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return integer
+ */
+function getNbUsers($connection) {
+
+    $result = mysqli_query($connection, "SELECT * FROM kioui_accounts");
+    return mysqli_num_rows ( $result );
+}
+
+
+
+/**
+ * Fonction qui renvoie le nombre total de fichiers stockés
+ *
+ * @param mysqlconnection    $connection        -   Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return integer
+ */
+function getNbFiles($connection) {
+	
+    $result = mysqli_query($connection, "SELECT * FROM kioui_files");
+    return mysqli_num_rows ( $result );
+}
+
+
+/**
+ * Fonction qui renvoie la taille totale des fichiers stockés
+ *
+ * @param mysqlconnection    $connection        -   Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return string
+ */
+function getNbSize($connection) {
+
+    $result = mysqli_query($connection, "SELECT * FROM kioui_files");
+    $sum = 0;
+
+    while ($row = mysqli_fetch_assoc($result)) {
+        $sum += $row['size'];
+    }
+
+    return convertUnits($sum);
+}
+
 ?>
