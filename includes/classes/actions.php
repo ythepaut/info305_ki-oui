@@ -284,8 +284,10 @@ function backupKey($key, $connection) {
 
 /**
  * Upload des fichiers
+ * 
+ * @param   mysqlconnection $connection			- 	Connection à la base de données SQL
  *
- * @return boolean          $res                -   Si l'opération s'est bien passée ou non
+ * @return  boolean         $res                -   Si l'opération s'est bien passée ou non
  */
 function upload($connection) {
     $res = true;
@@ -339,10 +341,10 @@ function upload($connection) {
             $content = file_get_contents($_FILES["files"]["tmp_name"][$i]);
             $size = $_FILES["files"]["size"][$i];
 
-            $newFileName = createCryptedZipFile($connection, $originalName, $content, $size);
+            $newFileName = createCryptedZipFile($connection, $content, $size, $originalName);
         }
 
-        $passwd = $_SESSION["Data"]["password"];
+        // $passwd = $_SESSION["Data"]["password"];
 
         $content = unzipCryptedFile($connection, $newFileName, $passwd);
 
@@ -427,75 +429,6 @@ function downloadFile($file, $name, $mimeType='') {
     else {
         die("Erreur : impossible d'ouvrir le fichier");
     }
-}
-
-function createCryptedZipFile($connection, $originalName, $content, $size) {
-    $compt = 0;
-
-    do {
-        $newFileName = randomString(SIZE_FILE_NAME);
-        $compt ++;
-    } while (file_exists(TARGET_DIR.$newFileName) && $compt < 100);
-
-    if (file_exists(TARGET_DIR.$newFileName)) {
-        return null;
-    }
-
-    $password = $_SESSION["UserPassword"];
-    $ownerId = $_SESSION["Data"]["id"];
-    $ip = $_SERVER["REMOTE_ADDR"];
-
-    $zipFile = new ZipArchive;
-
-    if ($zipFile->open(TARGET_DIR.$newFileName, ZipArchive::CREATE) === TRUE) {
-        $zipFile->addFromString($newFileName, $content);
-        $zipFile->close();
-    }
-    else {
-        throw new Exception("Le fichier zip n'a pas pu être créé");
-    }
-
-    $zipText = file_get_contents(TARGET_DIR.$newFileName);
-
-    list($encryptedText, $salt, $hash) = encryptText($zipText, $password);
-
-    file_put_contents(TARGET_DIR.$newFileName, $encryptedText);
-
-    $query = $connection->prepare("INSERT INTO kioui_files (original_name, path, owner, salt, size, ip, content_hash) VALUES (?,?,?,?,?,?,?)");
-    $query->bind_param("ssisiss", $originalName, $newFileName, $ownerId, $salt, $size, $ip, $hash);
-    $query->execute();
-    $query->close();
-
-    return $newFileName;
-}
-
-function unzipCryptedFile($connection, $newFileName, $key) {
-    $query = $connection->prepare("SELECT * FROM kioui_files WHERE path = ?");
-    $query->bind_param("s", $newFileName);
-    $query->execute();
-    $result = $query->get_result();
-    $query->close();
-    $fileData = $result->fetch_assoc();
-
-    $zipTextEncrypted = file_get_contents(TARGET_DIR.$newFileName);
-
-    $zipText = decryptText($zipTextEncrypted, $_SESSION["UserPassword"], $fileData["salt"], $fileData["hash"]);
-
-    file_put_contents(TEMP_DIR.$newFileName, $zipText);
-
-    $zipFile = new ZipArchive;
-
-    if ($zipFile->open(TEMP_DIR.$newFileName) === true) {
-        $zipFile->extractTo(TEMP_DIR."zip/");
-        $zipFile->close();
-    }
-
-    $content = file_get_contents(TEMP_DIR."zip/".$newFileName);
-
-    unlink(TEMP_DIR.$newFileName);
-    unlink(TEMP_DIR."zip/".$newFileName);
-
-    return $content;
 }
 
 ?>

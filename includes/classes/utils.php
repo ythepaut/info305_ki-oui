@@ -9,7 +9,7 @@ define("MAX_FILE_SIZE", 50 * 10**6);
 /**
  * Fonction qui retourne une chaîne de caractères aléatoire de longueur n.
  *
- * @param int           $n                  -       Longueur de la chaîne a generer
+ * @param int           $n                  -   Longueur de la chaîne a generer
  *
  * @return string
  */
@@ -23,6 +23,20 @@ function randomString($n) {
     return $randomString;
 }
 
+/**
+ * Fonction chiffrant un texte à partir d'un mot de passe et d'un sel
+ * 
+ * @param	string		$text						-	Texte à chiffrer
+ * @param	string		$password					-	Mot de passe
+ * @param	string		$salt						-	Sel, null par défaut,
+ * 														
+ * 														si null alors sera créé
+ * @param	boolean		$raw						-	Si vrai alors retourne du binaire,
+ * 														sinon retourne en base 64
+ * 
+ * @return	array		$cryptedText, $salt, $hash	-	Liste contenant le texte crypté,
+ * 														le sel utilisé et le hash du texte original
+ */
 function encryptText($text, $password, $salt = null, $raw = true) {
     if ($salt == null) {
         // $salt = hash_hmac('sha512', openssl_random_pseudo_bytes(64), $password, false);
@@ -55,6 +69,96 @@ function decryptText($cryptedText, $password, $salt, $hash = null, $raw = true) 
     else {
         return null;
     }
+}
+
+/**
+ * Fonction créant un fichier zip chiffré et l'ajoutant à la base de données
+ * 
+ * @param 	mysqlconnection	$connection			- 	Connection à la base de données SQL
+ * @param 	string			$content			-	Contenu du fichier à chiffrer 	
+ * @param	int				$size				-	Taille du fichier
+ * @param	string			$oldName			-	Ancien nom du fcihier : nom original
+ * @param 	string			$newName			-	Nouveau nom du fichier : facultatif, si null sera initialisé random
+ * 
+ * @return	string			$newName			-	Nouveau nom du fichier
+ */
+function createCryptedZipFile($connection, $content, $size, $oldName, $newName = null) {
+    $compt = 0;
+
+	if ($newName === null) {
+		do {
+			$newName = randomString(SIZE_FILE_NAME);
+			$compt ++;
+		} while (file_exists(TARGET_DIR.$newName) && $compt < 100);
+	}
+
+    if (file_exists(TARGET_DIR.$newName)) {
+        return null;
+    }
+	
+    $password = $_SESSION["UserPassword"];
+    $ownerId = $_SESSION["Data"]["id"];
+    $ip = $_SERVER["REMOTE_ADDR"];
+
+    $zipFile = new ZipArchive;
+
+    if ($zipFile->open(TARGET_DIR.$newName, ZipArchive::CREATE) === TRUE) {
+        $zipFile->addFromString($newName, $content);
+        $zipFile->close();
+    }
+    else {
+        throw new Exception("Le fichier zip n'a pas pu être créé");
+    }
+
+    $zipText = file_get_contents(TARGET_DIR.$newName);
+
+    list($encryptedText, $salt, $hash) = encryptText($zipText, $password);
+
+    file_put_contents(TARGET_DIR.$newName, $encryptedText);
+
+    $query = $connection->prepare("INSERT INTO kioui_files (original_name, path, owner, salt, size, ip, content_hash) VALUES (?,?,?,?,?,?,?)");
+    $query->bind_param("ssisiss", $oldName, $newName, $ownerId, $salt, $size, $ip, $hash);
+    $query->execute();
+    $query->close();
+
+    return $newName;
+}
+
+/**
+ * Fonction déchiffrant un fichier zip
+ * 
+ * @param   mysqlconnection	$connection			- 	Connection à la base de données SQL
+ * @param   string          $cryptedFileName    -   Nom du fichier chiffré (son nom sur le serveur)
+ * 
+ * @param   string          $content            -   Contenu déchiffré du fichier
+ */
+function unzipCryptedFile($connection, $cryptedFileName, $key) {
+    $query = $connection->prepare("SELECT * FROM _files WHERE path = ?");
+    $query->bind_param("s", $cryptedFileName);
+    $query->execute();
+    $result = $query->get_result();
+    $query->close();
+    $fileData = $result->fetch_assoc();
+
+    $zipTextEncrypted = file_get_contents(TARGET_DIR.$cryptedFileName);
+
+    $zipText = decryptText($zipTextEncrypted, $_SESSION["UserPassword"], $fileData["salt"], $fileData["hash"]);
+
+    file_put_contents(TEMP_DIR.$cryptedFileName, $zipText);
+
+    $zipFile = new ZipArchive;
+
+    if ($zipFile->open(TEMP_DIR.$cryptedFileName) === true) {
+        $zipFile->extractTo(TEMP_DIR."zip/");
+        $zipFile->close();
+    }
+
+    $content = file_get_contents(TEMP_DIR."zip/".$cryptedFileName);
+
+    unlink(TEMP_DIR.$cryptedFileName);
+    unlink(TEMP_DIR."zip/".$cryptedFileName);
+
+    return $content;
 }
 
 /**
