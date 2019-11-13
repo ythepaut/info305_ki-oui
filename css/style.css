@@ -265,10 +265,27 @@ button:disabled:not(.close), input[type="submit"]:disabled, a.button:disabled {
 
 /* Espace utilisateur */
 
-.cote {
-    background-color: #404040;
+.user-nav {
+    background-color: #283849;
     margin: 0px;
     padding: 0px;
+}
+.user-nav li {
+    display: block;
+    width: 100%;
+    background-color: #222f3e;
+}
+
+.user-nav li a {
+    display: block;
+    color: #fff;
+    font-size: 16px;
+    padding: 16px 24px;
+    transition: ease 0.3s;
+}
+
+.user-nav li a:hover {
+    transform: translateX(10px);
 }
 
 ul.white a, ul.white a:hover, ul.white a:visited, ul.white  a:active {
@@ -383,7 +400,7 @@ footer {
 }
 
 .footer {
-	margin-top: 20px;
+	/*margin-top: 20px;*/
 	background-color: #222f3e;
 	padding: 20px;
 	text-align: left;
