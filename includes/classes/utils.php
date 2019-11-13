@@ -168,8 +168,9 @@ function sendMailwosmtp($to,$subject,$message) {
 
 }
 
+
 /**
- * Fonction qui renvoie l'espace occuper par un utilisateur
+ * Fonction qui renvoie l'espace occupé par un utilisateur
  *
  * @param string             $idUser   			-   identifiant de l'utilisateur
  * @param mysqlconnection    $connection        -   Connexion BDD effectuée dans le fichier config-db.php
@@ -196,14 +197,14 @@ function getSize($idUser,$connection){
  *
  * @return array
  */
-function getFolders($idUser,$connection){
+function getFolders($idUser, $connection) {
 	$foldersUser=[];
-	//on récupère tout les fichiers
+	//On récupère tout les fichiers
     $folders = mysqli_query($connection, "SELECT * FROM kioui_files");
 
     while ($folder = mysqli_fetch_assoc($folders)) {
-        if($folder['owner']==$idUser){
-            $foldersUser[]=$folder;
+        if ($folder['owner'] == $idUser) {
+            $foldersUser[] = $folder;
         }
     }
 
@@ -217,23 +218,72 @@ function getFolders($idUser,$connection){
  * @return string
  */
 function convertUnits($size){
-	$unit='';
-	$stringSize=NULL;
+	$unit = "";
+	$stringSize = NULL;
+	
 	if (floor($size/10**6) > 0){
-		$unit=' Mo';
-		$stringSize=round($size/10**6,2);
-	}
-	else if (floor($size/10**3) > 0){
-		$unit=' Ko';
-		$stringSize=round($size/10**3,2);
-	}
-	else{
-		$unit=' octets';
-		$stringSize=$size;
+		$unit = " Mo";
+		$stringSize = round($size/10**6, 2);
+	} else if (floor($size/10**3) > 0){
+		$unit = " Ko";
+		$stringSize = round($size/10**3, 2);
+	} else{
+		$unit = " octets";
+		$stringSize = $size;
 	}
 
-	$stringSize=((string)$stringSize).$unit;
+	$stringSize = ((string) $stringSize) . $unit;
 
 	return $stringSize;
 }
+
+
+/** 
+ * Fonction qui change le mot de passe d'un utilisateur donné
+ * 
+ * @param integer             $userId       		- id de l'utilisateur
+ * @param string			  $oldPassword			- ancien mot de passe
+ * @param string			  $newPassword			- nouveau mot de passe
+ * @param mysqlconnection     $connection           - Connexion BDD effectuée dans le fichier config-db.php
+ * 
+ * @return string
+*/
+function changePassword($userId, $oldPassword, $newPassword, $connection) {
+	$result = '';
+	if (isset($userId, $oldPassword, $newPassword) && $userId != "" && $oldPassword != "" && $newPassword != "") {
+
+		//Recuperation des données
+		$query = $connection->prepare("SELECT * FROM kioui_accounts WHERE email = ?");
+		$query->bind_param("s", $email);
+		$query->execute();
+		$result = $query->get_result();
+		$query->close();
+		$userData = $result->fetch_assoc();
+		
+		//Identifiants correct ?
+		if (isset($userData['id']) && $userData['id'] != null && password_verify(hash('sha512', $oldPassword . $userData['salt']), $userData['password'])) {
+
+			//nouveau mot de passe correct ?
+			if (strlen($newPassword) >= 8 && preg_match("#[0-9]+#", $newPassword) && preg_match("#[a-zA-Z]+#", $newPassword)) {
+
+				//décrypter et rencrypter tous les fichiers
+				$folders = getFolders($idUser,$connection);
+                //obtenir les deux clés de décryptage et de cryptage
+				$oldUserKey = hash('sha512', $oldPassword . $userData['salt']);
+                $newUserKey = hash('sha512', $newPassword . $userData['salt']);
+                
+                foreach ($folders as $folder) {
+                    $content = unzipCryptedFile($connection, $folder['path'], $oldUserKey);
+                    createCryptedZipFile($connection, $originalName, $content, $size);
+				}
+			}
+		} else {
+
+		}
+	} else {
+		$result = "ERROR_MISSING_FIELDS#Veuillez remplir tous les champs.";
+	}
+
+}
+
 ?>

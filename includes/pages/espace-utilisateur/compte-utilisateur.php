@@ -42,7 +42,7 @@
                     <tr>
                         <th scope="row"> Double authentification</th>
                         <td>Désactivée &nbsp; <i class="fas fa-exclamation-triangle warning" title="Conseillé d'activer"></i></td>
-                        <td>Btns</td>
+                        <td><a href="#"><?php if ($_SESSION['Data']['totp'] != "") { echo("<i class='fas fa-toggle-on enabled' title='Activer la double authentification'></i>"); } else { echo("<i class='fas fa-toggle-off disabled' title='Désactiver la double authentification'></i>"); } ?></a></td>
                     </tr>
                     <tr>
                         <th scope="row"> Clé de secours</th>

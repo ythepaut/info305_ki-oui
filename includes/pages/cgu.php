@@ -16,31 +16,30 @@
         <br />
         <h5>1. Objet</h5>
         <br />
-        <p><p>&nbsp;&nbsp;&nbsp;&nbsp;Les présentes « conditions générales d'utilisation » ont pour objet l'encadrement juridique de l’utilisation de l’outil « KI-OUI » disponible à l’adresse https://ki-oui.ythepaut.com/ ci-après désigné « <b>Service</b> ».<br /><br />
+        <p><p>&nbsp;&nbsp;&nbsp;&nbsp;Les présentes « conditions générales d'utilisation » ont pour objet l'encadrement juridique de l’utilisation de l’outil de partage de fichiers « KI-OUI » disponible à l’adresse https://ki-oui.ythepaut.com/ ci-après désigné « <b>Service</b> ».<br /><br />
         Ce contrat est conclu entre :<br />
         Le gérant du <b>Service</b>, ci-après désigné « l’<b>Éditeur</b> »,<br />
-        Toute personne physique ou morale souhaitant accéder au site et à ses <b>Service</b>s, ci-après appelé « l’<b>Utilisateur</b> ».</p>
+        Toute personne physique ou morale souhaitant accéder au site et à ses <b>Services</b>, ci-après appelé « l’<b>Utilisateur</b> ».</p><br />
         <p><p>&nbsp;&nbsp;&nbsp;&nbsp;L’accès au <b>Service</b> vaut acceptation totale et sans réserve de chacune des dispositions incluses dans le présent avis juridique, ainsi que de toute autre disposition légale en vigueur.</p>
         <p><p>&nbsp;&nbsp;&nbsp;&nbsp;L’<b>Utilisateur</b>, s’engage à relire fréquemment et attentivement les présentes conditions générales d’utilisation, ces dernières pouvant subir des modifications, l’<b>Éditeur</b> se réserve le droit de modifier tout type d’information pouvant figurer sur ces conditions sans préavis.</p>
         <br />
         <br />
         <h5>2. Conditions d'accès et d'utilisation du Web</h5>
         <br />
-        <h6>2.1 Accès gratuit au Web et utilisation de celui-ci</h6>
+        <h6>2.1 Accès gratuit au Web et utilisation de celui-ci</h6><br />
         <p><p>&nbsp;&nbsp;&nbsp;&nbsp;L’utilisation du <b>Service</b> est gratuit pour tous les <b>Utilisateurs</b>. Toutefois, certaines fonctionnalités fournies par le <b>Service</b> sont soumis au paiement d’un certain prix conformément aux conditions générales de vente.</p>
         <br />
-        <h6>2.2 Enregistrement des <b>Utilisateurs</b></h6>
+        <h6>2.2 Enregistrement des <b>Utilisateurs</b></h6><br />
         <p><p>&nbsp;&nbsp;&nbsp;&nbsp;En général, les fonctionnalités du <b>Service</b> ne nécessitent pas l'abonnement préalable ni l'enregistrement des <b>Utilisateurs</b>. Même dans ce cas, l’<b>Éditeur</b> subordonne l’utilisation de certaines fonctionnalités à la précédente complémentation de l’enregistrement <b>Utilisateur</b> correspondant. Cette inscription sera effectuée de la manière expressément indiquée dans la section de <b>Service</b> elle-même.</p>
         <br />
-        <h6>2.3 Exactitude des informations</h6>
+        <h6>2.3 Exactitude des informations</h6><br />
         <p><p>&nbsp;&nbsp;&nbsp;&nbsp;Toutes les informations fournies par l'<b>Utilisateur</b> doivent être véridiques. À ces fins, l'<b>Utilisateur</b> garantit l'authenticité des données communiquées via les formulaires de souscription au <b>Service</b>. Il incombera à l'<b>Utilisateur</b> de tenir à jour en permanence toutes les informations fournies au <b>Service</b>. Dans tous les cas, l'<b>Utilisateur</b> sera seul responsable de toute déclaration fausse ou inexacte et des dommages causés à l’<b>Éditeur</b> ou à des tiers.</p>
         <br />
-        <h6>2.4 Mineurs</h6>
-        <p><p>&nbsp;&nbsp;&nbsp;&nbsp;Pour l'utilisation des <b>Service</b>s, les mineurs doivent toujours obtenir l'accord préalable des parents, des tuteurs ou des représentants légaux, qui sont responsables en dernier ressort de tous les actes accomplis par les mineurs à leur charge. La responsabilité dans la détermination des contenus spécifiques auxquels les mineurs ont accès correspond à ceux, c’est pourquoi, s’ils accèdent à un contenu qui ne convient pas sur Internet, des mécanismes devront être établis dans leurs ordinateurs, notamment des programmes informatiques, des filtres et des blocs, qui permettent de limiter les contenus disponibles et, s'ils ne sont pas infaillibles, ils sont particulièrement utiles pour contrôler et restreindre les matériaux auxquels les mineurs ont accès.</p>
+        <h6>2.4 Mineurs</h6><br />
+        <p><p>&nbsp;&nbsp;&nbsp;&nbsp;Pour l'utilisation des <b>Services</b>, les mineurs doivent toujours obtenir l'accord préalable des parents, des tuteurs ou des représentants légaux, qui sont responsables en dernier ressort de tous les actes accomplis par les mineurs à leur charge. La responsabilité dans la détermination des contenus spécifiques auxquels les mineurs ont accès correspond à ceux, c’est pourquoi, s’ils accèdent à un contenu qui ne convient pas sur Internet, des mécanismes devront être établis dans leurs ordinateurs, notamment des programmes informatiques, des filtres et des blocs, qui permettent de limiter les contenus disponibles et, s'ils ne sont pas infaillibles, ils sont particulièrement utiles pour contrôler et restreindre les matériaux auxquels les mineurs ont accès.</p>
         <br />
-        <h6>2.5 Obligation d'utiliser correctement le site Web</h6>
-        <br />
-        <p><p>&nbsp;&nbsp;&nbsp;&nbsp;L'<b>Utilisateur</b> s'engage à utiliser le <b>Service</b> conformément à la loi et aux présentes conditions d’utilisation, ainsi qu'à la morale et aux bonnes pratiques. À cette fin, l'<b>Utilisateur</b> s'abstiendra d'utiliser le site Web à des fins illégales ou interdites, préjudiciables aux droits et intérêts de tiers, ou qui pourraient endommager, désactiver, surcharger, détériorer ou empêcher l'utilisation normale du matériel ou de documents informatiques, fichiers et toutes sortes de contenus stockés sur l’équipement informatique de l’<b>Éditeur</b>.<br />
+        <h6>2.5 Obligation d'utiliser correctement le site Web</h6><br />
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;L'<b>Utilisateur</b> s'engage à utiliser le <b>Service</b> conformément à la loi et aux présentes conditions d’utilisation, ainsi qu'à la morale et aux bonnes pratiques. À cette fin, l'<b>Utilisateur</b> s'abstiendra d'utiliser le site Web à des fins illégales ou interdites, préjudiciables aux droits et intérêts de tiers, ou qui pourraient endommager, désactiver, surcharger, détériorer ou empêcher l'utilisation normale du matériel ou de documents informatiques, fichiers et toutes sortes de contenus stockés sur l’équipement informatique de l’<b>Éditeur</b>.<br />
         En particulier, et à titre indicatif, mais non exhaustif, l'<b>Utilisateur</b> s'engage à ne pas transmettre, diffuser ou mettre à la disposition de tiers des informations, données, contenus, messages, graphiques, dessins, fichiers son ou image, photographies, logiciels et en général, tout type de matériel qui :<br />
         (a) est contraire, méprise ou viole les droits fondamentaux et les libertés publiques reconnus par la Constitution dans les traités internationaux et autres réglementations en vigueur;<br />
         (b) inciter ou promouvoir des actions criminelles, dénigrantes, diffamatoires, violentes ou, en général, contraires à la loi, à la morale et aux actions de l'ordre public;<br />

@@ -13,14 +13,14 @@
             </div>
 
             <div class="d-none d-lg-block" style="display:flex;">
-            <h1 style="margin-top: 0.35rem;margin-bottom: 0px;">Partagez vos fichiers </h1>
-            <div class="animate-contain">
-                <div class="animated-text">
-                    <span> &nbsp;simplement.</span>
-                    <span> &nbsp;en toute sécurité.</span>
-                    <span> &nbsp;gratuitement.</span>
+                <h1 style="margin-top: 0.35rem;margin-bottom: 0px;">Partagez vos fichiers </h1>
+                <div class="animate-contain">
+                    <div class="animated-text">
+                        <span> &nbsp;simplement.</span>
+                        <span> &nbsp;en toute sécurité.</span>
+                        <span> &nbsp;gratuitement.</span>
+                    </div>
                 </div>
-            </div>
             </div>
 
             <br />
