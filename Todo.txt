@@ -1,0 +1,12 @@
+Trucs à faire après premier test client :
+
+Espace utilisateur
+- pourcentage diagramme espace utilisateur
+- fichiers trié par ordre de date d'ajout
+
+Upload de fichier
+- redirection vers espace après upload
+- indicateur de chiffrement / téléchargement
+
+- Tester différents type et tailles de fichiers
+- tracer les chtites prises de décision
