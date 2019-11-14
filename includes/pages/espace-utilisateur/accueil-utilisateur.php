@@ -17,13 +17,17 @@
                         <script>
                             var options = {
                                 maintainAspectRatio: false,
+                                rotation: 1 * Math.PI,
+                                circumference: 1 * Math.PI,
+                                cutoutPercentage: 70
                             };
                             //variable contenant l'espace utilisé par l'utilisateur
                             var sizeUser="<?php echo(getSize($_SESSION['Data']['id'],$connection));?>";
                             var data = {
                                 datasets: [{
                                     data:[sizeUser,200*10**6-sizeUser],
-                                    backgroundColor:["rgb(255,0,0)","rgb(0,0,255)"],
+                                    backgroundColor:["rgb(84, 160, 255)","rgb(200, 214, 229)"],
+                                    weight: 15,
                                 }],
                                 labels: [
                                     'Espace Utilisé',
@@ -32,7 +36,7 @@
                             };
 
                             new Chart(document.getElementById("chart-js-1"),{
-                                type: 'pie',
+                                type: 'doughnut',
                                 data: data,
                                 options: options,
                             });

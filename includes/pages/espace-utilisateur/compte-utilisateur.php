@@ -37,7 +37,7 @@
                     <tr>
                         <th scope="row"> Mot de passe</th>
                         <td>****************</td>
-                        <td><i class="fas fa-pen edit"></i></td>
+                        <td><a href="#" data-toggle="modal" data-target="#modalChangePassword"><i class="fas fa-pen edit"></i></a></td>
                     </tr>
                     <tr>
                         <th scope="row"> Double authentification</th>
@@ -75,4 +75,5 @@
 <?php
 $backupKey = randomString(16); 
 include("./includes/pages/modals/backup-key.php");
+include("./includes/pages/modals/change-password.php");
 ?>
