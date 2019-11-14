@@ -75,3 +75,6 @@
         </section>
     </div>
 </div>
+<?php
+    include("./includes/pages/modals/dl-link.php");
+?>

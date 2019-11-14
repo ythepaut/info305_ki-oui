@@ -306,14 +306,14 @@ function changePassword($userId, $oldPassword, $newPassword, $connection) {
 			//nouveau mot de passe correct ?
 			if (strlen($newPassword) >= 8 && preg_match("#[0-9]+#", $newPassword) && preg_match("#[a-zA-Z]+#", $newPassword)) {
 				//décrypter et rencrypter tous les fichiers
-				$folders = getFolders($idUser,$connection);
+				$files = getFolders($idUser,$connection);
                 //obtenir les deux clés de décryptage et de cryptage
 				$oldUserKey = hash('sha512', $oldPassword . $userData['salt']);
                 $newUserKey = hash('sha512', $newPassword . $userData['salt']);
                 
-                foreach ($folders as $folder) {
-                    $content = unzipCryptedFile($connection, $folder['path'], $oldUserKey);
-                    createCryptedZipFile($connection, $originalName, $content, $size);
+                foreach ($files as $file) {
+                    $content = unzipCryptedFile($connection, $file['path'], $oldUserKey);
+                    createCryptedZipFile($connection, $content, $file['size'], $file['original_name']);
 				}
 			}
 		} else {
