@@ -88,7 +88,6 @@
 		<div class="inner col-lg-4">
 			<h2>Fichiers stockés</h2>
 			<span class="stats">
-				<i class="far fa-file-alt"></i>
 				<?php
 				echo(getNbFiles($connection));
 				?>	

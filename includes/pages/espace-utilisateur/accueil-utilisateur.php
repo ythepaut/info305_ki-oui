@@ -46,17 +46,24 @@
             <div class="row">
                 <div class="col">
                     <table class="table">
-                    <thead class="thead-light"><th>Nom du fichier</th><th>Taille du fichier</th></thead>
+                    <thead class="thead-light">
+                    <th style="width=60%;">Nom du fichier</th>
+                    <th style="width=20%;">Taille du fichier</th>
+                    <th style="width=auto;">Actions</th>
+                    </thead>
                         <?php
                             $folders=getFolders($_SESSION['Data']['id'],$connection);
                             $res="";
                             foreach($folders as $folder){
-                                $res="<tr>";
+                                $res.="<tr>";
                                 $res.="<td>";
                                 $res.=$folder["original_name"];
                                 $res.="</td>";
                                 $res.="<td>";
                                 $res.=convertUnits($folder["size"]);
+                                $res.="</td>";
+                                $res.="<td>";
+                                $res.="<a href='#' data-toggle='modal' data-target='#modalDlLink'><i class='fas fa-link edit'></i></a>";
                                 $res.="</td>";
                                 $res.="</tr>";
                             }
@@ -68,3 +75,6 @@
         </section>
     </div>
 </div>
+<?php
+    include("./includes/pages/modals/dl-link.php");
+?>
