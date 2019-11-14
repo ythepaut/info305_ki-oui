@@ -8,6 +8,7 @@ RewriteCond %{SERVER_PORT} 80
 RewriteRule ^(.*)$ https://ki-oui.ythepaut.com/$1 [R,L]
 
 
+RewriteRule ^logout$ includes/classes/actions.php?action=logout [L]
 RewriteRule ^verif-email/([A-Za-z0-9_.]+)$ includes/classes/actions.php?action=verif-email&token=$1 [L]
 RewriteRule ^([a-z0-9-]+)$ index.php?page=$1 [L]
 RewriteRule ^espace-utilisateur/([a-z0-9-]+)$ index.php?page=espace-utilisateur&sp=$1 [L]

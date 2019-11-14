@@ -30,7 +30,7 @@
                 if (isset($_SESSION['LoggedIn']) && $_SESSION['LoggedIn'] && $_SESSION['Data']['username']) {
                     echo('<a href="/espace-utilisateur/accueil"><span><i class="fas fa-tachometer-alt"></i> &nbsp; Espace utilisateur (' . htmlspecialchars($_SESSION['Data']['username']) . ')</span></a>');
                 }else{
-                    echo('<a href="#" data-toggle="modal" data-target="#modalLogin"><span><i class="fas fa-tachometer-alt"></i> &nbsp; Connexion</span></a>');
+                    echo('<a href="#" data-toggle="modal" data-target="#modalLogin"><span><i class="fas fa-tachometer-alt"></i> &nbsp; Espace utilisateur</span></a>');
                 }
                 ?>
                 <a href="#"><span><i class="fas fa-globe-americas"></i> &nbsp; EN</span></a>

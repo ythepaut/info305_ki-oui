@@ -30,8 +30,6 @@
                             </div>
                             <br />
                             <span><b>ATTENTION</b>, il s'agit de la seule façon de récuperer vos fichiers si vous oubliez votre mot de passe.<br />Conservez-la dans un endroit sûr, et ne la perdez pas.</span>
-                            
-                            <p><b>DEBUG : </b> Hashage du mot de passe salé : <?php echo($_SESSION['UserPassword']); ?></p>
 
                             <br />
                             <br />

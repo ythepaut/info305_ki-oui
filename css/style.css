@@ -156,6 +156,12 @@ main > section > .ligne1 > .inner > i {
 	color: #1dd1a1;
 }
 
+main > section > .ligne2 > .inner > .stats {
+	font-weight: bold;
+	font-size: 80px;
+	color: #1dd1a1;
+}
+
 /* Pages d'erreur */
 
 div.errorpage {

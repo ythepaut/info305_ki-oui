@@ -6,6 +6,7 @@ include_once(getcwd() . "/config-db.php");
 include_once(getcwd() . "/config-email.php");
 include_once(getcwd() . "/config-recaptcha.php");
 include_once(getcwd() . "/utils.php");
+include_once(getcwd() . "/totp.php");
 require_once(getcwd() . '/PHPMailer/PHPMailerAutoload.php');
 
 $action = (isset($_POST['action'])) ? $_POST['action'] : "";
@@ -23,6 +24,16 @@ switch ($action) {
         break;
     case "backup-key":
         die(backupKey($_POST['backup-key_key'], $connection));
+        break;
+    case "enable-totp":
+        die(enableTOTP($_POST['enable-totp_key'], $_POST['enable-totp_code'], $connection));
+        break;
+    case "disable-totp":
+        die(disableTOTP($_POST['enable-totp_code'], $connection));
+        break;
+    case "logout":
+        session_destroy();
+        header("Location: /");
         break;
 
     case "upload":
@@ -279,6 +290,82 @@ function backupKey($key, $connection) {
     }
 
     return $result;
+}
+
+
+/**
+ * Activation de la double authentification par application.
+ * (Formulaire AJAX)
+ *
+ * @param string            $key                -   Clé TOTP
+ * @param string            $code               -   Code TOTP pour activation
+ * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return string
+ */
+function enableTOTP($key, $code, $connection) {
+    $result = "ERROR_UNKNOWN#Une erreur est survenue.";
+
+    //TOTP désactivé ?
+    if ($_SESSION['Data']['totp'] == "") {
+
+        //Verification du code de confirmation
+        $ga = new PHP_GoogleAuthenticator();
+        if ($ga->verifyCode($key, $code) == 1) {
+
+            $query = $connection->prepare("UPDATE kioui_accounts SET totp = ? WHERE id = ?");
+            $query->bind_param("si", $key, $_SESSION['Data']['id']);
+            $query->execute();
+            $query->close();
+            $result = "SUCCESS#Double authentification activée avec succès.#/espace-utilisateur/compte";
+        } else {
+            $result = "ERROR_TOTP_INVALID#Le code saisi est invalide.";
+        }
+
+    } else {
+        $result = "ERROR_TOTP_ENABLED#Vous avez déjà la double authentification par application d'activé.";
+    }
+
+    return $result;
+
+}
+
+
+/**
+ * Désactivation de la double authentification par application.
+ * (Formulaire AJAX)
+ *
+ * @param string            $code               -   Code TOTP pour désactivation
+ * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return string
+ */
+function disableTOTP($code, $connection) {
+    $result = "ERROR_UNKNOWN#Une erreur est survenue.";
+
+    //TOTP activé ?
+    if ($_SESSION['Data']['totp'] != "") {
+
+        //Verification du code de confirmation
+        $ga = new PHP_GoogleAuthenticator();
+        if ($ga->verifyCode($_SESSION['Data']['totp'], $code) == 1) {
+
+            $newtotp = "";
+            $query = $connection->prepare("UPDATE kioui_accounts SET totp = ? WHERE id = ?");
+            $query->bind_param("si", $newtotp, $_SESSION['Data']['id']);
+            $query->execute();
+            $query->close();
+            $result = "SUCCESS#Double authentification désactivée avec succès.#/espace-utilisateur/compte";
+        } else {
+            $result = "ERROR_TOTP_INVALID#Le code saisi est invalide.";
+        }
+
+    } else {
+        $result = "ERROR_TOTP_DISABLED#Vous avez déjà la double authentification par application désactivé.";
+    }
+
+    return $result;
+
 }
 
 
