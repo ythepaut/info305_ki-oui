@@ -22,15 +22,15 @@ function randomString($n) {
 }
 /**
  * Fonction chiffrant un texte à partir d'un mot de passe et d'un sel
- * 
+ *
  * @param	string		$text						-	Texte à chiffrer
  * @param	string		$password					-	Mot de passe
  * @param	string		$salt						-	Sel, null par défaut,
- * 														
+ *
  * 														si null alors sera créé
  * @param	boolean		$raw						-	Si vrai alors retourne du binaire,
  * 														sinon retourne en base 64
- * 
+ *
  * @return	array		$cryptedText, $salt, $hash	-	Liste contenant le texte crypté,
  * 														le sel utilisé et le hash du texte original
  */
@@ -62,16 +62,17 @@ function decryptText($cryptedText, $password, $salt, $hash = null, $raw = true) 
 }
 /**
  * Fonction créant un fichier zip chiffré et l'ajoutant à la base de données
- * 
+ *
  * @param 	mysqlconnection	$connection			- 	Connection à la base de données SQL
- * @param 	string			$content			-	Contenu du fichier à chiffrer 	
+ * @param 	string			$content			-	Contenu du fichier à chiffrer
  * @param	int				$size				-	Taille du fichier
+ * @param   string          $password           -   Clé de cryptage
  * @param	string			$oldName			-	Ancien nom du fcihier : nom original
  * @param 	string			$newName			-	Nouveau nom du fichier : facultatif, si null sera initialisé random
- * 
+ *
  * @return	string			$newName			-	Nouveau nom du fichier
  */
-function createCryptedZipFile($connection, $content, $size, $oldName, $newName = null) {
+function createCryptedZipFile($connection, $content, $size, $password, $oldName, $newName = null) {
     $compt = 0;
 	if ($newName === null) {
 		do {
@@ -82,8 +83,7 @@ function createCryptedZipFile($connection, $content, $size, $oldName, $newName =
     if (file_exists(TARGET_DIR.$newName)) {
         return null;
     }
-	
-    $password = $_SESSION["UserPassword"];
+
     $ownerId = $_SESSION["Data"]["id"];
     $ip = $_SERVER["REMOTE_ADDR"];
     $zipFile = new ZipArchive;
@@ -105,10 +105,11 @@ function createCryptedZipFile($connection, $content, $size, $oldName, $newName =
 }
 /**
  * Fonction déchiffrant un fichier zip
- * 
+ *
  * @param   mysqlconnection	$connection			- 	Connection à la base de données SQL
  * @param   string          $cryptedFileName    -   Nom du fichier chiffré (son nom sur le serveur)
- * 
+ * @param   string          $key                -   Clé de déchiffrage
+ *
  * @param   string          $content            -   Contenu déchiffré du fichier
  */
 function unzipCryptedFile($connection, $cryptedFileName, $key) {
@@ -118,18 +119,28 @@ function unzipCryptedFile($connection, $cryptedFileName, $key) {
     $result = $query->get_result();
     $query->close();
     $fileData = $result->fetch_assoc();
+
     $zipTextEncrypted = file_get_contents(TARGET_DIR.$cryptedFileName);
     $zipText = decryptText($zipTextEncrypted, $_SESSION["UserPassword"], $fileData["salt"], $fileData["hash"]);
-    file_put_contents(TEMP_DIR.$cryptedFileName, $zipText);
-    $zipFile = new ZipArchive;
-    if ($zipFile->open(TEMP_DIR.$cryptedFileName) === true) {
-        $zipFile->extractTo(TEMP_DIR."zip/");
-        $zipFile->close();
+
+    if ($zipText === null) {
+        die("Hash différent !");
     }
-    $content = file_get_contents(TEMP_DIR."zip/".$cryptedFileName);
-    unlink(TEMP_DIR.$cryptedFileName);
-    unlink(TEMP_DIR."zip/".$cryptedFileName);
-    return $content;
+    else {
+        file_put_contents(TEMP_DIR.$cryptedFileName, $zipText);
+
+        $zipFile = new ZipArchive;
+        if ($zipFile->open(TEMP_DIR.$cryptedFileName) === true) {
+            $zipFile->extractTo(TEMP_DIR."zip/");
+            $zipFile->close();
+        }
+        $content = file_get_contents(TEMP_DIR."zip/".$cryptedFileName);
+
+        unlink(TEMP_DIR.$cryptedFileName);
+        unlink(TEMP_DIR."zip/".$cryptedFileName);
+
+        return $content;
+    }
 }
 /**
  * Fonction qui retourne la source relative d'un fichier en fonction de l'emplacement actuel.
@@ -228,13 +239,16 @@ function sendMailwosmtp($to,$subject,$message) {
  *
  * @return integer                              -   Espace occupé par l'utilisateur en octets
  */
-function getSize($idUser,$connection){
-	$size=0;
+function getSize($idUser, $connection){
+	$size = 0;
+
     //on récupère tout les fichiers
-    $folders = getFolders($idUser,$connection);
-    foreach($folders as $folder){
-        $size+=$folder['size'];
+
+    $files = getFiles($idUser, $connection);
+    foreach ($files as $file){
+        $size += $file['size'];
     }
+
     return $size;
 }
 /**
@@ -245,16 +259,16 @@ function getSize($idUser,$connection){
  *
  * @return array
  */
-function getFolders($idUser, $connection) {
-	$foldersUser=[];
+function getFiles($idUser, $connection) {
+	$filesUser=[];
 	//On récupère tout les fichiers
-    $folders = mysqli_query($connection, "SELECT * FROM kioui_files");
-    while ($folder = mysqli_fetch_assoc($folders)) {
+    $files = mysqli_query($connection, "SELECT * FROM kioui_files");
+    while ($folder = mysqli_fetch_assoc($files)) {
         if ($folder['owner'] == $idUser) {
-            $foldersUser[] = $folder;
+            $filesUser[] = $folder;
         }
     }
-    return $foldersUser;
+    return $filesUser;
 }
 /**
  * Fonction qui renvoie la conversion d'une taille de fichier en octets en une chaine de charactères avec les unitées
@@ -266,7 +280,7 @@ function getFolders($idUser, $connection) {
 function convertUnits($size){
 	$unit = "";
 	$stringSize = NULL;
-	
+
 	if (floor($size/10**6) > 0){
 		$unit = " Mo";
 		$stringSize = round($size/10**6, 2);
@@ -280,14 +294,14 @@ function convertUnits($size){
 	$stringSize = ((string) $stringSize) . $unit;
 	return $stringSize;
 }
-/** 
+/**
  * Fonction qui change le mot de passe d'un utilisateur donné
- * 
+ *
  * @param integer             $userId       		- id de l'utilisateur
  * @param string			  $oldPassword			- ancien mot de passe
  * @param string			  $newPassword			- nouveau mot de passe
  * @param mysqlconnection     $connection           - Connexion BDD effectuée dans le fichier config-db.php
- * 
+ *
  * @return string
 */
 function changePassword($userId, $oldPassword, $newPassword, $connection) {
@@ -300,20 +314,20 @@ function changePassword($userId, $oldPassword, $newPassword, $connection) {
 		$result = $query->get_result();
 		$query->close();
 		$userData = $result->fetch_assoc();
-		
+
 		//Identifiants correct ?
 		if (isset($userData['id']) && $userData['id'] != null && password_verify(hash('sha512', $oldPassword . $userData['salt']), $userData['password'])) {
 			//nouveau mot de passe correct ?
 			if (strlen($newPassword) >= 8 && preg_match("#[0-9]+#", $newPassword) && preg_match("#[a-zA-Z]+#", $newPassword)) {
 				//décrypter et rencrypter tous les fichiers
-				$files = getFolders($idUser,$connection);
+				$files = getFiles($idUser,$connection);
                 //obtenir les deux clés de décryptage et de cryptage
 				$oldUserKey = hash('sha512', $oldPassword . $userData['salt']);
                 $newUserKey = hash('sha512', $newPassword . $userData['salt']);
-                
+
                 foreach ($files as $file) {
                     $content = unzipCryptedFile($connection, $file['path'], $oldUserKey);
-                    createCryptedZipFile($connection, $content, $file['size'], $file['original_name']);
+                    createCryptedZipFile($connection, $content, $file['size'], $newPassword, $file['original_name']);
 				}
 			}
 		} else {
@@ -341,7 +355,7 @@ function getNbUsers($connection) {
  * @return integer
  */
 function getNbFiles($connection) {
-	
+
     $result = mysqli_query($connection, "SELECT * FROM kioui_files");
     return mysqli_num_rows ( $result );
 }
@@ -360,13 +374,13 @@ function getNbSize($connection) {
     }
     return convertUnits($sum);
 }
-/** 
+/**
  * Fonction qui génère le lien qui permet de décoder un fichier spécifique
- * 
+ *
  * @param string              $password       		- mot de passe de l'utilisateur hash(mdp + sel_user)
  * @param integer  			  $fileId  				- id du fichier
  * @param mysqlconnection     $connection           - Connexion BDD effectuée dans le fichier config-db.php
- * 
+ *
  * @return string
 */
 function generateDlLink($password, $fileId, $connection) {

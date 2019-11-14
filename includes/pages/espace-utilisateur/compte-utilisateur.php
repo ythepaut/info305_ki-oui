@@ -3,8 +3,10 @@
         <?php include("./includes/pages/espace-utilisateur/nav-utilisateur.php"); ?>
 
         
-        <section class="col-lg-10">
+        <section class="col-lg-10 panel-background">
 
+            <div class="col-lg-12 panel-outline">
+                <h4 class="panel-title">Mon compte</h4>
 
                 
         
@@ -66,8 +68,9 @@
 
 
 
-        </section>
+            </section>
 
+        </div>
     </div>
 
 </div>

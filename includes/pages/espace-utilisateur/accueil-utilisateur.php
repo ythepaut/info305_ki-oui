@@ -2,7 +2,7 @@
     <div class="row">
         <?php include("./includes/pages/espace-utilisateur/nav-utilisateur.php"); ?>
 
-        <section class="col-lg-10">
+        <section class="col-lg-10 panel-background">
             <div class="row">
                 <div class="col-lg-9">
                     <p>
@@ -43,35 +43,42 @@
                         </script>
                     </p>
                 </div>
-                <div class="col-lg-3 inner">
-                        <a href="/ajout" class="button"><i class="fas fa-file-import"></i> &nbsp; Ajouter un fichier</a>
+
+                <div class="col-lg inner panel-outline">
+                    <h4 class="panel-title">Ajouter des fichiers</h4>
+                    
+                    <a href="/ajout" class="button"><i class="fas fa-file-import"></i> &nbsp; Ajouter un fichier</a>
                 </div>
+
             </div>
             <div class="row">
-                <div class="col">
+                <div class="col panel-outline">
+
+                <h4 class="panel-title">Mes fichiers</h4>
+
                     <table class="table">
-                    <thead class="thead-light">
-                    <th style="width=60%;">Nom du fichier</th>
-                    <th style="width=20%;">Taille du fichier</th>
-                    <th style="width=auto;">Actions</th>
-                    </thead>
+                        <thead class="thead">
+                            <th style="width=60%;">Nom du fichier</th>
+                            <th style="width=20%;">Taille du fichier</th>
+                            <th style="width=auto;">Actions</th>
+                        </thead>
                         <?php
-                            $folders=getFolders($_SESSION['Data']['id'],$connection);
-                            $res="";
-                            foreach($folders as $folder){
-                                $res.="<tr>";
-                                $res.="<td>";
-                                $res.=$folder["original_name"];
-                                $res.="</td>";
-                                $res.="<td>";
-                                $res.=convertUnits($folder["size"]);
-                                $res.="</td>";
-                                $res.="<td>";
-                                $res.="<a href='#' data-toggle='modal' data-target='#modalDlLink' onclick='editModalDownload(\"" . generateDlLink($_SESSION['UserPassword'], $folder['id'], $connection) . "\")'><i class='fas fa-link edit'></i></a>";
-                                $res.="</td>";
-                                $res.="</tr>";
-                            }
-                            echo($res);
+                        $folders=getFolders($_SESSION['Data']['id'],$connection);
+                        $res="";
+                        foreach($folders as $folder){
+                            $res.="<tr>";
+                            $res.="<td>";
+                            $res.=$folder["original_name"];
+                            $res.="</td>";
+                            $res.="<td>";
+                            $res.=convertUnits($folder["size"]);
+                            $res.="</td>";
+                            $res.="<td>";
+                            $res.="<a href='#' data-toggle='modal' data-target='#modalDlLink' onclick='editModalDownload(\"" . generateDlLink($_SESSION['UserPassword'], $folder['id'], $connection) . "\")'><i class='fas fa-link edit'></i></a>";
+                            $res.="</td>";
+                            $res.="</tr>";
+                        }
+                        echo($res);
                         ?>
                     </table>
                 </div>

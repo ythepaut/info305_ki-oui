@@ -284,7 +284,7 @@ function backupKey($key, $connection) {
 
 /**
  * Upload des fichiers
- * 
+ *
  * @param   mysqlconnection $connection			- 	Connection à la base de données SQL
  *
  * @return  boolean         $res                -   Si l'opération s'est bien passée ou non
@@ -340,8 +340,9 @@ function upload($connection) {
             $originalName = $_FILES["files"]["name"][$i];
             $content = file_get_contents($_FILES["files"]["tmp_name"][$i]);
             $size = $_FILES["files"]["size"][$i];
+            $password = $_SESSION["UserPassword"];
 
-            $newFileName = createCryptedZipFile($connection, $content, $size, $originalName);
+            $newFileName = createCryptedZipFile($connection, $content, $size, $password, $originalName);
         }
 
         // $passwd = $_SESSION["Data"]["password"];

@@ -27,10 +27,10 @@
         <div class="col-lg-6">
             <form class="form-inline">
                 <?php
-                if (isset($_SESSION['LoggedIn']) && $_SESSION['LoggedIn']) {
-                    echo('<a href="/espace-utilisateur/accueil"><span><i class="fas fa-tachometer-alt"></i> &nbsp; Espace utilisateur</span></a>');
+                if (isset($_SESSION['LoggedIn']) && $_SESSION['LoggedIn'] && $_SESSION['Data']['Username']) {
+                    echo('<a href="/espace-utilisateur/accueil"><span><i class="fas fa-tachometer-alt"></i> &nbsp; Espace utilisateur('.$_SESSION['Data']['username'].')</span></a>');
                 }else{
-                    echo('<a href="#" data-toggle="modal" data-target="#modalLogin"><span><i class="fas fa-tachometer-alt"></i> &nbsp; Espace utilisateur</span></a>');
+                    echo('<a href="#" data-toggle="modal" data-target="#modalLogin"><span><i class="fas fa-tachometer-alt"></i> &nbsp; Connexion</span></a>');
                 }
                 ?>
                 <a href="#"><span><i class="fas fa-globe-americas"></i> &nbsp; EN</span></a>
