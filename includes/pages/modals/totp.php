@@ -22,7 +22,7 @@
 
                             <form action="<?php echo(getSrc('./includes/classes/actions.php')); ?>" method="POST" class="ajax">
                             
-                                <span>Scannez le QR code ci-dessous, ou entrez manuellement le code sur votre application <a href="#" class="link">Authy</a> ou <a href="#" class="link">Google Authenticator</a>.</span>
+                                <span>Scannez le QR code ci-dessous, ou entrez manuellement le code sur votre application <a href="https://authy.com/download/" target="_blank" class="link">Authy <i style="position: relative; top:-.3em; font-size: 9px;" class="fas fa-external-link-alt"></i></a> ou <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2" target="_blank" class="link">Google Authenticator <i style="position: relative; top:-.3em; font-size: 9px;" class="fas fa-external-link-alt"></i></a>.</span>
                                 <br />
                                 <br />
 

@@ -395,7 +395,7 @@ function validateTOTP($code, $connection) {
     $ga = new PHP_GoogleAuthenticator();
     if ($_SESSION['Data']['totp'] == "" || $ga->verifyCode($_SESSION['Data']['totp'], $code) == 1) {
         $_SESSION['totp_validated'] = true;
-        $result = "SUCCESS#Double authentification désactivée avec succès.#/espace-utilisateur/accueil";
+        $result = "SUCCESS#Validation effectuée.#/espace-utilisateur/accueil";
     } else {
         $result = "ERROR_TOTP_INVALID#Le code saisi est invalide.";
     }
