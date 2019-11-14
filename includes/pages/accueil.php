@@ -97,15 +97,3 @@
 
 	</div>
 </section>
-
-
-
-<section class="impair container-fluid">
-	<div class="row ligne3">
-
-		<div class="inner col">
-			<a href="/ajout" class="button"><i class="fas fa-file-import"></i> &nbsp; Ajouter un fichier</a>
-		</div>
-
-	</div>
-</section>
