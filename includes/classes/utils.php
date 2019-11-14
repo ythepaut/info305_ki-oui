@@ -1,49 +1,136 @@
 <?php
-
 define("AES_METHOD", "AES-256-CBC");
-define("SIZE_FILE_NAME", 64);
+define("SIZE_FILE_NAME", 16);
 define("TARGET_DIR", "../../uploads/");
+define("TEMP_DIR", "../../uploads/tmp/");
 define("MAX_FILE_SIZE", 50 * 10**6);
-
 /**
  * Fonction qui retourne une chaîne de caractères aléatoire de longueur n.
  *
- * @param int           $n                  -       Longueur de la chaîne a generer
+ * @param int           $n                  -   Longueur de la chaîne a generer
  *
  * @return string
  */
 function randomString($n) {
-    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     $charactersLength = strlen($characters);
-    $randomString = '';
+    $randomString = "";
     for ($i = 0; $i < $n; $i++) {
-        $randomString .= $characters[rand(0, $charactersLength - 1)];
+        $randomString .= $characters[random_int(0, $charactersLength - 1)];
     }
     return $randomString;
 }
-
-function encryptText($text, $key, $initVector = null) {
-    if ($initVector == null) {
-        $initVector = substr(hash_hmac('sha256', openssl_random_pseudo_bytes(64), $key, false), 0, 16);
+/**
+ * Fonction chiffrant un texte à partir d'un mot de passe et d'un sel
+ * 
+ * @param	string		$text						-	Texte à chiffrer
+ * @param	string		$password					-	Mot de passe
+ * @param	string		$salt						-	Sel, null par défaut,
+ * 														
+ * 														si null alors sera créé
+ * @param	boolean		$raw						-	Si vrai alors retourne du binaire,
+ * 														sinon retourne en base 64
+ * 
+ * @return	array		$cryptedText, $salt, $hash	-	Liste contenant le texte crypté,
+ * 														le sel utilisé et le hash du texte original
+ */
+function encryptText($text, $password, $salt = null, $raw = true) {
+    if ($salt == null) {
+        // $salt = hash_hmac('sha512', openssl_random_pseudo_bytes(64), $password, false);
+        $salt = randomString(16);
     }
-
-    $cryptedText = openssl_encrypt($text, AES_METHOD, $key, OPENSSL_RAW_DATA, $initVector);
-    $hash = hash_hmac('sha256', $initVector . $text, $key, true);
-
-    return array($cryptedText, $initVector, $hash);
+    $hash = hash_hmac('sha512', $text, $password . $salt, false);
+    $initVector = substr($salt, 0, 16);
+    $cryptedText = openssl_encrypt($text, AES_METHOD, $password . $salt, OPENSSL_RAW_DATA, $initVector);
+    if (!$raw) {
+        $cryptedText = base64_encode($cryptedText);
+    }
+    return array($cryptedText, $salt, $hash);
 }
-
-function decryptText($cryptedText, $key, $initVector, $hash) {
-    $text = openssl_decrypt($cryptedText, AES_METHOD, $key, OPENSSL_RAW_DATA, $initVector);
-
-    if (hash_equals(hash_hmac('sha256', $initVector . $text, $key, true), $hash)) {
+function decryptText($cryptedText, $password, $salt, $hash = null, $raw = true) {
+    if (!$raw) {
+        $cryptedText = base64_decode($cryptedText);
+    }
+    $initVector = substr($salt, 0, 16);
+    $text = openssl_decrypt($cryptedText, AES_METHOD, $password . $salt, OPENSSL_RAW_DATA, $initVector);
+    if ($hash === null || hash_equals(hash_hmac('sha512', $text, $password . $salt, false), $hash)) {
         return $text;
     }
     else {
         return null;
     }
 }
-
+/**
+ * Fonction créant un fichier zip chiffré et l'ajoutant à la base de données
+ * 
+ * @param 	mysqlconnection	$connection			- 	Connection à la base de données SQL
+ * @param 	string			$content			-	Contenu du fichier à chiffrer 	
+ * @param	int				$size				-	Taille du fichier
+ * @param	string			$oldName			-	Ancien nom du fcihier : nom original
+ * @param 	string			$newName			-	Nouveau nom du fichier : facultatif, si null sera initialisé random
+ * 
+ * @return	string			$newName			-	Nouveau nom du fichier
+ */
+function createCryptedZipFile($connection, $content, $size, $oldName, $newName = null) {
+    $compt = 0;
+	if ($newName === null) {
+		do {
+			$newName = randomString(SIZE_FILE_NAME);
+			$compt ++;
+		} while (file_exists(TARGET_DIR.$newName) && $compt < 100);
+	}
+    if (file_exists(TARGET_DIR.$newName)) {
+        return null;
+    }
+	
+    $password = $_SESSION["UserPassword"];
+    $ownerId = $_SESSION["Data"]["id"];
+    $ip = $_SERVER["REMOTE_ADDR"];
+    $zipFile = new ZipArchive;
+    if ($zipFile->open(TARGET_DIR.$newName, ZipArchive::CREATE) === TRUE) {
+        $zipFile->addFromString($newName, $content);
+        $zipFile->close();
+    }
+    else {
+        throw new Exception("Le fichier zip n'a pas pu être créé");
+    }
+    $zipText = file_get_contents(TARGET_DIR.$newName);
+    list($encryptedText, $salt, $hash) = encryptText($zipText, $password);
+    file_put_contents(TARGET_DIR.$newName, $encryptedText);
+    $query = $connection->prepare("INSERT INTO kioui_files (original_name, path, owner, salt, size, ip, content_hash) VALUES (?,?,?,?,?,?,?)");
+    $query->bind_param("ssisiss", $oldName, $newName, $ownerId, $salt, $size, $ip, $hash);
+    $query->execute();
+    $query->close();
+    return $newName;
+}
+/**
+ * Fonction déchiffrant un fichier zip
+ * 
+ * @param   mysqlconnection	$connection			- 	Connection à la base de données SQL
+ * @param   string          $cryptedFileName    -   Nom du fichier chiffré (son nom sur le serveur)
+ * 
+ * @param   string          $content            -   Contenu déchiffré du fichier
+ */
+function unzipCryptedFile($connection, $cryptedFileName, $key) {
+    $query = $connection->prepare("SELECT * FROM kioui_files WHERE path = ?");
+    $query->bind_param("s", $cryptedFileName);
+    $query->execute();
+    $result = $query->get_result();
+    $query->close();
+    $fileData = $result->fetch_assoc();
+    $zipTextEncrypted = file_get_contents(TARGET_DIR.$cryptedFileName);
+    $zipText = decryptText($zipTextEncrypted, $_SESSION["UserPassword"], $fileData["salt"], $fileData["hash"]);
+    file_put_contents(TEMP_DIR.$cryptedFileName, $zipText);
+    $zipFile = new ZipArchive;
+    if ($zipFile->open(TEMP_DIR.$cryptedFileName) === true) {
+        $zipFile->extractTo(TEMP_DIR."zip/");
+        $zipFile->close();
+    }
+    $content = file_get_contents(TEMP_DIR."zip/".$cryptedFileName);
+    unlink(TEMP_DIR.$cryptedFileName);
+    unlink(TEMP_DIR."zip/".$cryptedFileName);
+    return $content;
+}
 /**
  * Fonction qui retourne la source relative d'un fichier en fonction de l'emplacement actuel.
  *
@@ -54,11 +141,24 @@ function decryptText($cryptedText, $key, $initVector, $hash) {
 function getSrc($relative_src) {
     $result_src = $relative_src;
     $nb = substr_count($_SERVER['REQUEST_URI'], "/", 0, strlen($_SERVER['REQUEST_URI']));
-
     return str_repeat("../", $nb - 1) . "." . $relative_src;
 }
-
-
+/**
+ * Fonction qui rafraichit la variable de session.
+ *
+ * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return void
+ */
+function refreshSession($connection) {
+    $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE id = ?");
+    $query->bind_param("s", $_SESSION['Data']['id']);
+    $query->execute();
+    $result = $query->get_result();
+    $query->close();
+    $userData = $result->fetch_assoc();
+    $_SESSION['Data'] = $userData;
+}
 if (file_exists(getcwd() . '/includes/classes/PHPMailer/PHPMailerAutoload.php')) {
     require_once(getcwd() . '/includes/classes/PHPMailer/PHPMailerAutoload.php');
 }
@@ -76,19 +176,13 @@ if (file_exists(getcwd() . '/includes/classes/PHPMailer/PHPMailerAutoload.php'))
  * @return void
  */
 function sendMail($em, $to, $subject, $title, $body, $button_link, $button_text) {
-
 	$message = file_get_contents(getcwd() . "/PHPMailer/email_format/email-layout1.php");
 	$message .= $title . file_get_contents(getcwd() . "/PHPMailer/email_format/email-layout2.php");
 	$message .= $body . file_get_contents(getcwd() . "/PHPMailer/email_format/email-layout3.php");
 	$message .= $button_link . file_get_contents(getcwd() . "/PHPMailer/email_format/email-layout4.php");
 	$message .= $button_text . file_get_contents(getcwd() . "/PHPMailer/email_format/email-layout5.php");
-
-
-
 	$phpmail = new PHPMailer(true);
 	try {
-
-
 		//Server settings
 		$phpmail->SMTPDebug = 0;                                 // Enable verbose debug output
 		$phpmail->isSMTP();                                      // Set mailer to use SMTP
@@ -98,26 +192,20 @@ function sendMail($em, $to, $subject, $title, $body, $button_link, $button_text)
 		$phpmail->Password = $em['password'];                           // SMTP password
 		$phpmail->SMTPSecure = 'ssl';  //tls/ssl                          // Enable TLS encryption, `ssl` also accepted
 		$phpmail->Port = 465;//587//465                                    // TCP port to connect to
-
 		//Recipients
 		$phpmail->setFrom('ki-oui@ythepaut.com', 'KI-OUI');
 		$phpmail->addAddress($to);
 		$phpmail->addReplyTo('noreply@ythepaut.com', 'Ne pas repondre');
-
 		//Content
 		$phpmail->isHTML(true);                                  // Set email format to HTML
 		$phpmail->CharSet = 'UTF-8';
 		$phpmail->Subject = $subject;
 		$phpmail->Body    = $message;
 		$phpmail->AltBody = $message;
-
 		$phpmail->send();
 	} catch (Exception $e) {
 	}
-
 }
-
-
 /**
  * Envoyer un e-mail sans passer par PHPMailer (Expediteur ovh visible, sans html). (Eviter d'utiliser dans la mesure du possible)
  *
@@ -128,16 +216,12 @@ function sendMail($em, $to, $subject, $title, $body, $button_link, $button_text)
  * @return void
  */
 function sendMailwosmtp($to,$subject,$message) {
-
 	$headers = "From: KI-OUI <ki-oui@ythepaut.com>\r\n";
 	$headers .= "Reply-To: noreply@ythepaut.com\r\n";
-
 	mail($to, $subject, $message, $headers);
-
 }
-
 /**
- * Fonction qui renvoie l'espace occuper par un utilisateur
+ * Fonction qui renvoie l'espace occupé par un utilisateur
  *
  * @param string             $idUser   			-   identifiant de l'utilisateur
  * @param mysqlconnection    $connection        -   Connexion BDD effectuée dans le fichier config-db.php
@@ -148,14 +232,11 @@ function getSize($idUser,$connection){
 	$size=0;
     //on récupère tout les fichiers
     $folders = getFolders($idUser,$connection);
-
     foreach($folders as $folder){
         $size+=$folder['size'];
     }
-
     return $size;
 }
-
 /**
  * Fonction qui renvoie les fichiers de l'utilisateur
  *
@@ -164,17 +245,15 @@ function getSize($idUser,$connection){
  *
  * @return array
  */
-function getFolders($idUser,$connection){
+function getFolders($idUser, $connection) {
 	$foldersUser=[];
-	//on récupère tout les fichiers
+	//On récupère tout les fichiers
     $folders = mysqli_query($connection, "SELECT * FROM kioui_files");
-
     while ($folder = mysqli_fetch_assoc($folders)) {
-        if($folder['owner']==$idUser){
-            $foldersUser[]=$folder;
+        if ($folder['owner'] == $idUser) {
+            $foldersUser[] = $folder;
         }
     }
-
     return $foldersUser;
 }
 /**
@@ -185,28 +264,22 @@ function getFolders($idUser,$connection){
  * @return string
  */
 function convertUnits($size){
-	$unit = '';
+	$unit = "";
 	$stringSize = NULL;
 	
 	if (floor($size/10**6) > 0){
-		$unit = ' Mo';
+		$unit = " Mo";
 		$stringSize = round($size/10**6, 2);
-	}
-	else if (floor($size/10**3) > 0){
-		$unit = ' Ko';
+	} else if (floor($size/10**3) > 0){
+		$unit = " Ko";
 		$stringSize = round($size/10**3, 2);
-	}
-	else{
-		$unit = ' octets';
+	} else{
+		$unit = " octets";
 		$stringSize = $size;
 	}
-
 	$stringSize = ((string) $stringSize) . $unit;
-
 	return $stringSize;
 }
-
-
 /** 
  * Fonction qui change le mot de passe d'un utilisateur donné
  * 
@@ -220,7 +293,6 @@ function convertUnits($size){
 function changePassword($userId, $oldPassword, $newPassword, $connection) {
 	$result = '';
 	if (isset($userId, $oldPassword, $newPassword) && $userId != "" && $oldPassword != "" && $newPassword != "") {
-
 		//Recuperation des données
 		$query = $connection->prepare("SELECT * FROM kioui_accounts WHERE email = ?");
 		$query->bind_param("s", $email);
@@ -231,25 +303,62 @@ function changePassword($userId, $oldPassword, $newPassword, $connection) {
 		
 		//Identifiants correct ?
 		if (isset($userData['id']) && $userData['id'] != null && password_verify(hash('sha512', $oldPassword . $userData['salt']), $userData['password'])) {
-
 			//nouveau mot de passe correct ?
 			if (strlen($newPassword) >= 8 && preg_match("#[0-9]+#", $newPassword) && preg_match("#[a-zA-Z]+#", $newPassword)) {
-
 				//décrypter et rencrypter tous les fichiers
 				$folders = getFolders($idUser,$connection);
-				foreach ($folder as $folders) {
-					//obtenir les deux clés de décryptage et de cryptage
-					$oldKey = 0;
-					$newKey = 0;
+                //obtenir les deux clés de décryptage et de cryptage
+				$oldUserKey = hash('sha512', $oldPassword . $userData['salt']);
+                $newUserKey = hash('sha512', $newPassword . $userData['salt']);
+                
+                foreach ($folders as $folder) {
+                    $content = unzipCryptedFile($connection, $folder['path'], $oldUserKey);
+                    createCryptedZipFile($connection, $originalName, $content, $size);
 				}
 			}
 		} else {
-
 		}
 	} else {
 		$result = "ERROR_MISSING_FIELDS#Veuillez remplir tous les champs.";
 	}
-
+}
+/**
+ * Fonction qui renvoie le nombre total d'utilisateurs stockés
+ *
+ * @param mysqlconnection    $connection        -   Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return integer
+ */
+function getNbUsers($connection) {
+    $result = mysqli_query($connection, "SELECT * FROM kioui_accounts");
+    return mysqli_num_rows ( $result );
+}
+/**
+ * Fonction qui renvoie le nombre total de fichiers stockés
+ *
+ * @param mysqlconnection    $connection        -   Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return integer
+ */
+function getNbFiles($connection) {
+	
+    $result = mysqli_query($connection, "SELECT * FROM kioui_files");
+    return mysqli_num_rows ( $result );
+}
+/**
+ * Fonction qui renvoie la taille totale des fichiers stockés
+ *
+ * @param mysqlconnection    $connection        -   Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return string
+ */
+function getNbSize($connection) {
+    $result = mysqli_query($connection, "SELECT * FROM kioui_files");
+    $sum = 0;
+    while ($row = mysqli_fetch_assoc($result)) {
+        $sum += $row['size'];
+    }
+    return convertUnits($sum);
 }
 /** 
  * Fonction qui génère le lien qui permet de décoder un fichier spécifique
