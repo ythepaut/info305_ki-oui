@@ -9,9 +9,9 @@ RewriteRule ^(.*)$ https://ki-oui.ythepaut.com/$1 [R,L]
 
 
 RewriteRule ^logout$ includes/classes/actions.php?action=logout [L]
+RewriteRule ^dl/([A-Za-z0-9-]+)/([A-Za-z0-9-]+)$ includes/classes/actions.php?action=download&filename=$1&filekey=$2 [L]
 RewriteRule ^verif-email/([A-Za-z0-9_.]+)$ includes/classes/actions.php?action=verif-email&token=$1 [L]
 RewriteRule ^([a-z0-9-]+)$ index.php?page=$1 [L]
 RewriteRule ^espace-utilisateur/([a-z0-9-]+)$ index.php?page=espace-utilisateur&sp=$1 [L]
-RewriteRule ^dl/([a-z0-9-]+)/([a-z0-9-]+)$ action.php?action=download&filename=$1&filekey=$2 [L]
 
 Options -Indexes

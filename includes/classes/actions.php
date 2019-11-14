@@ -57,6 +57,10 @@ switch ($action) {
         die();
 
         break;
+    
+    case "download":
+        die("todo");
+        break;
 
     default:
         throw new Exception("ERROR_MISSING_ACTION#Action invalide - " . 'action' . ":'$action'");
