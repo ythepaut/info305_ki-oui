@@ -4,44 +4,41 @@
 
         <section class="col-lg-10 panel-background">
             <div class="row">
-                <div class="col-lg-9">
-                    <p>
-                        Espace occupé par vos fichiers :
-                        <?php
-                            $size =getSize($_SESSION['Data']['id'],$connection);
-                            echo(convertUnits($size));
-                        ?>
-                        <div class="chart-container">
-                            <canvas id="chart-js-1" class="chartjs"></canvas>
-                        </div>
-                        <script>
-                            var options = {
-                                maintainAspectRatio: false,
-                                rotation: 1 * Math.PI,
-                                circumference: 1 * Math.PI,
-                                cutoutPercentage: 70
-                            };
-                            //variable contenant l'espace utilisé par l'utilisateur
-                            var sizeUser="<?php echo(getSize($_SESSION['Data']['id'],$connection));?>";
-                            var data = {
-                                datasets: [{
-                                    data:[sizeUser,200*10**6-sizeUser],
-                                    backgroundColor:["rgb(84, 160, 255)","rgb(200, 214, 229)"],
-                                    weight: 15,
-                                }],
-                                labels: [
-                                    'Espace Utilisé',
-                                    'Espace Restant'
-                                ]
-                            };
 
-                            new Chart(document.getElementById("chart-js-1"),{
-                                type: 'doughnut',
-                                data: data,
-                                options: options,
-                            });
-                        </script>
-                    </p>
+                <div class="col-lg-6 panel-outline">
+                        
+                    <h4 class="panel-title">Quota</h4>
+
+                    <div class="chart-container">
+                        <canvas id="chart-js-1" class="chartjs quota"></canvas>
+                    </div>
+
+                    <script>
+                        var options = {
+                            maintainAspectRatio: false,
+                            rotation: 1 * Math.PI,
+                            circumference: 1 * Math.PI,
+                            cutoutPercentage: 70
+                        };
+                        //variable contenant l'espace utilisé par l'utilisateur
+                        var sizeUser="<?php echo(getSize($_SESSION['Data']['id'],$connection));?>";
+                        var data = {
+                            datasets: [{
+                                data:[sizeUser/(10**6),200-sizeUser/(10**6)],
+                                backgroundColor:["rgb(84, 160, 255)","rgb(200, 214, 229)"],
+                                weight: 15,
+                            }],
+                            labels: [
+                                'Espace Utilisé (Mo)',
+                                'Espace Restant (Mo)'
+                            ]
+                        };
+                        new Chart(document.getElementById("chart-js-1"),{
+                            type: 'doughnut',
+                            data: data,
+                            options: options,
+                        });
+                    </script>
                 </div>
 
                 <div class="col-lg inner panel-outline">
@@ -63,7 +60,7 @@
                             <th style="width=auto;">Actions</th>
                         </thead>
                         <?php
-                        $folders=getFolders($_SESSION['Data']['id'],$connection);
+                        $folders=getFiles($_SESSION['Data']['id'],$connection);
                         $res="";
                         foreach($folders as $folder){
                             $res.="<tr>";

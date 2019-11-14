@@ -156,12 +156,6 @@ main > section > .ligne1 > .inner > i {
 	color: #1dd1a1;
 }
 
-main > section > .ligne2 > .inner > .stats {
-	font-weight: bold;
-	font-size: 80px;
-	color: #1dd1a1;
-}
-
 /* Pages d'erreur */
 
 div.errorpage {
@@ -315,6 +309,10 @@ div.panel-outline {
 section.panel-background {
 	background-color: #f2f3f7;
 	color: #404957 !important;
+}
+
+canvas.quota {
+	margin-bottom: 20px;
 }
 
 /* Graphiques pour l'espace utilisateur */
