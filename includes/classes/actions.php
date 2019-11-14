@@ -26,7 +26,7 @@ switch ($action) {
         break;
 
     case "upload":
-        if (isset($_SESSION["LoggedIn"]) && $_SESSION['LoggedIn']) {
+        if (true || isset($_SESSION["LoggedIn"]) && $_SESSION['LoggedIn']) {
             $res = upload($connection);
 
             if ($res) {
@@ -370,6 +370,9 @@ function upload($connection) {
 }
 
 function downloadFile($file, $name, $mimeType='') {
+    if (!is_readable($file)) {
+        die("Fichier inaccessible !");
+    }
 
     $size = filesize($file);
     $name = rawurldecode($name);

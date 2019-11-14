@@ -67,9 +67,8 @@
 	<div class="row ligne2">
 
 		<div class="inner col-lg-4">
-			<h2>Utilisateurs inscrits</h2>
+			<h2>Nombres d'utilisateurs</h2>
 			<span class="stats">
-				<i class="far fa-user"></i>
 				<?php
 				echo(getNbUsers($connection));
 				?>	
@@ -86,9 +85,8 @@
 		</div>
 
 		<div class="inner col-lg-4">
-			<h2>Fichiers stockés</h2>
+			<h2>Nombres de fichiers</h2>
 			<span class="stats">
-				<i class="far fa-file-alt"></i>
 				<?php
 				echo(getNbFiles($connection));
 				?>	
