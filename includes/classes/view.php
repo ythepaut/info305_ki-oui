@@ -13,7 +13,7 @@ switch ($page) {
         break;
 
     case "espace-utilisateur":
-        if (isset($_SESSION['LoggedIn']) && $_SESSION['LoggedIn']) {
+        if (isset($_SESSION['LoggedIn']) && $_SESSION['LoggedIn'] && $_SESSION['totp_validated']) {
             refreshSession($connection);
             $sousPage = (isset($_GET['sp']) ? $_GET['sp'] : "accueil");
             switch ($sousPage) {
@@ -28,6 +28,10 @@ switch ($page) {
                     include("./includes/pages/espace-utilisateur/accueil-utilisateur.php");
                     break;
             }
+        } elseif (isset($_SESSION['LoggedIn']) && $_SESSION['LoggedIn'] && !$_SESSION['totp_validated']) {
+            
+            include("./includes/pages/espace-utilisateur/validation-totp.php");
+
         } else {
             include("./includes/pages/401.php");
             $openLoginModal = true;

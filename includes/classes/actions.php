@@ -31,6 +31,9 @@ switch ($action) {
     case "disable-totp":
         die(disableTOTP($_POST['enable-totp_code'], $connection));
         break;
+    case "validate-totp":
+        die(validateTOTP($_POST['validate-totp_code'], $connection));
+        break;
     case "logout":
         session_destroy();
         header("Location: /");
@@ -89,12 +92,20 @@ function login($email, $passwd, $connection) {
             //Verification du compte
             if ($userData['access_level'] != "" && $userData['status'] == "ALIVE") {
 
+                //Verification TOTP
+                if ($userData['totp'] != "") { 
+                    $_SESSION['totp_validated'] = false;
+                } else {
+                    $_SESSION['totp_validated'] = true;
+                }
+
                 #Attribution des données de session
                 $_SESSION['Data'] = $userData;
                 $_SESSION['LoggedIn'] = true;
                 $_SESSION['UserPassword'] = hash('sha512', $passwd . $userData['salt']);
 
-                $result = "SUCCESS#Bienvenue " . $_SESSION['Data']['username'] . "#/espace-utilisateur";
+                $result = "SUCCESS#Bienvenue " . $_SESSION['Data']['username'] . "#/espace-utilisateur/accueil";
+                   
 
             } else {
 
@@ -362,6 +373,31 @@ function disableTOTP($code, $connection) {
 
     } else {
         $result = "ERROR_TOTP_DISABLED#Vous avez déjà la double authentification par application désactivé.";
+    }
+
+    return $result;
+
+}
+
+
+/**
+ * Verification de la double authentification par application.
+ * (Formulaire AJAX)
+ *
+ * @param string            $code               -   Code TOTP pour verification
+ * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return string
+ */
+function validateTOTP($code, $connection) {
+    $result = "ERROR_UNKNOWN#Une erreur est survenue.";
+
+    $ga = new PHP_GoogleAuthenticator();
+    if ($_SESSION['Data']['totp'] == "" || $ga->verifyCode($_SESSION['Data']['totp'], $code) == 1) {
+        $_SESSION['totp_validated'] = true;
+        $result = "SUCCESS#Double authentification désactivée avec succès.#/espace-utilisateur/accueil";
+    } else {
+        $result = "ERROR_TOTP_INVALID#Le code saisi est invalide.";
     }
 
     return $result;
