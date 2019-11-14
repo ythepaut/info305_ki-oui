@@ -4,5 +4,5 @@
 
 function editModalDownload(link) {
 	let dlField=document.querySelector("#input-dllink");
-	dlField.setAttribut("value", link);
+	dlField.setAttribute("value", link);
 }
