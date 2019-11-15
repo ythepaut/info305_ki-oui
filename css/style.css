@@ -230,6 +230,16 @@ i.edit:hover {
     color: #2e86de;
 }
 
+i.delete {
+    color: #ff6b6b;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+i.delete:hover {
+    color: #ee5253;
+}
+
 
 /* Boutons */
 

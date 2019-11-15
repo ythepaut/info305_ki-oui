@@ -34,6 +34,9 @@ switch ($action) {
     case "validate-totp":
         die(validateTOTP($_POST['validate-totp_code'], $connection));
         break;
+    case "download-data":
+        die(downloadData($_POST['download-data_checked'], $_POST['download-data_passwd'], $connection));
+        break;
     case "logout":
         session_destroy();
         header("Location: /");
@@ -128,7 +131,7 @@ function login($email, $passwd, $connection) {
             }
 
         } else {
-            $result = "ERROR_INVALID_CREDENTIALS#Identifiants de connexion invalides";
+            $result = "ERROR_INVALID_CREDENTIALS#Identifiants de connexion invalides.";
         }
 
     } else {
@@ -406,6 +409,69 @@ function validateTOTP($code, $connection) {
 
     return $result;
 
+}
+
+
+/**
+ * Téléchargement des données de l'utilisateur
+ *
+ * @param string            $checked            -   Checkboxes qui indiquent ce que l'on doit telecharger
+ * @param string            $passwd             -   Mot de passe de l'utilisateur
+ * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return string
+ */
+function downloadData($checked, $passwd, $connection) {
+    $result = "ERROR_UNKNOWN#Une erreur est survenue.";
+    
+    //Identifiants correct ?
+    if (password_verify(hash('sha512', hash('sha512', $passwd . $_SESSION['Data']['salt'])), $_SESSION['Data']['password'])) {
+
+        //Verification checkbox
+        if (true) {
+
+            try {
+               
+                $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE id = ?");
+                $query->bind_param("i", $_SESSION['Data']['id']);
+                $query->execute();
+                $result = $query->get_result();
+                $query->close();
+                $userData = $result->fetch_assoc();
+
+                $user_data_file = fopen("kioui-fr-user-data-fetch-" . $_SESSION['Data']['id'] . ".json", "w");
+                fwrite($user_data_file, json_encode($userData));
+                fclose($user_data_file);
+
+                $file = "kioui-fr-user-data-fetch-" . $_SESSION['Data']['id'] . ".json";
+
+                header('Content-Description: File Transfer');
+                header('Content-Type: application/octet-stream');
+                header('Content-Disposition: attachment; filename="'.basename($file).'"');
+                header('Expires: 0');
+                header('Cache-Control: must-revalidate');
+                header('Pragma: public');
+                header('Content-Length: ' . filesize($file));
+                readfile($file);
+
+                unlink($file);
+                
+                $result = "SUCCESS#Téléchargement...#null";
+
+            } catch (Exception $e) {
+                $result = "ERROR#" . $e->get_message();
+            }
+            
+
+        } else {
+            $result = "ERROR_INVALID_FIELDS#Veuillez cocher au moins une case.";
+        }
+
+    } else {
+        $result = "ERROR_INVALID_CREDENTIALS#Mot de passe invalide.";
+    }
+
+    return $result;
 }
 
 

@@ -13,8 +13,8 @@
                 <table class="table">
                     <thead class="thead-light">
                         <tr>
-                            <th scope="col" style="width: 50%;">INFORMATIONS</th>
-                            <th scope="col" style="width: 40%;"></th>
+                            <th scope="col" style="width: 45%;">INFORMATIONS</th>
+                            <th scope="col" style="width: 45%;"></th>
                             <th scope="col" style="width: auto;"></th>
                         </tr>
                     </thead>
@@ -22,24 +22,24 @@
                         <tr>
                             <th scope="row"> Adresse e-mail</th>
                             <td><?php echo(htmlspecialchars($_SESSION['Data']['email'])); ?></td>
-                            <td><i class="fas fa-pen edit"></i></td>
+                            <td><i class="fas fa-pen edit" title="Modifier"></i></td>
                         </tr>
                         <tr>
                             <th scope="row"> Nom d'utilisateur</th>
                             <td><?php echo(htmlspecialchars($_SESSION['Data']['username'])); ?></td>
-                            <td><i class="fas fa-pen edit"></i></td>
+                            <td><i class="fas fa-pen edit" title="Modifier"></i></td>
                         </tr>
                     <thead class="thead-light">
                         <tr>
-                            <th scope="col" style="width: 50%;">SÉCURITÉ</th>
-                            <th scope="col" style="width: 40%;"></th>
+                            <th scope="col" style="width: 45%;">SÉCURITÉ</th>
+                            <th scope="col" style="width: 45%;"></th>
                             <th scope="col" style="width: auto;"></th>
                         </tr>
                     </thead>
                         <tr>
                             <th scope="row"> Mot de passe</th>
                             <td>****************</td>
-                            <td><i class="fas fa-pen edit"></i></td>
+                            <td><i class="fas fa-pen edit" title="Modifier"></i></td>
                         </tr>
                         <tr>
                             <th scope="row"> Double authentification par application</th>
@@ -53,15 +53,37 @@
                         </tr>
                     <thead class="thead-light">
                         <tr>
-                            <th scope="col" style="width: 50%;">PRÉFÉRENCES</th>
-                            <th scope="col" style="width: 40%;"></th>
+                            <th scope="col" style="width: 45%;">PRÉFÉRENCES</th>
+                            <th scope="col" style="width: 45%;"></th>
                             <th scope="col" style="width: auto;"></th>
                         </tr>
                     </thead>
                         <tr>
                             <th scope="row"> Recevoir des notifications par e-mail</th>
                             <td></td>
-                            <td><i class="fas fa-toggle-on enabled"></i></td>
+                            <td><i class="fas fa-toggle-on enabled" title="Désactiver"></i></td>
+                        </tr>
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col" style="width: 45%;">ACTIONS</th>
+                            <th scope="col" style="width: 45%;"></th>
+                            <th scope="col" style="width: auto;"></th>
+                        </tr>
+                    </thead>
+                        <tr>
+                            <th scope="row"> Visualiser mes données conservées par KI-OUI</th>
+                            <td></td>
+                            <td><i class="fas fa-eye edit" title="Visualiser"></i></td>
+                        </tr>
+                        <tr>
+                            <th scope="row"> Télecharger une copie des mes données conservées par KI-OUI</th>
+                            <td></td>
+                            <td><a href="#" data-toggle="modal" data-target="#modalDlData"><i class="fas fa-download edit" title="Télecharger"></i></a></td>
+                        </tr>
+                        <tr>
+                            <th scope="row"> Clôturer mon compte et supprimer toutes mes données</th>
+                            <td></td>
+                            <td><i class="fas fa-window-close delete" title="Fermer mon compte"></i></td>
                         </tr>
                     </tbody>
                 </table>
@@ -81,4 +103,5 @@ include("./includes/pages/modals/backup-key.php");
 $_SESSION['totp'] = ($_SESSION['Data']['totp'] == "" && !isset($_SESSION['totp'])) ? $ga->createSecret() : $_SESSION['totp'];
 $_SESSION['totp'] = ($_SESSION['Data']['totp'] != "" && !isset($_SESSION['totp'])) ? $_SESSION['Data']['totp'] : $_SESSION['totp'];
 include("./includes/pages/modals/totp.php");
+include("./includes/pages/modals/download-data.php");
 ?>
