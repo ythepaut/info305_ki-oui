@@ -329,6 +329,11 @@ div.panel-outline {
 	margin: 20px 15px;
     background-color: #fff;
 }
+@media only screen and (max-width: 1000px) {
+    div.panel-outline {
+        margin: 20px 0px !important;
+    }
+}
 
 
 section.panel-background {

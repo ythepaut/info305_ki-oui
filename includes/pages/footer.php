@@ -59,9 +59,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
 
-    <!--Google re-captcha-->
-    <script src="https://www.google.com/recaptcha/api.js?render=<?php echo($recaptcha['public']); ?>"></script>
-
     <!--Nos JS-->
     <script src="<?php echo(getSrc('./js/index.js')); ?>"></script>
     <script src="<?php echo(getSrc('./js/upload.js')); ?>"></script>
