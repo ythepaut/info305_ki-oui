@@ -7,7 +7,7 @@
 
                 <div class="col-lg-4 panel-outline">
                         
-                    <h4 class="panel-title">Quota</h4>
+                    <h4 class="panel-title">Espace utilisé</h4>
 
                     <div class="chart-container">
                         <canvas id="chart-js-1" class="chartjs quota"></canvas>
@@ -59,8 +59,6 @@
                             }
                         });
 
-                        var sizeUser="<?php echo(getSize($_SESSION['Data']['id'],$connection));?>";
-
                         var options = {
                             maintainAspectRatio: false,
                             rotation: 1 * Math.PI,
@@ -69,7 +67,8 @@
                             legend: {
                                 display: true,
                                 position: 'right',
-                                fullWidth: false
+                                fullWidth: false,
+                                onClick: null
                             },
                             elements: {
                                 center: {
@@ -83,7 +82,7 @@
                         //variable contenant l'espace utilisé par l'utilisateur
                         var data = {
                             datasets: [{
-                                data:[sizeUser/(10**6),200-sizeUser/(10**6)],
+                                data:[<?php echo(substr(getSize($_SESSION['Data']['id'],$connection)/(10**6),0,5)); ?>, <?php echo(substr(200 - getSize($_SESSION['Data']['id'],$connection)/(10**6),0,5)); ?>],
                                 backgroundColor:["rgb(84, 160, 255)","rgb(200, 214, 229)"],
                                 weight: 15,
                             }],

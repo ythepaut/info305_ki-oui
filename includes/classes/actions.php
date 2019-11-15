@@ -34,8 +34,11 @@ switch ($action) {
     case "validate-totp":
         die(validateTOTP($_POST['validate-totp_code'], $connection));
         break;
+    case "request-data":
+        die(requestData($_POST['request-data_checked'], $_POST['request-data_passwd'], $connection));
+        break;
     case "download-data":
-        die(downloadData($_POST['download-data_checked'], $_POST['download-data_passwd'], $connection));
+        die(downloadData($connection, $_GET['download-data_file']));
         break;
     case "contact":
         die(contactForm($em, $_POST['contact-email'], $_POST['contact-subject'], $_POST['contact-message']));
@@ -436,6 +439,7 @@ function validateTOTP($code, $connection) {
 
 /**
  * Téléchargement des données de l'utilisateur
+ * (Formulaire AJAX)
  *
  * @param string            $checked            -   Checkboxes qui indiquent ce que l'on doit telecharger
  * @param string            $passwd             -   Mot de passe de l'utilisateur
@@ -443,10 +447,10 @@ function validateTOTP($code, $connection) {
  *
  * @return string
  */
-function downloadData($checked, $passwd, $connection) {
+function requestData($checked, $passwd, $connection) {
     $result = "ERROR_UNKNOWN#Une erreur est survenue.";
     
-    if (isSessionValid($connection)) {
+    if (isValidSession($connection)) {
 
         //Identifiants correct ?
         if (password_verify(hash('sha512', hash('sha512', $passwd . $_SESSION['Data']['salt'])), $_SESSION['Data']['password'])) {
@@ -455,7 +459,7 @@ function downloadData($checked, $passwd, $connection) {
             if (true) {
 
                 try {
-                
+                    
                     $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE id = ?");
                     $query->bind_param("i", $_SESSION['Data']['id']);
                     $query->execute();
@@ -463,24 +467,14 @@ function downloadData($checked, $passwd, $connection) {
                     $query->close();
                     $userData = $result->fetch_assoc();
 
-                    $user_data_file = fopen("kioui-fr-user-data-fetch-" . $_SESSION['Data']['id'] . ".json", "w");
+                    $salt = randomString(16);
+                    $file = "../../uploads/tmp/kioui-fr-user-data-fetch-" . $_SESSION['Data']['id'] . "-" . $salt . ".json";
+                    
+                    $user_data_file = fopen($file, "w");
                     fwrite($user_data_file, json_encode($userData));
                     fclose($user_data_file);
-
-                    $file = "kioui-fr-user-data-fetch-" . $_SESSION['Data']['id'] . ".json";
-
-                    header('Content-Description: File Transfer');
-                    header('Content-Type: application/octet-stream');
-                    header('Content-Disposition: attachment; filename="'.basename($file).'"');
-                    header('Expires: 0');
-                    header('Cache-Control: must-revalidate');
-                    header('Pragma: public');
-                    header('Content-Length: ' . filesize($file));
-                    readfile($file);
-
-                    unlink($file);
                     
-                    $result = "SUCCESS#Téléchargement...#null";
+                    $result = "SUCCESS#Téléchargement...#/dl-data/" . $salt;
 
                 } catch (Exception $e) {
                     $result = "ERROR#" . $e->get_message();
@@ -500,6 +494,31 @@ function downloadData($checked, $passwd, $connection) {
     }
 
     return $result;
+}
+function downloadData($connection, $salt) {
+
+    if (isValidSession($connection)) {
+
+        $file = "../../uploads/tmp/kioui-fr-user-data-fetch-" . $_SESSION['Data']['id'] . "-" . $salt . ".json";
+
+        if (file_exists($file)) {
+
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename="'.basename($file).'"');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($file));
+            readfile($file);
+
+            unlink($file);
+        } else {
+            header("Location : /404");
+        }
+        header("Location : /403");
+    }
+    
 }
 
 

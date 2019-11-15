@@ -17,7 +17,7 @@
                     </div>
 
                     <div class="col-lg-8">
-                    <form action="<?php echo(getSrc('./includes/classes/actions.php')); ?>" method="POST">
+                    <form action="<?php echo(getSrc('./includes/classes/actions.php')); ?>" method="POST" class="ajax">
                         
                         <span>Je souhaite télécharger :</span>
                         <br />
@@ -25,20 +25,20 @@
                         <ul style="list-style-type: none; margin: 5px 0px;">
                             <li>
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" name="download-data_checked" value="data" id="download-data_db" checked disabled />
-                                    <label class="custom-control-label" for="download-data_db">Toutes les données de mon compte (Nom d'utilisateur, mot de passe crypté, email, etc...).</label>
+                                    <input type="checkbox" class="custom-control-input" name="request-data_checked" value="data" id="request-data_db" checked disabled />
+                                    <label class="custom-control-label" for="request-data_db">Toutes les données de mon compte (Nom d'utilisateur, mot de passe crypté, email, etc...).</label>
                                 </div>
                             </li>
                             <li>
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" name="download-data_checked" value="encfiles" id="download-data_encrypted-files" disabled />
-                                    <label class="custom-control-label" for="download-data_encrypted-files">Mes fichiers tels qu'ils sont stockés sur le serveur de KI-OUI.</label>
+                                    <input type="checkbox" class="custom-control-input" name="request-data_checked" value="encfiles" id="request-data_encrypted-files" disabled />
+                                    <label class="custom-control-label" for="request-data_encrypted-files">Mes fichiers tels qu'ils sont stockés sur le serveur de KI-OUI.</label>
                                 </div>
                             </li>
                             <li>
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" name="download-data_checked" value="decfiles" id="download-data_decrypted-files" disabled />
-                                    <label class="custom-control-label" for="download-data_decrypted-files">Mes fichiers décryptés.</label>
+                                    <input type="checkbox" class="custom-control-input" name="request-data_checked" value="decfiles" id="request-data_decrypted-files" disabled />
+                                    <label class="custom-control-label" for="request-data_decrypted-files">Mes fichiers décryptés.</label>
                                 </div>
                             </li>
                         </ul>
@@ -48,15 +48,15 @@
 
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text label-icon" id="icon_download-data_passwd"><i class="fas fa-unlock"></i></span>
+                                <span class="input-group-text label-icon" id="icon_request-data_passwd"><i class="fas fa-unlock"></i></span>
                             </div>
-                            <input type="password" name="download-data_passwd" class="form-control" placeholder="Mot de passe requis pour confirmer votre action" aria-describedby="icon_download-data_passwd" required />
+                            <input type="password" name="request-data_passwd" class="form-control" placeholder="Mot de passe requis pour confirmer votre action" aria-describedby="icon_request-data_passwd" required />
                         </div>
 
                         <br />
                         
 
-                        <input type="hidden" name="action" value="download-data">
+                        <input type="hidden" name="action" value="request-data">
 
                         <div style="text-align: center;">
                             
@@ -75,7 +75,7 @@
 
 
                     <div class="col-lg-12">
-                        <div style="display: none;" id="hint_download-data"></div>
+                        <div style="display: none;" id="hint_request-data"></div>
                     </div>
 
                 
