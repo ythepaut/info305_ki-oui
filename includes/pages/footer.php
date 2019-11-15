@@ -38,9 +38,9 @@
             <div class="col-lg-3">
                 <h3>NOUS CONTACTER</h3>
                 <ul>
-                    <li><a href="/">Formulaire de contact</a></li>
-                    <li><a href="/">Assistance technique</a></li>
-                    <li>Par e-mail à <a href="mailto:contact@ki-oui.ythepaut.com">contact@ki-oui.ythepaut.com</a></li>
+                    <li><a href="/nous-contacter">Formulaire de contact</a></li>
+                    <li><a href="/espace-utilisateur/assistance">Assistance technique</a></li>
+                    <li>Par e-mail à <a href="mailto:ki-oui@ythepaut.com">ki-oui@ythepaut.com</a></li>
                 </ul>
             </div>
         
@@ -58,6 +58,9 @@
     <!--Ajax-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+
+    <!--Google re-captcha-->
+    <script src="https://www.google.com/recaptcha/api.js?render=<?php echo($recaptcha['public']); ?>"></script>
 
     <!--Nos JS-->
     <script src="<?php echo(getSrc('./js/index.js')); ?>"></script>

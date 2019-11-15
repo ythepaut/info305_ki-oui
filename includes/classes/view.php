@@ -11,6 +11,9 @@ switch ($page) {
     case "accueil":
         include("./includes/pages/accueil.php");
         break;
+    case "nous-contacter":
+        include("./includes/pages/contact.php");
+        break;
 
     case "espace-utilisateur":
         if (isset($_SESSION['LoggedIn']) && $_SESSION['LoggedIn'] && $_SESSION['totp_validated']) {
@@ -56,6 +59,8 @@ switch ($page) {
 
     case "cgu":
     case "mentions-legales":
+    case "cgv":
+    case "rgpd":
         include("./includes/pages/cgu.php");
         break;
 

@@ -37,6 +37,9 @@ switch ($action) {
     case "download-data":
         die(downloadData($_POST['download-data_checked'], $_POST['download-data_passwd'], $connection));
         break;
+    case "contact":
+        die(contactForm($em, $_POST['contact-email'], $_POST['contact-subject'], $_POST['contact-message']));
+        break;
     case "logout":
         session_destroy();
         header("Location: /");
@@ -494,6 +497,36 @@ function downloadData($checked, $passwd, $connection) {
 
     } else {
         $result = "ERROR_INVALID_SESSION#Votre session est invalide. Déconnectez vous puis reconnectez vous. Si le problème persiste contactez le support.";
+    }
+
+    return $result;
+}
+
+
+/**
+ * Envoi d'un email par le formulaire de contact
+ * (Formulaire AJAX)
+ *
+ * @param array             $em                 -   Identifiants du fichier config-email.php
+ * @param string            $email              -   Email expediteur
+ * @param string            $subject            -   Sujet du message
+ * @param string            $message            -   Message
+ *
+ * @return void
+ */
+function contactForm($em, $email, $subject, $message) {
+    $result = "ERROR_UNKNOWN#Une erreur est survenue.";
+
+    if (isset($email, $subject, $message) && $subject != "" && $message != "" && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+
+        sendMailwosmtp($em['address'], "Nouveau message du formulaire de contact", "De : " . $email . "\nSujet : " . $subject . "\nMessage :\n" . $message);
+        
+        sendMail($em, $email, "Accusé de réception", "Accusé de réception", "Bonjour, votre message a bien été transmis, et nous répondrons dans les plus brefs délais.", "https://ki-oui.ythepaut.com/", "KI-OUI");
+
+        $result = "SUCCESS#Votre message a été envoyé, vous allez recevoir une confirmation de réception par e-mail.#null";
+
+    } else {
+        $result = "ERROR_MISSING_FIELDS#Veuillez remplir tous les champs.";
     }
 
     return $result;

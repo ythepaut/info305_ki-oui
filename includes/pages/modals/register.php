@@ -95,6 +95,3 @@
         </div>
     </div>
 </div>
-
-<!--Google re-captcha-->
-<script src="https://www.google.com/recaptcha/api.js?render=<?php echo($recaptcha['public']); ?>"></script>

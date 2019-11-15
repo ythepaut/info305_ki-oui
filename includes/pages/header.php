@@ -40,8 +40,10 @@
 	</nav>
 
     <?php
-    include("./includes/pages/modals/login.php");
-    include("./includes/pages/modals/register.php");
+        if (!isset($_SESSION['LoggedIn'])) {
+        include("./includes/pages/modals/login.php");
+        include("./includes/pages/modals/register.php");
+    }
     include("./includes/pages/modals/upload-file-error.php");
     ?>
 
