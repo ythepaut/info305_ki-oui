@@ -25,19 +25,19 @@
                         <ul style="list-style-type: none; margin: 5px 0px;">
                             <li>
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" name="download-data_checked" value="data" id="download-data_db" />
-                                    <label class="custom-control-label" for="download-data_db">Toutes mes données de mon compte (Nom d'utilisateur, mot de passe crypté, email, etc...).</label>
+                                    <input type="checkbox" class="custom-control-input" name="download-data_checked" value="data" id="download-data_db" checked disabled />
+                                    <label class="custom-control-label" for="download-data_db">Toutes les données de mon compte (Nom d'utilisateur, mot de passe crypté, email, etc...).</label>
                                 </div>
                             </li>
                             <li>
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" name="download-data_checked" value="encfiles" id="download-data_encrypted-files" />
+                                    <input type="checkbox" class="custom-control-input" name="download-data_checked" value="encfiles" id="download-data_encrypted-files" disabled />
                                     <label class="custom-control-label" for="download-data_encrypted-files">Mes fichiers tels qu'ils sont stockés sur le serveur de KI-OUI.</label>
                                 </div>
                             </li>
                             <li>
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" name="download-data_checked" value="decfiles" id="download-data_decrypted-files" />
+                                    <input type="checkbox" class="custom-control-input" name="download-data_checked" value="decfiles" id="download-data_decrypted-files" disabled />
                                     <label class="custom-control-label" for="download-data_decrypted-files">Mes fichiers décryptés.</label>
                                 </div>
                             </li>

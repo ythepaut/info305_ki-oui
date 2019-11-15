@@ -295,16 +295,22 @@ function backupKey($key, $connection) {
 
     $result = "ERROR_UNKNOWN#Une erreur est survenue.";
 
-    if (isset($key) && strlen($key) == 16) {
+    if (isValidSession($connection)) {
 
-        $backup_password = encryptText($_SESSION['UserPassword'], $key, $_SESSION['Data']['salt'], $raw=false)[0];
+        if (isset($key) && strlen($key) == 16) {
 
-        $query = $connection->prepare("UPDATE kioui_accounts SET backup_password = ? WHERE id = ?");
-        $query->bind_param("si", $backup_password, $_SESSION['Data']['id']);
-        $query->execute();
-        $query->close();
+            $backup_password = encryptText($_SESSION['UserPassword'], $key, $_SESSION['Data']['salt'], $raw=false)[0];
 
-        $result = "SUCCESS#Votre clé a été sauvegardée.#/espace-utilisateur/compte";
+            $query = $connection->prepare("UPDATE kioui_accounts SET backup_password = ? WHERE id = ?");
+            $query->bind_param("si", $backup_password, $_SESSION['Data']['id']);
+            $query->execute();
+            $query->close();
+
+            $result = "SUCCESS#Votre clé a été sauvegardée.#/espace-utilisateur/compte";
+        }
+
+    } else {
+        $result = "ERROR_INVALID_SESSION#Votre session est invalide. Déconnectez vous puis reconnectez vous. Si le problème persiste contactez le support.";
     }
 
     return $result;
@@ -324,24 +330,31 @@ function backupKey($key, $connection) {
 function enableTOTP($key, $code, $connection) {
     $result = "ERROR_UNKNOWN#Une erreur est survenue.";
 
-    //TOTP désactivé ?
-    if ($_SESSION['Data']['totp'] == "") {
 
-        //Verification du code de confirmation
-        $ga = new PHP_GoogleAuthenticator();
-        if ($ga->verifyCode($key, $code) == 1) {
+    if (isValidSession($connection)) {
 
-            $query = $connection->prepare("UPDATE kioui_accounts SET totp = ? WHERE id = ?");
-            $query->bind_param("si", $key, $_SESSION['Data']['id']);
-            $query->execute();
-            $query->close();
-            $result = "SUCCESS#Double authentification activée avec succès.#/espace-utilisateur/compte";
+        //TOTP désactivé ?
+        if ($_SESSION['Data']['totp'] == "") {
+
+            //Verification du code de confirmation
+            $ga = new PHP_GoogleAuthenticator();
+            if ($ga->verifyCode($key, $code) == 1) {
+
+                $query = $connection->prepare("UPDATE kioui_accounts SET totp = ? WHERE id = ?");
+                $query->bind_param("si", $key, $_SESSION['Data']['id']);
+                $query->execute();
+                $query->close();
+                $result = "SUCCESS#Double authentification activée avec succès.#/espace-utilisateur/compte";
+            } else {
+                $result = "ERROR_TOTP_INVALID#Le code saisi est invalide.";
+            }
+
         } else {
-            $result = "ERROR_TOTP_INVALID#Le code saisi est invalide.";
+            $result = "ERROR_TOTP_ENABLED#Vous avez déjà la double authentification par application d'activé.";
         }
 
     } else {
-        $result = "ERROR_TOTP_ENABLED#Vous avez déjà la double authentification par application d'activé.";
+        $result = "ERROR_INVALID_SESSION#Votre session est invalide. Déconnectez vous puis reconnectez vous. Si le problème persiste contactez le support.";
     }
 
     return $result;
@@ -361,25 +374,31 @@ function enableTOTP($key, $code, $connection) {
 function disableTOTP($code, $connection) {
     $result = "ERROR_UNKNOWN#Une erreur est survenue.";
 
-    //TOTP activé ?
-    if ($_SESSION['Data']['totp'] != "") {
+    if (isValidSession($connection)) {
 
-        //Verification du code de confirmation
-        $ga = new PHP_GoogleAuthenticator();
-        if ($ga->verifyCode($_SESSION['Data']['totp'], $code) == 1) {
+        //TOTP activé ?
+        if ($_SESSION['Data']['totp'] != "") {
 
-            $newtotp = "";
-            $query = $connection->prepare("UPDATE kioui_accounts SET totp = ? WHERE id = ?");
-            $query->bind_param("si", $newtotp, $_SESSION['Data']['id']);
-            $query->execute();
-            $query->close();
-            $result = "SUCCESS#Double authentification désactivée avec succès.#/espace-utilisateur/compte";
+            //Verification du code de confirmation
+            $ga = new PHP_GoogleAuthenticator();
+            if ($ga->verifyCode($_SESSION['Data']['totp'], $code) == 1) {
+
+                $newtotp = "";
+                $query = $connection->prepare("UPDATE kioui_accounts SET totp = ? WHERE id = ?");
+                $query->bind_param("si", $newtotp, $_SESSION['Data']['id']);
+                $query->execute();
+                $query->close();
+                $result = "SUCCESS#Double authentification désactivée avec succès.#/espace-utilisateur/compte";
+            } else {
+                $result = "ERROR_TOTP_INVALID#Le code saisi est invalide.";
+            }
+
         } else {
-            $result = "ERROR_TOTP_INVALID#Le code saisi est invalide.";
+            $result = "ERROR_TOTP_DISABLED#Vous avez déjà la double authentification par application désactivé.";
         }
 
     } else {
-        $result = "ERROR_TOTP_DISABLED#Vous avez déjà la double authentification par application désactivé.";
+        $result = "ERROR_INVALID_SESSION#Votre session est invalide. Déconnectez vous puis reconnectez vous. Si le problème persiste contactez le support.";
     }
 
     return $result;
@@ -424,51 +443,57 @@ function validateTOTP($code, $connection) {
 function downloadData($checked, $passwd, $connection) {
     $result = "ERROR_UNKNOWN#Une erreur est survenue.";
     
-    //Identifiants correct ?
-    if (password_verify(hash('sha512', hash('sha512', $passwd . $_SESSION['Data']['salt'])), $_SESSION['Data']['password'])) {
+    if (isSessionValid($connection)) {
 
-        //Verification checkbox
-        if (true) {
+        //Identifiants correct ?
+        if (password_verify(hash('sha512', hash('sha512', $passwd . $_SESSION['Data']['salt'])), $_SESSION['Data']['password'])) {
 
-            try {
-               
-                $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE id = ?");
-                $query->bind_param("i", $_SESSION['Data']['id']);
-                $query->execute();
-                $result = $query->get_result();
-                $query->close();
-                $userData = $result->fetch_assoc();
+            //Verification checkbox
+            if (true) {
 
-                $user_data_file = fopen("kioui-fr-user-data-fetch-" . $_SESSION['Data']['id'] . ".json", "w");
-                fwrite($user_data_file, json_encode($userData));
-                fclose($user_data_file);
-
-                $file = "kioui-fr-user-data-fetch-" . $_SESSION['Data']['id'] . ".json";
-
-                header('Content-Description: File Transfer');
-                header('Content-Type: application/octet-stream');
-                header('Content-Disposition: attachment; filename="'.basename($file).'"');
-                header('Expires: 0');
-                header('Cache-Control: must-revalidate');
-                header('Pragma: public');
-                header('Content-Length: ' . filesize($file));
-                readfile($file);
-
-                unlink($file);
+                try {
                 
-                $result = "SUCCESS#Téléchargement...#null";
+                    $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE id = ?");
+                    $query->bind_param("i", $_SESSION['Data']['id']);
+                    $query->execute();
+                    $result = $query->get_result();
+                    $query->close();
+                    $userData = $result->fetch_assoc();
 
-            } catch (Exception $e) {
-                $result = "ERROR#" . $e->get_message();
+                    $user_data_file = fopen("kioui-fr-user-data-fetch-" . $_SESSION['Data']['id'] . ".json", "w");
+                    fwrite($user_data_file, json_encode($userData));
+                    fclose($user_data_file);
+
+                    $file = "kioui-fr-user-data-fetch-" . $_SESSION['Data']['id'] . ".json";
+
+                    header('Content-Description: File Transfer');
+                    header('Content-Type: application/octet-stream');
+                    header('Content-Disposition: attachment; filename="'.basename($file).'"');
+                    header('Expires: 0');
+                    header('Cache-Control: must-revalidate');
+                    header('Pragma: public');
+                    header('Content-Length: ' . filesize($file));
+                    readfile($file);
+
+                    unlink($file);
+                    
+                    $result = "SUCCESS#Téléchargement...#null";
+
+                } catch (Exception $e) {
+                    $result = "ERROR#" . $e->get_message();
+                }
+                
+
+            } else {
+                $result = "ERROR_INVALID_FIELDS#Veuillez cocher au moins une case.";
             }
-            
 
         } else {
-            $result = "ERROR_INVALID_FIELDS#Veuillez cocher au moins une case.";
+            $result = "ERROR_INVALID_CREDENTIALS#Mot de passe invalide.";
         }
 
     } else {
-        $result = "ERROR_INVALID_CREDENTIALS#Mot de passe invalide.";
+        $result = "ERROR_INVALID_SESSION#Votre session est invalide. Déconnectez vous puis reconnectez vous. Si le problème persiste contactez le support.";
     }
 
     return $result;

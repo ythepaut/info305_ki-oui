@@ -4,6 +4,8 @@ define("SIZE_FILE_NAME", 16);
 define("TARGET_DIR", "../../uploads/");
 define("TEMP_DIR", "../../uploads/tmp/");
 define("MAX_FILE_SIZE", 50 * 10**6);
+
+
 /**
  * Fonction qui retourne une chaîne de caractères aléatoire de longueur n.
  *
@@ -20,6 +22,8 @@ function randomString($n) {
     }
     return $randomString;
 }
+
+
 /**
  * Fonction chiffrant un texte à partir d'un mot de passe et d'un sel
  *
@@ -60,6 +64,8 @@ function decryptText($cryptedText, $password, $salt, $hash = null, $raw = true) 
         return null;
     }
 }
+
+
 /**
  * Fonction créant un fichier zip chiffré et l'ajoutant à la base de données
  *
@@ -103,6 +109,8 @@ function createCryptedZipFile($connection, $content, $size, $password, $oldName,
     $query->close();
     return $newName;
 }
+
+
 /**
  * Fonction déchiffrant un fichier zip
  *
@@ -142,6 +150,8 @@ function unzipCryptedFile($connection, $cryptedFileName, $key) {
         return $content;
     }
 }
+
+
 /**
  * Fonction qui retourne la source relative d'un fichier en fonction de l'emplacement actuel.
  *
@@ -154,6 +164,8 @@ function getSrc($relative_src) {
     $nb = substr_count($_SERVER['REQUEST_URI'], "/", 0, strlen($_SERVER['REQUEST_URI']));
     return str_repeat("../", $nb - 1) . "." . $relative_src;
 }
+
+
 /**
  * Fonction qui rafraichit la variable de session.
  *
@@ -170,6 +182,21 @@ function refreshSession($connection) {
     $userData = $result->fetch_assoc();
     $_SESSION['Data'] = $userData;
 }
+
+
+/**
+ * Fonction retourne si la session est valide ou non
+ *
+ * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return boolean
+ */
+function isValidSession($connection) {
+    refreshSession($connection);
+    return $_SESSION['Data']['status'] == "ALIVE" && $_SESSION['LoggedIn'] && $_SESSION['totp_validated'];
+}
+
+
 if (file_exists(getcwd() . '/includes/classes/PHPMailer/PHPMailerAutoload.php')) {
     require_once(getcwd() . '/includes/classes/PHPMailer/PHPMailerAutoload.php');
 }
@@ -217,6 +244,8 @@ function sendMail($em, $to, $subject, $title, $body, $button_link, $button_text)
 	} catch (Exception $e) {
 	}
 }
+
+
 /**
  * Envoyer un e-mail sans passer par PHPMailer (Expediteur ovh visible, sans html). (Eviter d'utiliser dans la mesure du possible)
  *
@@ -231,6 +260,8 @@ function sendMailwosmtp($to,$subject,$message) {
 	$headers .= "Reply-To: noreply@ythepaut.com\r\n";
 	mail($to, $subject, $message, $headers);
 }
+
+
 /**
  * Fonction qui renvoie l'espace occupé par un utilisateur
  *
@@ -251,6 +282,8 @@ function getSize($idUser, $connection){
 
     return $size;
 }
+
+
 /**
  * Fonction qui renvoie les fichiers de l'utilisateur
  *
@@ -270,6 +303,8 @@ function getFiles($idUser, $connection) {
     }
     return $filesUser;
 }
+
+
 /**
  * Fonction qui renvoie la conversion d'une taille de fichier en octets en une chaine de charactères avec les unitées
  *
@@ -288,12 +323,14 @@ function convertUnits($size){
 		$unit = " Ko";
 		$stringSize = round($size/10**3, 2);
 	} else{
-		$unit = " octets";
+		$unit = " o";
 		$stringSize = $size;
 	}
 	$stringSize = ((string) $stringSize) . $unit;
 	return $stringSize;
 }
+
+
 /**
  * Fonction qui change le mot de passe d'un utilisateur donné
  *
@@ -336,6 +373,8 @@ function changePassword($userId, $oldPassword, $newPassword, $connection) {
 		$result = "ERROR_MISSING_FIELDS#Veuillez remplir tous les champs.";
 	}
 }
+
+
 /**
  * Fonction qui renvoie le nombre total d'utilisateurs stockés
  *
@@ -347,6 +386,8 @@ function getNbUsers($connection) {
     $result = mysqli_query($connection, "SELECT * FROM kioui_accounts");
     return mysqli_num_rows ( $result );
 }
+
+
 /**
  * Fonction qui renvoie le nombre total de fichiers stockés
  *
@@ -359,6 +400,8 @@ function getNbFiles($connection) {
     $result = mysqli_query($connection, "SELECT * FROM kioui_files");
     return mysqli_num_rows ( $result );
 }
+
+
 /**
  * Fonction qui renvoie la taille totale des fichiers stockés
  *
@@ -374,6 +417,8 @@ function getNbSize($connection) {
     }
     return convertUnits($sum);
 }
+
+
 /**
  * Fonction qui génère le lien qui permet de décoder un fichier spécifique
  *
