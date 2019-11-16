@@ -1,2 +1,8 @@
 uploads/*
 Todo.txt
+.idea/.gitignore
+.idea/misc.xml
+.idea/modules.xml
+.idea/src.iml
+.idea/vcs.xml
+.gitignore
