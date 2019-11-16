@@ -43,7 +43,7 @@
 
                             <input type="hidden" name="action" value="change-password" />
                             <div style="text-align: center;">
-                            <input type="submit" value="Changer le mot de passe" />
+                                <input type="submit" value="Valider" />
                             </div>
 
                         </form>
