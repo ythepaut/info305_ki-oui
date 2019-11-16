@@ -22,6 +22,9 @@ switch ($action) {
     case "verif-email":
         die(verifEmail($_GET['token'], $connection));
         break;
+    case "change-password":
+        die(changePassword($_SESSION['Data']['id'],$_POST['change-password_oldPassword'],$_POST['change-password_newPassword'],$connection));
+        break;
     case "backup-key":
         die(backupKey($_POST['backup-key_key'], $connection));
         break;
