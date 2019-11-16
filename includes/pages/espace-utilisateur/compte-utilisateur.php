@@ -27,7 +27,7 @@
                         <tr>
                             <th scope="row"> Nom d'utilisateur</th>
                             <td><?php echo(htmlspecialchars($_SESSION['Data']['username'])); ?></td>
-                            <td><i class="fas fa-pen edit" title="Modifier"></i></td>
+                            <td><a href="#" data-toggle="modal" data-target="#modalChangeUsername"><i class="fas fa-pen edit" title="Modifier"></i></a></td>
                         </tr>
                     <thead class="thead-light">
                         <tr>
@@ -39,7 +39,7 @@
                         <tr>
                             <th scope="row"> Mot de passe</th>
                             <td>****************</td>
-                            <td><i class="fas fa-pen edit" title="Modifier"></i></td>
+                            <td><a href="#" data-toggle="modal" data-target="#modalChangePassword"><i class="fas fa-pen edit"></i></a></td>
                         </tr>
                         <tr>
                             <th scope="row"> Double authentification par application</th>
@@ -104,4 +104,6 @@ $_SESSION['totp'] = ($_SESSION['Data']['totp'] == "" && !isset($_SESSION['totp']
 $_SESSION['totp'] = ($_SESSION['Data']['totp'] != "" && !isset($_SESSION['totp'])) ? $_SESSION['Data']['totp'] : $_SESSION['totp'];
 include("./includes/pages/modals/totp.php");
 include("./includes/pages/modals/download-data.php");
+include("./includes/pages/modals/change-password.php");
+include("./includes/pages/modals/change-username.php");
 ?>
