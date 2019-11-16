@@ -151,10 +151,6 @@ function login($email, $passwd, $connection, $em) {
                 }
                 $_SESSION['tfa'] = ($_SESSION['tfa'] == "trusted" && !$known) ? "new_device" : $_SESSION['tfa'];
 
-                if ($_SESSION['tfa'] == "new_device") {
-                    sendTFACode($em, $connection);
-                }
-                
 
                 #Attribution des données de session
                 $_SESSION['Data'] = $userData;
@@ -163,6 +159,9 @@ function login($email, $passwd, $connection, $em) {
 
                 $result = "SUCCESS#Bienvenue " . $_SESSION['Data']['username'] . "#/espace-utilisateur/accueil";
 
+                if ($_SESSION['tfa'] == "new_device") {
+                    sendTFACode($em, $connection);
+                }
 
             } else {
 
@@ -202,8 +201,9 @@ function sendTFACode($em, $connection) {
         }
         $expire = time() + 300;
 
+
         $query = $connection->prepare("UPDATE kioui_accounts SET tfa_code = ? , tfa_expire = ? WHERE id = ?");
-        $query->bind_param("sss", $randomString, $expire, $_SESSION['Data']['id']);
+        $query->bind_param("iii", $randomString, $expire, $_SESSION['Data']['id']);
         $query->execute();
 
         sendMail($em, $_SESSION['Data']['email'], "Votre code de verification KI-OUI", $randomString, "Nous avons détecté une nouvelle connexion d'un appareil inconnu. Saisissez le code ci-dessus pour completer votre connexion.<br /><br />Si vous n'êtes pas à l'origine de cette requete, changez votre mot de passe et contactez le support.", "https://ki-oui.ythepaut.com/", "KI-OUI");
