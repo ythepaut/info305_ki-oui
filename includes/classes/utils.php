@@ -341,41 +341,64 @@ function convertUnits($size){
  * @param integer             $userId       		- id de l'utilisateur
  * @param string			  $oldPassword			- ancien mot de passe
  * @param string			  $newPassword			- nouveau mot de passe
+ * @param string			  $newPasswordBis	    - Confirmation du nouveau mot de passe
  * @param mysqlconnection     $connection           - Connexion BDD effectuée dans le fichier config-db.php
  *
  * @return string
 */
-function changePassword($userId, $oldPassword, $newPassword, $connection) {
-	$result = '';
+function changePassword($userId, $oldPassword, $newPassword, $newPasswordBis, $connection) {
+    $result = "ERROR_UNKNOWN#Une erreur est survenue.";
 	if (isset($userId, $oldPassword, $newPassword) && $userId != "" && $oldPassword != "" && $newPassword != "") {
 		//Recuperation des données
-		$query = $connection->prepare("SELECT * FROM kioui_accounts WHERE email = ?");
-		$query->bind_param("s", $email);
+		$query = $connection->prepare("SELECT * FROM kioui_accounts WHERE id = ?");
+		$query->bind_param("i", $userId);
 		$query->execute();
-		$result = $query->get_result();
+		$result_bis = $query->get_result();
 		$query->close();
-		$userData = $result->fetch_assoc();
+		$userData = $result_bis->fetch_assoc();
 
 		//Identifiants correct ?
-		if (isset($userData['id']) && $userData['id'] != null && password_verify(hash('sha512', $oldPassword . $userData['salt']), $userData['password'])) {
+		if (isset($userData['id']) && $userData['id'] != null && password_verify(hash('sha512', hash('sha512', $oldPassword . $userData['salt'])), $userData['password'])) {
 			//nouveau mot de passe correct ?
 			if (strlen($newPassword) >= 8 && preg_match("#[0-9]+#", $newPassword) && preg_match("#[a-zA-Z]+#", $newPassword)) {
-				//décrypter et rencrypter tous les fichiers
-				$files = getFiles($idUser,$connection);
-                //obtenir les deux clés de décryptage et de cryptage
-				$oldUserKey = hash('sha512', $oldPassword . $userData['salt']);
-                $newUserKey = hash('sha512', $newPassword . $userData['salt']);
+                if($newPassword == $newPasswordBis){
+                    //décrypter et rencrypter tous les fichiers
+                    $files = getFiles($userId,$connection);
+                    //obtenir les deux clés de décryptage et de cryptage
+                    $oldUserKey = hash('sha512', $oldPassword . $userData['salt']);
+                    $newUserKey = hash('sha512', $newPassword . $userData['salt']);
 
-                foreach ($files as $file) {
-                    $content = unzipCryptedFile($connection, $file['path'], $oldUserKey);
-                    createCryptedZipFile($connection, $content, $file['size'], $newPassword, $file['original_name']);
-				}
-			}
+                    foreach ($files as $file) {
+                        $content = unzipCryptedFile($connection, $file['path'], $oldUserKey);
+                        createCryptedZipFile($connection, $content, $file['size'], $newPassword, $file['original_name']);
+                        //suppresion du fichier
+                    }
+                    //obtention mdp a insérer
+                    $new_password_salted_hashed = password_hash(hash('sha512', hash('sha512', $newPassword . $userData['salt'])), PASSWORD_DEFAULT, ['cost' => 12]);
+                    //changement mdp bdd
+                    $query = $connection->prepare("UPDATE kioui_accounts SET password = ? WHERE kioui_accounts.id = ?");
+                    $query->bind_param("si",$new_password_salted_hashed,$userId);
+                    $query->execute();
+                    $result_bis = $query->get_result();
+                    $query->close();
+                    
+                    $result = "SUCCESS#Changement de mot de passe effectuer#/espace-utilisateur/compte";
+                } else {
+                    $result="ERROR_DIFFERENT_PASSWORD#Veuillez confirmer votre nouveau mot de passe";
+                }
+            } else {
+                $result = "ERROR_WEAK_PASSWORD#Veuillez choisir un mot de passe plus fort";
+            }
 		} else {
+            $result = "ERROR_WRONG_PASSWORD#Veuillez rentrer les bons identifiants ";
+            /*if (!password_verify(hash('sha512', hash('sha512', $oldPassword . $userData['salt'])), $userData['password'])){
+                $result.=" mot de passe de base erroné ".$userData['password']." ";//.hash('sha512',hash('sha512', $oldPassword . $userData['salt']));
+            }*/
 		}
 	} else {
-		$result = "ERROR_MISSING_FIELDS#Veuillez remplir tous les champs.";
-	}
+        $result = "ERROR_MISSING_FIELDS#Veuillez remplir tous les champs.";
+    }
+    return $result;
 }
 
 
