@@ -14,7 +14,7 @@ $action = ($action == "" && isset($_GET['action']) && $_GET['action'] != "") ? $
 
 switch ($action) {
     case "login":
-        die(login($_POST['login_email'], $_POST['login_passwd'], $connection));
+        die(login($_POST['login_email'], $_POST['login_passwd'], $connection, $em));
         break;
     case "register":
         die(register($_POST['register_username'], $_POST['register_email'], $_POST['register_passwd'], $_POST['register_passwd2'], $_POST['register_cgu'], $_POST['register_recaptchatoken'], $connection, $em, $recaptcha));
@@ -33,6 +33,12 @@ switch ($action) {
         break;
     case "validate-totp":
         die(validateTOTP($_POST['validate-totp_code'], $connection));
+        break;
+    case "validate-tfa":
+        die(validateTFA($_POST['validate-tfa_code'], $connection));
+        break;
+    case "resend-tfa":
+        die(sendTFACode($em, $connection));
         break;
     case "request-data":
         die(requestData($_POST['request-data_checked'], $_POST['request-data_passwd'], $connection));
@@ -97,10 +103,11 @@ switch ($action) {
  * @param string            $email              -   Adresse e-mail de l'utilisateur
  * @param string            $passwd             -   Mot de passe de l'utilisateur
  * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php
+ * @param array             $em                 -   Identifiants email dans le fichier config-email.php
  *
  * @return string
  */
-function login($email, $passwd, $connection) {
+function login($email, $passwd, $connection, $em) {
     $result = "ERROR_UNKNOWN#Une erreur est survenue.";
 
     //Verification des champs
@@ -121,11 +128,23 @@ function login($email, $passwd, $connection) {
             if ($userData['access_level'] != "" && $userData['status'] == "ALIVE") {
 
                 //Verification TOTP
-                if ($userData['totp'] != "") {
-                    $_SESSION['totp_validated'] = false;
-                } else {
-                    $_SESSION['totp_validated'] = true;
+                $_SESSION['tfa'] = ($userData['totp'] != "") ? "totp" : "trusted";
+
+                //Verification appareil connu ?
+                $knownDevices = json_decode($userData['known_devices'], true);
+                $thisDevice = array("hostname" => gethostbyaddr($_SERVER['REMOTE_ADDR']), "ip" => $_SERVER['REMOTE_ADDR'], "useragent" => $_SERVER["HTTP_USER_AGENT"]);
+                $known = false;
+                foreach ($knownDevices as $device) {
+                    if ($device == $thisDevice) {
+                        $known = true;
+                    }
                 }
+                $_SESSION['tfa'] = ($_SESSION['tfa'] == "trusted" && !$known) ? "new_device" : $_SESSION['tfa'];
+
+                if ($_SESSION['tfa'] == "new_device") {
+                    sendTFACode($em, $connection);
+                }
+                
 
                 #Attribution des données de session
                 $_SESSION['Data'] = $userData;
@@ -161,6 +180,31 @@ function login($email, $passwd, $connection) {
 
     return $result . "#<script>window.href.location = '/';</script>";
 }
+function sendTFACode($em, $connection) {
+    $result = "ERROR_UNKNOWN#Une erreur est survenue.";
+    if ($_SESSION['tfa'] == "new_device") {
+
+        $characters = "0123456789";
+        $charactersLength = strlen($characters);
+        $randomString = "";
+        for ($i = 0; $i < 6; $i++) {
+            $randomString .= $characters[random_int(0, $charactersLength - 1)];
+        }
+        $expire = time() + 300;
+
+        $query = $connection->prepare("UPDATE kioui_accounts SET tfa_code = ? , tfa_expire = ? WHERE id = ?");
+        $query->bind_param("sss", $randomString, $expire, $_SESSION['Data']['id']);
+        $query->execute();
+
+        sendMail($em, $_SESSION['Data']['email'], "Votre code de verification KI-OUI", $randomString, "Nous avons détecté une nouvelle connexion d'un appareil inconnu. Saisissez le code ci-dessus pour completer votre connexion.<br /><br />Si vous n'êtes pas à l'origine de cette requete, changez votre mot de passe et contactez le support.", "https://ki-oui.ythepaut.com/", "KI-OUI");
+        
+        $result = "SUCCESS#Un autre e-mail contenant votre code a été envoyé.#null";
+    }
+
+    return $result;
+}
+
+
 
 /**
  * Enregistrement d'un nouvel utilisateur
@@ -226,9 +270,11 @@ function register($username, $email, $passwd, $passwd2, $cgu, $recaptchatoken, $
                                     $ip = $_SERVER['REMOTE_ADDR'];
                                     $registrationDate = time();
                                     $emailToken = randomString(64);
+                                    $device = array(array("hostname" => gethostbyaddr($_SERVER['REMOTE_ADDR']), "ip" => $_SERVER['REMOTE_ADDR'], "useragent" => $_SERVER["HTTP_USER_AGENT"]));
+                                    $firstDevice = json_encode($device);
 
-                                    $query = $connection->prepare("INSERT INTO kioui_accounts (email, username, password, salt, access_level, status, ip, registration_date, email_token) VALUES (?,?,?,?,?,?,?,?,?)");
-                                    $query->bind_param("sssssssis", $email, $username, $password_salted_hashed, $salt, $accesslevel, $status, $ip, $registrationDate, $emailToken);
+                                    $query = $connection->prepare("INSERT INTO kioui_accounts (email, username, password, salt, access_level, status, ip, registration_date, email_token, known_devices) VALUES (?,?,?,?,?,?,?,?,?,?)");
+                                    $query->bind_param("sssssssiss", $email, $username, $password_salted_hashed, $salt, $accesslevel, $status, $ip, $registrationDate, $emailToken, $firstDevice);
                                     $query->execute();
 
                                     sendMail($em, $email, "Bienvenue sur KI-OUI. Verifiez votre e-mail.", "Bienvenue !", "Merci de vous être inscrit " . $username . ".<br />Veuillez confirmer votre adresse e-mail pour pouvoir commencer à utiliser nos services en cliquant sur le lien ci-dessous.<br /><br />Si vous n'êtes pas à l'origine de cette action, ignorez cet e-mail.", "https://ki-oui.ythepaut.com/verif-email/" . $emailToken, "Vérifier mon e-mail");
@@ -441,10 +487,48 @@ function validateTOTP($code, $connection) {
 
     $ga = new PHP_GoogleAuthenticator();
     if ($_SESSION['Data']['totp'] == "" || $ga->verifyCode($_SESSION['Data']['totp'], $code) == 1) {
-        $_SESSION['totp_validated'] = true;
+        $_SESSION['tfa'] = "trusted";
         $result = "SUCCESS#Validation effectuée.#/espace-utilisateur/accueil";
     } else {
         $result = "ERROR_TOTP_INVALID#Le code saisi est invalide.";
+    }
+
+    return $result;
+
+}
+
+
+/**
+ * Verification de la double authentification par email.
+ * (Formulaire AJAX)
+ *
+ * @param string            $code               -   Code TFA pour verification
+ * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return string
+ */
+function validateTFA($code, $connection) {
+    $result = "ERROR_UNKNOWN#Une erreur est survenue.";
+
+    refreshSession($connection);
+
+    if ($_SESSION['Data']['tfa_code'] == $code && $_SESSION['Data']['tfa_expire'] > time()) {
+        $_SESSION['tfa'] = "trusted";
+
+        $userDevices = json_decode($_SESSION['Data']['known_devices']);
+
+        $device = array("hostname" => gethostbyaddr($_SERVER['REMOTE_ADDR']), "ip" => $_SERVER['REMOTE_ADDR'], "useragent" => $_SERVER["HTTP_USER_AGENT"]);
+        array_push($userDevices, $device);
+
+        $newDevices = json_encode($userDevices);
+
+        $query = $connection->prepare("UPDATE kioui_accounts SET known_devices = ? , tfa_code = 0 , tfa_expire = 0 WHERE id = ?");
+        $query->bind_param("si", $newDevices, $_SESSION['Data']['id']);
+        $query->execute();
+
+        $result = "SUCCESS#Validation effectuée.#/espace-utilisateur/accueil";
+    } else {
+        $result = "ERROR_INVALID_TFACODE#Ce code est invalide ou expiré (>5min).";
     }
 
     return $result;
@@ -517,25 +601,6 @@ function downloadData($connection, $salt) {
         $file = TEMP_DIR . "kioui-fr-user-data-fetch-" . $_SESSION['Data']['id'] . "-" . $salt . ".json";
 
         downloadFile($file);
-
-        /*
-        if (file_exists($file)) {
-
-            header('Content-Description: File Transfer');
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename="'.basename($file).'"');
-            header('Expires: 0');
-            header('Cache-Control: must-revalidate');
-            header('Pragma: public');
-            header('Content-Length: ' . filesize($file));
-            readfile($file);
-
-            unlink($file);
-        } else {
-            header("Location : /404");
-        }
-        header("Location : /403");
-        */
     }
 
 }

@@ -197,7 +197,7 @@ function refreshSession($connection) {
  */
 function isValidSession($connection) {
     refreshSession($connection);
-    return $_SESSION['Data']['status'] == "ALIVE" && $_SESSION['LoggedIn'] && $_SESSION['totp_validated'];
+    return $_SESSION['Data']['status'] == "ALIVE" && $_SESSION['LoggedIn'] && $_SESSION['tfa'] == "trusted";
 }
 
 

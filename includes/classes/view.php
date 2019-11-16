@@ -16,7 +16,7 @@ switch ($page) {
         break;
 
     case "espace-utilisateur":
-        if (isset($_SESSION['LoggedIn']) && $_SESSION['LoggedIn'] && $_SESSION['totp_validated']) {
+        if (isset($_SESSION['LoggedIn']) && $_SESSION['LoggedIn'] && $_SESSION['tfa'] == "trusted") {
             refreshSession($connection);
             $sousPage = (isset($_GET['sp']) ? $_GET['sp'] : "accueil");
             switch ($sousPage) {
@@ -31,9 +31,9 @@ switch ($page) {
                     include("./includes/pages/espace-utilisateur/accueil-utilisateur.php");
                     break;
             }
-        } elseif (isset($_SESSION['LoggedIn']) && $_SESSION['LoggedIn'] && !$_SESSION['totp_validated']) {
+        } elseif (isset($_SESSION['LoggedIn']) && $_SESSION['LoggedIn'] && ($_SESSION['tfa'] == "new_device" || $_SESSION['tfa'] == "totp")) {
             
-            include("./includes/pages/espace-utilisateur/validation-totp.php");
+            include("./includes/pages/espace-utilisateur/validation-tfa.php");
 
         } else {
             include("./includes/pages/401.php");

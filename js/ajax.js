@@ -76,10 +76,18 @@ $('form.ajax').on('submit', function() {
                 //Réactivation des champs
                 for (let submit of document.querySelectorAll('input[type="submit"]')) {
                     submit.removeAttribute('disabled');
-                    submit.setAttribute('value', 'Valider');
+                    
+                    if (submit.getAttribute('name') == null) {
+                        submit.setAttribute('value', 'Valider');
+                    } else {
+                        submit.setAttribute('value', submit.getAttribute('name'));
+                    }
                 }
                 
-                document.querySelector('input[type="password"]').value = "";
+                let pwdfield = document.querySelector('input[type="password"]')
+                if (pwdfield != null) {
+                    pwdfield.value = "";
+                }
 
                 for (let inputDisabled of document.querySelectorAll("input[disabled='disabled']")) {
                     inputDisabled.removeAttribute('disabled');
