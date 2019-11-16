@@ -46,6 +46,9 @@ switch ($action) {
     case "resend-tfa":
         die(sendTFACode($em, $connection));
         break;
+    case "delete-known-devices":
+        die(deleteKnownDevices($connection));
+        break;
     case "request-data":
         die(requestData($_POST['request-data_checked'], $_POST['request-data_passwd'], $connection));
         break;
@@ -655,31 +658,39 @@ function contactForm($em, $email, $subject, $message) {
  * @return  string
  */
 function changeUsername($connection, $newUsername, $userId){
+
     $result="ERROR_UNKNOWN#Une erreur est survenue.";
 
-    if (strlen($newUsername) <= 16 && strlen($newUsername) >= 3) {
-        //Verification données nom d'utilisateur
-        $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE username = ?");
-        $query->bind_param("s", $newUsername);
-        $query->execute();
-        $result_bis = $query->get_result();
-        $query->close();
-        $userData = $result_bis->fetch_assoc();
-        if ($userData['id'] == "") {
-            //changement nom d'utilisateur bdd
-            $query = $connection->prepare("UPDATE kioui_accounts SET username = ? WHERE kioui_accounts.id = ?");
-            $query->bind_param("si",$newUsername,$userId);
+    if (isValidSession($connection)) {
+
+        if (strlen($newUsername) <= 16 && strlen($newUsername) >= 3) {
+            //Verification données nom d'utilisateur
+            $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE username = ?");
+            $query->bind_param("s", $newUsername);
             $query->execute();
             $result_bis = $query->get_result();
             $query->close();
+            $userData = $result_bis->fetch_assoc();
+            if ($userData['id'] == "") {
+                //changement nom d'utilisateur bdd
+                $query = $connection->prepare("UPDATE kioui_accounts SET username = ? WHERE kioui_accounts.id = ?");
+                $query->bind_param("si",$newUsername,$userId);
+                $query->execute();
+                $result_bis = $query->get_result();
+                $query->close();
 
-            $result = "SUCCESS#Votre nom d'utilisateur a bien été changé#/espace-utilisateur/compte";
+                $result = "SUCCESS#Votre nom d'utilisateur a bien été changé#/espace-utilisateur/compte";
+            } else {
+                $result = "ERROR_USER_USERNAME#Ce nom d'utilisateur est déjà utilisé.";
+            }
         } else {
-            $result = "ERROR_USER_USERNAME#Ce nom d'utilisateur est déjà utilisé.";
+            $result = "ERROR_INVALID_USERNAME#Votre nom d'utilisateur doit faire entre 3 et 16 caractères.";
         }
+
     } else {
-        $result = "ERROR_INVALID_USERNAME#Votre nom d'utilisateur doit faire entre 3 et 16 caractères.";
+        $result = "ERROR_INVALID_SESSION#Votre session est invalide. Déconnectez vous puis reconnectez vous. Si le problème persiste contactez le support.";
     }
+
     return $result;
 }
 /**
@@ -764,6 +775,7 @@ function upload($connection) {
     return $res;
 }
 
+
 function downloadAction($connection, $fileName, $fileKey) {
     $content = unzipCryptedFile($connection, $fileName, $fileKey);
 
@@ -784,6 +796,7 @@ function downloadAction($connection, $fileName, $fileKey) {
     return true;
 }
 
+
 /**
  * Suppression d'un fichier
  * (Formulaire AJAX)
@@ -797,40 +810,71 @@ function deleteFile($fileId, $connection) {
 
     $result = "ERROR_UNKNOWN#Une erreur est survenue.";
 
-    if (isset($fileId)) {
+    if (isValidSession($connection)) {
 
-        // acquisition du fichier crypté
-        $query = $connection->prepare("SELECT * FROM kioui_files WHERE id = ? ");
-        $query->bind_param("i", $fileId);
-        $query->execute();
-        $res = $query->get_result();
-        $query->close();
-        $fileData = $res->fetch_assoc();
+        if (isset($fileId)) {
 
-        $filePath = $fileData['path'];
-        $fileOwner = $fileData['owner'];
+            // acquisition du fichier crypté
+            $query = $connection->prepare("SELECT * FROM kioui_files WHERE id = ? ");
+            $query->bind_param("i", $fileId);
+            $query->execute();
+            $res = $query->get_result();
+            $query->close();
+            $fileData = $res->fetch_assoc();
 
-        if (isset($filePath) && $filePath != "" && $fileOwner == $_SESSION['Data']['id']) {
+            $filePath = $fileData['path'];
+            $fileOwner = $fileData['owner'];
 
-            // suppression dans le répertoire
-            if (unlink('../../uploads/'.$filePath)) {
+            if (isset($filePath) && $filePath != "" && $fileOwner == $_SESSION['Data']['id']) {
 
-                // suppression dans la BDD
-                $query = $connection->prepare("DELETE FROM kioui_files WHERE id = ? ");
-                $query->bind_param("i", $fileId);
-                $query->execute();
-                $query->close();
+                // suppression dans le répertoire
+                if (unlink('../../uploads/'.$filePath)) {
 
-                $result = "SUCCESS#Fichier supprimé avec succès.#/espace-utilisateur/accueil";
+                    // suppression dans la BDD
+                    $query = $connection->prepare("DELETE FROM kioui_files WHERE id = ? ");
+                    $query->bind_param("i", $fileId);
+                    $query->execute();
+                    $query->close();
+
+                    $result = "SUCCESS#Fichier supprimé avec succès.#/espace-utilisateur/accueil";
+
+                } else {
+                    $result = "ERROR_NOT_DELETED#Suppression du fichier impossible.";
+                }
+
+            } else {
+                $result = "ERROR_DONT_EXIST#Fichier inexistant.";
             }
-            else {$result = "ERROR_NOT_DELETED#Suppression du fichier impossible.";}
-        }
-        else {$result = "ERROR_DONT_EXIST#Fichier inexistant.";}
-    }
-    else {$result = "ERROR_UNFOUND#Fichier introuvable.";}
 
+        } else {
+            $result = "ERROR_UNFOUND#Fichier introuvable.";
+        }
+
+    } else {
+        $result = "ERROR_INVALID_SESSION#Votre session est invalide. Déconnectez vous puis reconnectez vous. Si le problème persiste contactez le support.";
+    }
     return $result;
 }
 
+
+
+/**
+ * Suppression des appareils enregistrés
+ * (Formulaire AJAX)
+ *
+ * @param   mysqlconnection $connection         -   Connection à la base de données SQL
+ *
+ * @return  string
+ */
+function deleteKnownDevices($connection) {
+
+    $newVal = "[]";
+    $query = $connection->prepare("UPDATE kioui_accounts SET known_devices = ? WHERE id = ?");
+    $query->bind_param("si", $newVal, $_SESSION['Data']['id']);
+    $query->execute();
+    $query->close();
+
+    return "SUCCESS#Appareils enregistrés supprimés avec succès.#/espace-utilisateur/compte";
+}
 
 ?>
