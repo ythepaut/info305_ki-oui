@@ -142,6 +142,9 @@
                             $res.="</td>";
                             $res.="<td>";
                             $res.="<a href='#' data-toggle='modal' data-target='#modalDlLink' onclick='editModalDownload(\"" . generateDlLink($_SESSION['UserPassword'], $folder['id'], $connection) . "\")'><i class='fas fa-link edit'></i></a>";
+                            $res.="&nbsp; &nbsp; &nbsp;";
+                            $res.="<a href='#' data-toggle='modal' data-target='#modalDeleteFile'
+                            onclick='editModalDelete(" . $folder['id'] . ")'><i class='fas fa-trash-alt edit'></i></a>";
                             $res.="</td>";
                             $res.="</tr>";
                         }
@@ -154,4 +157,7 @@
     </div>
 </div>
 
-<?php include("./includes/pages/modals/dl-link.php"); ?>
+<?php
+include("./includes/pages/modals/dl-link.php");
+include("./includes/pages/modals/delete.php");
+?>

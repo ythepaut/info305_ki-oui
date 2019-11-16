@@ -98,6 +98,10 @@ switch ($action) {
         }
         break;
 
+    case "delete":
+        die(deleteFile($_POST['delete-fileid'], $connection));
+        break;
+
     default:
         throw new Exception("ERROR_MISSING_ACTION#Action invalide - " . 'action' . ":'$action'");
 }
@@ -778,6 +782,54 @@ function downloadAction($connection, $fileName, $fileKey) {
     downloadFile($content, $name = $originalName, $from_string = true);
 
     return true;
+}
+
+/**
+ * Suppression d'un fichier
+ * (Formulaire AJAX)
+ *
+ * @param   mysqlconnection $connection         -   Connection à la base de données SQL
+ * @param   integer         $fileId             -   Id du fichier à supprimer
+ *
+ * @return  string
+ */
+function deleteFile($fileId, $connection) {
+
+    $result = "ERROR_UNKNOWN#Une erreur est survenue.";
+
+    if (isset($fileId)) {
+
+        // acquisition du fichier crypté
+        $query = $connection->prepare("SELECT * FROM kioui_files WHERE id = ? ");
+        $query->bind_param("i", $fileId);
+        $query->execute();
+        $res = $query->get_result();
+        $query->close();
+        $fileData = $res->fetch_assoc();
+
+        $filePath = $fileData['path'];
+        $fileOwner = $fileData['owner'];
+
+        if (isset($filePath) && $filePath != "" && $fileOwner == $_SESSION['Data']['id']) {
+
+            // suppression dans le répertoire
+            if (unlink('../../uploads/'.$filePath)) {
+
+                // suppression dans la BDD
+                $query = $connection->prepare("DELETE FROM kioui_files WHERE id = ? ");
+                $query->bind_param("i", $fileId);
+                $query->execute();
+                $query->close();
+
+                $result = "SUCCESS#Fichier supprimé avec succès.#/espace-utilisateur/accueil";
+            }
+            else {$result = "ERROR_NOT_DELETED#Suppression du fichier impossible.";}
+        }
+        else {$result = "ERROR_DONT_EXIST#Fichier inexistant.";}
+    }
+    else {$result = "ERROR_UNFOUND#Fichier introuvable.";}
+
+    return $result;
 }
 
 
