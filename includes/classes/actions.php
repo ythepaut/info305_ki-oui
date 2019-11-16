@@ -25,6 +25,9 @@ switch ($action) {
     case "change-password":
         die(changePassword($_SESSION['Data']['id'],$_POST['change-password_oldPassword'],$_POST['change-password_newPassword'],$connection));
         break;
+    case "change-username":
+        die(changeUsername($connection, $_POST['change-username_newusername'], $_SESSION['Data']['id']));
+        break;
     case "backup-key":
         die(backupKey($_POST['backup-key_key'], $connection));
         break;
@@ -93,6 +96,10 @@ switch ($action) {
                 }
             }
         }
+        break;
+
+    case "delete":
+        die(deleteFile($_POST['delete-fileid'], $connection));
         break;
 
     default:
@@ -638,7 +645,43 @@ function contactForm($em, $email, $subject, $message) {
     return $result;
 }
 
+/**
+ * Fonction qui change le nom d'un utilisateur
+ * 
+ * @param   mysqlconnection $connection			- 	Connection à la base de données SQL
+ * @param   string          $newUsername        -   le nouveau nom de l'utilisateur
+ * @param   integer         $userId             -   l'indentifiant de l'utilisateur
+ * 
+ * @return  string
+ */
+function changeUsername($connection, $newUsername, $userId){
+    $result="ERROR_UNKNOWN#Une erreur est survenue.";
 
+    if (strlen($newUsername) <= 16 && strlen($newUsername) >= 3) {
+        //Verification données nom d'utilisateur
+        $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE username = ?");
+        $query->bind_param("s", $newUsername);
+        $query->execute();
+        $result_bis = $query->get_result();
+        $query->close();
+        $userData = $result_bis->fetch_assoc();
+        if ($userData['id'] == "") {
+            //changement nom d'utilisateur bdd
+            $query = $connection->prepare("UPDATE kioui_accounts SET username = ? WHERE kioui_accounts.id = ?");
+            $query->bind_param("si",$newUsername,$userId);
+            $query->execute();
+            $result_bis = $query->get_result();
+            $query->close();
+
+            $result = "SUCCESS#Votre nom d'utilisateur a bien été changé#/espace-utilisateur/compte";
+        } else {
+            $result = "ERROR_USER_USERNAME#Ce nom d'utilisateur est déjà utilisé.";
+        }
+    } else {
+        $result = "ERROR_INVALID_USERNAME#Votre nom d'utilisateur doit faire entre 3 et 16 caractères.";
+    }
+    return $result;
+}
 /**
  * Upload des fichiers
  *
@@ -739,6 +782,54 @@ function downloadAction($connection, $fileName, $fileKey) {
     downloadFile($content, $name = $originalName, $from_string = true);
 
     return true;
+}
+
+/**
+ * Suppression d'un fichier
+ * (Formulaire AJAX)
+ *
+ * @param   mysqlconnection $connection         -   Connection à la base de données SQL
+ * @param   integer         $fileId             -   Id du fichier à supprimer
+ *
+ * @return  string
+ */
+function deleteFile($fileId, $connection) {
+
+    $result = "ERROR_UNKNOWN#Une erreur est survenue.";
+
+    if (isset($fileId)) {
+
+        // acquisition du fichier crypté
+        $query = $connection->prepare("SELECT * FROM kioui_files WHERE id = ? ");
+        $query->bind_param("i", $fileId);
+        $query->execute();
+        $res = $query->get_result();
+        $query->close();
+        $fileData = $res->fetch_assoc();
+
+        $filePath = $fileData['path'];
+        $fileOwner = $fileData['owner'];
+
+        if (isset($filePath) && $filePath != "" && $fileOwner == $_SESSION['Data']['id']) {
+
+            // suppression dans le répertoire
+            if (unlink('../../uploads/'.$filePath)) {
+
+                // suppression dans la BDD
+                $query = $connection->prepare("DELETE FROM kioui_files WHERE id = ? ");
+                $query->bind_param("i", $fileId);
+                $query->execute();
+                $query->close();
+
+                $result = "SUCCESS#Fichier supprimé avec succès.#/espace-utilisateur/accueil";
+            }
+            else {$result = "ERROR_NOT_DELETED#Suppression du fichier impossible.";}
+        }
+        else {$result = "ERROR_DONT_EXIST#Fichier inexistant.";}
+    }
+    else {$result = "ERROR_UNFOUND#Fichier introuvable.";}
+
+    return $result;
 }
 
 
