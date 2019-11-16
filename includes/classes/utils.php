@@ -5,7 +5,6 @@ define("TARGET_DIR", "../../uploads/");
 define("TEMP_DIR", "../../uploads/tmp/");
 define("MAX_FILE_SIZE", 50 * 10**6);
 
-
 /**
  * Fonction qui retourne une chaîne de caractères aléatoire de longueur n.
  *
@@ -121,6 +120,10 @@ function createCryptedZipFile($connection, $content, $size, $password, $oldName,
  * @param   string          $content            -   Contenu déchiffré du fichier
  */
 function unzipCryptedFile($connection, $cryptedFileName, $key) {
+    if (!file_exists(TARGET_DIR.$cryptedFileName)) {
+        return null;
+    }
+
     $query = $connection->prepare("SELECT * FROM kioui_files WHERE path = ?");
     $query->bind_param("s", $cryptedFileName);
     $query->execute();
@@ -132,7 +135,8 @@ function unzipCryptedFile($connection, $cryptedFileName, $key) {
     $zipText = decryptText($zipTextEncrypted, $_SESSION["UserPassword"], $fileData["salt"], $fileData["hash"]);
 
     if ($zipText === null) {
-        die("Hash différent !");
+        // Hash différent
+        return null;
     }
     else {
         file_put_contents(TEMP_DIR.$cryptedFileName, $zipText);
@@ -440,13 +444,145 @@ function generateDlLink($password, $fileId, $connection) {
         $file = $result->fetch_assoc();
 		//génération du lien
 		$fileName=$file['path'];
-		$fileSalt=$file['salt'];
-		$result= "https://ki-oui.ythepaut.com/dl/".$fileName."/".$fileSalt;
+        $filePassword = $_SESSION['UserPassword'];
+		$result= "https://ki-oui.ythepaut.com/dl/".$fileName."/".$filePassword;
 	} else {
 		$result = "ERROR_MISSING_VARIABLES#Veuillez entrer toutes les variables.";
 	}
 	return $result;
 }
 // Format du lien : https://ki-oui.ythepaut.com/dl/{NOM_FICHIER}/{CLE_DECRYPTAGE}
+
+/**
+ * Télécharge un fichier
+ * Cette fonction peut télécharger depuis fichier (laissant $name et $from_string par défaut),
+ * ou peut télécharger depuis une chaine de caractères, il faudra alors préciser le nom du fichier
+ * pour l'utilisateur et mettre $from_string à true.
+ *
+ * @param   string      $content        - Contenu du fichier, ou son nom
+ * @param   string      $name           - Nom du ficihier lors du téléchargement
+ * @param   boolean     $from_string    - Si true, $content est le contenu à télécharger,
+ *                                        sinon $content est le nom du fichier à télécharger
+ */
+function downloadFile($content, $name = null, $from_string = false) {
+    if ($from_string) {
+        $file = TEMP_DIR . randomString(16);
+        file_put_contents($file, $content);
+    }
+    else {
+        $file = $content;
+    }
+
+    if ($name === null) {
+        $name = basename($file);
+    }
+
+    $knownMimeTypes = array(
+        "htm"  => "text/html",
+        "exe"  => "application/octet-stream",
+        "zip"  => "application/zip",
+        "doc"  => "application/msword",
+        "jpg"  => "image/jpg",
+        "php"  => "text/plain",
+        "xls"  => "application/vnd.ms-excel",
+        "ppt"  => "application/vnd.ms-powerpoint",
+        "gif"  => "image/gif",
+        "pdf"  => "application/pdf",
+        "txt"  => "text/plain",
+        "html" => "text/html",
+        "png"  => "image/png",
+        "jpeg" => "image/jpg",
+    );
+
+    $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
+
+    if (array_key_exists($fileExtension, $knownMimeTypes)) {
+        $mimeType = $knownMimeTypes[$fileExtension];
+    }
+    else {
+        $mimeType = "application/octet-stream";
+    }
+
+    if (file_exists($file)) {
+        @ob_end_clean();
+        header('Content-Description: File Transfer');
+        header('Content-Type: ' . $mimeType);
+        header('Content-Disposition: attachment; filename="' . $name . '"');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+        header('Content-Length: ' . filesize($file));
+
+        readfile($file);
+
+        if ($from_string) {
+            unlink($file);
+        }
+    }
+    else {
+        header("Location : /404");
+    }
+}
+
+function downloadFileOld($filename, $name, $mimeType='') {
+    $size = filesize($filename);
+    $name = rawurldecode($name);
+
+    $knownMimeTypes = array(
+        "htm"  => "text/html",
+        "exe"  => "application/octet-stream",
+        "zip"  => "application/zip",
+        "doc"  => "application/msword",
+        "jpg"  => "image/jpg",
+        "php"  => "text/plain",
+        "xls"  => "application/vnd.ms-excel",
+        "ppt"  => "application/vnd.ms-powerpoint",
+        "gif"  => "image/gif",
+        "pdf"  => "application/pdf",
+        "txt"  => "text/plain",
+        "html" => "text/html",
+        "png"  => "image/png",
+        "jpeg" => "image/jpg",
+    );
+
+    if ($mimeType == '') {
+        $fileExtension = pathinfo($filename, PATHINFO_EXTENSION);
+
+        if (array_key_exists($fileExtension, $knownMimeTypes)) {
+            $mimeType = $knownMimeTypes[$fileExtension];
+        }
+        else {
+            $mimeType = "application/force-download";
+        }
+    }
+
+    /*
+    @ob_end_clean();
+    header("Content-Type: " . $mimeType);
+    header('Content-Disposition: attachment; filename="' . $name . '"');
+    header("Content-Transfer-Encoding: binary");
+    header("Accept-Ranges: bytes");
+
+    header("Content-Length: " . $size);
+    */
+    $chunksize = 1*1024*1024;
+    $bytes_send = 0;
+
+    $file = fopen($filename, "rb");
+
+    if ($file) {
+        while (!feof($filename) && !connection_aborted() && $bytes_send < $size) {
+            $buffer = fread($filename, $chunksize);
+            echo($buffer);
+            flush();
+            $bytes_send += strlen($buffer);
+        }
+
+        fclose($filename);
+    }
+    else {
+        die("Erreur : impossible d'ouvrir le fichier");
+    }
+}
 
 ?>

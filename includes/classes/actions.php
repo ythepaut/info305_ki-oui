@@ -53,7 +53,7 @@ switch ($action) {
             $res = upload($connection);
 
             if ($res) {
-                header("location:/ajout-ok");
+                header("location:/espace-utilisateur/accueil-utilisateur");
             }
             else {
                 header("location:/ajout-nok");
@@ -66,9 +66,24 @@ switch ($action) {
         die();
 
         break;
-    
+
     case "download":
-        die("todo");
+        if (isset($_SESSION["LoggedIn"]) && $_SESSION['LoggedIn']) {
+            $fileName = (isset($_GET["filename"]) ? $_GET["filename"] : null);
+            $fileKey = (isset($_GET["filekey"]) ? $_GET["filekey"] : null);
+
+            if ($fileName === null || $fileKey === null) {
+                echo "mauvais GET";
+            }
+            else {
+                $res = downloadAction($connection, $fileName, $fileKey);
+
+                if ($res) {
+                    echo "<script>window.close();</script>";
+                    header("location:/espace-utilisateur/accueil-utilisateur");
+                }
+            }
+        }
         break;
 
     default:
@@ -106,7 +121,7 @@ function login($email, $passwd, $connection) {
             if ($userData['access_level'] != "" && $userData['status'] == "ALIVE") {
 
                 //Verification TOTP
-                if ($userData['totp'] != "") { 
+                if ($userData['totp'] != "") {
                     $_SESSION['totp_validated'] = false;
                 } else {
                     $_SESSION['totp_validated'] = true;
@@ -118,7 +133,7 @@ function login($email, $passwd, $connection) {
                 $_SESSION['UserPassword'] = hash('sha512', $passwd . $userData['salt']);
 
                 $result = "SUCCESS#Bienvenue " . $_SESSION['Data']['username'] . "#/espace-utilisateur/accueil";
-                   
+
 
             } else {
 
@@ -449,7 +464,7 @@ function validateTOTP($code, $connection) {
  */
 function requestData($checked, $passwd, $connection) {
     $result = "ERROR_UNKNOWN#Une erreur est survenue.";
-    
+
     if (isValidSession($connection)) {
 
         //Identifiants correct ?
@@ -459,7 +474,7 @@ function requestData($checked, $passwd, $connection) {
             if (true) {
 
                 try {
-                    
+
                     $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE id = ?");
                     $query->bind_param("i", $_SESSION['Data']['id']);
                     $query->execute();
@@ -469,17 +484,17 @@ function requestData($checked, $passwd, $connection) {
 
                     $salt = randomString(16);
                     $file = "../../uploads/tmp/kioui-fr-user-data-fetch-" . $_SESSION['Data']['id'] . "-" . $salt . ".json";
-                    
+
                     $user_data_file = fopen($file, "w");
                     fwrite($user_data_file, json_encode($userData));
                     fclose($user_data_file);
-                    
+
                     $result = "SUCCESS#Téléchargement...#/dl-data/" . $salt;
 
                 } catch (Exception $e) {
                     $result = "ERROR#" . $e->get_message();
                 }
-                
+
 
             } else {
                 $result = "ERROR_INVALID_FIELDS#Veuillez cocher au moins une case.";
@@ -499,8 +514,11 @@ function downloadData($connection, $salt) {
 
     if (isValidSession($connection)) {
 
-        $file = "../../uploads/tmp/kioui-fr-user-data-fetch-" . $_SESSION['Data']['id'] . "-" . $salt . ".json";
+        $file = TEMP_DIR . "kioui-fr-user-data-fetch-" . $_SESSION['Data']['id'] . "-" . $salt . ".json";
 
+        downloadFile($file);
+
+        /*
         if (file_exists($file)) {
 
             header('Content-Description: File Transfer');
@@ -517,8 +535,9 @@ function downloadData($connection, $salt) {
             header("Location : /404");
         }
         header("Location : /403");
+        */
     }
-    
+
 }
 
 
@@ -539,7 +558,7 @@ function contactForm($em, $email, $subject, $message) {
     if (isset($email, $subject, $message) && $subject != "" && $message != "" && filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
         sendMailwosmtp($em['address'], "Nouveau message du formulaire de contact", "De : " . $email . "\nSujet : " . $subject . "\nMessage :\n" . $message);
-        
+
         sendMail($em, $email, "Accusé de réception", "Accusé de réception", "Bonjour, votre message a bien été transmis, et nous répondrons dans les plus brefs délais.", "https://ki-oui.ythepaut.com/", "KI-OUI");
 
         $result = "SUCCESS#Votre message a été envoyé, vous allez recevoir une confirmation de réception par e-mail.#null";
@@ -605,19 +624,19 @@ function upload($connection) {
 
     $res = $success;
 
+    $password = $_SESSION["UserPassword"];
+
     if ($success) {
         for ($i=0; $i<$nbFiles-1; $i++) {
             $originalName = $_FILES["files"]["name"][$i];
             $content = file_get_contents($_FILES["files"]["tmp_name"][$i]);
             $size = $_FILES["files"]["size"][$i];
-            $password = $_SESSION["UserPassword"];
 
             $newFileName = createCryptedZipFile($connection, $content, $size, $password, $originalName);
         }
 
-        // $passwd = $_SESSION["Data"]["password"];
-
-        $content = unzipCryptedFile($connection, $newFileName, $passwd);
+        /*
+        $content = unzipCryptedFile($connection, $newFileName, $password);
 
         $query = $connection->prepare("SELECT original_name FROM kioui_files WHERE path = ?");
         $query->bind_param("s", $newFileName);
@@ -627,76 +646,32 @@ function upload($connection) {
         $result = $result->fetch_assoc();
         $originalName = $result["original_name"];
 
-        $filename = TEMP_DIR . $originalName;
-
-        file_put_contents($filename, $content);
-
-        downloadFile($filename, $originalName);
-
-        unlink($filename);
-
+        downloadFile($content, $name = $originalName, $from_string = true);
+        */
     }
 
     return $res;
 }
 
-function downloadFile($file, $name, $mimeType='') {
+function downloadAction($connection, $fileName, $fileKey) {
+    $content = unzipCryptedFile($connection, $fileName, $fileKey);
 
-    $size = filesize($file);
-    $name = rawurldecode($name);
-
-    $knownMimeTypes = array(
-        "htm"  => "text/html",
-        "exe"  => "application/octet-stream",
-        "zip"  => "application/zip",
-        "doc"  => "application/msword",
-        "jpg"  => "image/jpg",
-        "php"  => "text/plain",
-        "xls"  => "application/vnd.ms-excel",
-        "ppt"  => "application/vnd.ms-powerpoint",
-        "gif"  => "image/gif",
-        "pdf"  => "application/pdf",
-        "txt"  => "text/plain",
-        "html" => "text/html",
-        "png"  => "image/png",
-        "jpeg" => "image/jpg",
-    );
-
-    if ($mimeType == '') {
-        $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
-
-        if (array_key_exists($fileExtension, $knownMimeTypes)) {
-            $mime_type = $knownMimeTypes[$fileExtension];
-        }
-        else {
-            $mimeType = "application/force-download";
-        }
+    if ($content === null) {
+        die("URL invalide");
     }
 
-    @ob_end_clean();
-    header("Content-Type: " . $mimeType);
-    header('Content-Disposition: attachment; filename="' . $name . '"');
-    header("Content-Transfer-Encoding: binary");
-    header("Accept-Ranges: bytes");
+    $query = $connection->prepare("SELECT original_name FROM kioui_files WHERE path = ?");
+    $query->bind_param("s", $fileName);
+    $query->execute();
+    $result = $query->get_result();
+    $query->close();
+    $result = $result->fetch_assoc();
+    $originalName = $result["original_name"];
 
-    header("Content-Length: " . $size);
+    downloadFile($content, $name = $originalName, $from_string = true);
 
-    $chunksize = 1*(1024*1024);
-    $bytes_send = 0;
-
-    if ($file = fopen($file, 'r')) {
-        while (!feof($file) && !connection_aborted() && $bytes_send<$size) {
-            $buffer = fread($file, $chunksize);
-            echo($buffer);
-            flush();
-            $bytes_send += strlen($buffer);
-        }
-
-        fclose($file);
-    }
-    else {
-        die("Erreur : impossible d'ouvrir le fichier");
-    }
+    return true;
 }
+
 
 ?>
