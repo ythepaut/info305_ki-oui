@@ -6,7 +6,7 @@
             <div class="row">
 
                 <div class="col-lg-4 panel-outline">
-                        
+
                     <h4 class="panel-title">Espace utilisé</h4>
 
                     <div class="chart-container">
@@ -22,7 +22,7 @@
                             if (chart.config.options.elements.center) {
                                 //Get ctx from string
                                 var ctx = chart.chart.ctx;
-                        
+
                                 //Get options from the center object in options
                                 var centerConfig = chart.config.options.elements.center;
                                 var fontStyle = centerConfig.fontStyle || 'Arial';
@@ -32,19 +32,19 @@
                                 var sidePaddingCalculated = (sidePadding/100) * (chart.innerRadius * 2)
                                 //Start with a base font of 30px
                                 ctx.font = "30px " + fontStyle;
-                        
+
                                 //Get the width of the string and also the width of the element minus 10 to give it 5px side padding
                                 var stringWidth = ctx.measureText(txt).width;
                                 var elementWidth = (chart.innerRadius * 2) - sidePaddingCalculated;
-                        
+
                                 // Find out how much the font can grow in width.
                                 var widthRatio = elementWidth / stringWidth;
                                 var newFontSize = Math.floor(30 * widthRatio);
                                 var elementHeight = (chart.innerRadius * 2);
-                        
+
                                 // Pick a new font size so it will not be larger than the height of label.
                                 var fontSizeToUse = Math.min(newFontSize, elementHeight);
-                        
+
                                 //Set font settings to draw it correctly.
                                 ctx.textAlign = 'center';
                                 ctx.textBaseline = 'middle';
@@ -52,7 +52,7 @@
                                 var centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2) + 30;
                                 ctx.font = fontSizeToUse+"px " + fontStyle;
                                 ctx.fillStyle = color;
-                        
+
                                 //Draw text in center
                                 ctx.fillText(txt, centerX, centerY);
                             }
@@ -101,8 +101,8 @@
 
                 <div class="col-lg inner panel-outline">
                     <h4 class="panel-title">Ajouter des fichiers</h4>
-                    
-                    <a href="/ajout" class="button"><i class="fas fa-file-import"></i> &nbsp; Ajouter un fichier</a>
+
+                    <a href="/upload-file" class="button"><i class="fas fa-file-import"></i> &nbsp; Ajouter un fichier</a>
                 </div>
 
             </div>
@@ -130,23 +130,31 @@
                             <th style="width=auto;">Actions</th>
                         </thead>
                         <?php
-                        $folders=getFiles($_SESSION['Data']['id'],$connection);
-                        $res="";
-                        foreach($folders as $folder){
-                            $res.="<tr>";
-                            $res.="<td>";
-                            $res.=$folder["original_name"];
-                            $res.="</td>";
-                            $res.="<td>";
-                            $res.=convertUnits($folder["size"]);
-                            $res.="</td>";
-                            $res.="<td>";
-                            $res.="<a href='#' data-toggle='modal' data-target='#modalDlLink' onclick='editModalDownload(\"" . generateDlLink($_SESSION['UserPassword'], $folder['id'], $connection) . "\")'><i class='fas fa-link edit'></i></a>";
-                            $res.="&nbsp; &nbsp; &nbsp;";
-                            $res.="<a href='#' data-toggle='modal' data-target='#modalDeleteFile'
-                            onclick='editModalDelete(" . $folder['id'] . ")'><i class='fas fa-trash-alt edit'></i></a>";
-                            $res.="</td>";
-                            $res.="</tr>";
+                        $files = getFiles($_SESSION['Data']['id'],$connection);
+                        $res = "";
+                        foreach($files as $file){
+                            $res .= "<tr>\n";
+                            $res .= "<td>";
+                            $res .= $file["original_name"];
+                            $res .= "</td>\n";
+                            $res .= "<td>";
+                            $res .= convertUnits($file["size"]);
+                            $res .= "</td>\n";
+                            $res .= "<td>";
+                            $res .= "<a href='#' data-toggle='modal' data-target='#modalShareLink' onclick='editModalShare(\"" . generateShareLink($_SESSION['UserPassword'], $file['id'], $connection) . "\")'><i class='fas fa-share-alt edit'></i></a>";
+                            $res .= "&nbsp; &nbsp; &nbsp;\n";
+                            $res .= "<a href='#' data-toggle='modal' data-target='#modalDeleteFile' onclick='editModalDelete(" . $file['id'] . ")'><i class='fas fa-trash-alt edit'></i></a>";
+                            $res .= "&nbsp; &nbsp; &nbsp;\n";
+
+                            $path = $file["path"];
+                            $key = $_SESSION['UserPassword'];
+                            $originalName = htmlspecialchars($file["original_name"]);
+                            $originalName = str_replace("'", "&apos;", $originalName);
+                            $originalName = str_replace('"', '&quot;', $originalName);
+
+                            $res .= "<a href='#' data-toggle='modal' data-target='#modalDirectDownload' onclick='editModalDirectDownload(".'"'."$path".'"'.", ".'"'."$key".'"'.", ".'"'.$originalName.'"'.")'><i class='fas fa-download edit'></i></a>\n";
+                            $res .= "</td>\n";
+                            $res .= "</tr>\n";
                         }
                         echo($res);
                         ?>
@@ -158,6 +166,7 @@
 </div>
 
 <?php
-include("./includes/pages/modals/dl-link.php");
-include("./includes/pages/modals/delete.php");
+include("./includes/pages/modals/direct-download.php");
+include("./includes/pages/modals/share-link.php");
+include("./includes/pages/modals/delete-file.php");
 ?>
