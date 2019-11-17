@@ -1,4 +1,5 @@
 <?php
+
 include_once(getcwd() . "/config-db.php");
 include_once(getcwd() . "/config-email.php");
 include_once(getcwd() . "/utils.php");
@@ -22,7 +23,7 @@ function deleteFilesByRules($connection) {
 
 
     $query = "SELECT * FROM kioui_files";
-    $results = mysql_query($connection, $query);
+    $results = mysqli_query($connection, $query);
 
     while ($file = mysqli_fetch_assoc($results)) {
 

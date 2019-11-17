@@ -51,6 +51,11 @@
                             <td><?php if ($_SESSION['Data']['backup_password'] != "") { echo("Créée"); } else { echo("Non générée &nbsp; <i class='fas fa-exclamation-triangle error' title='Fortement conseillé de recuperer'></i>"); } ?></td>
                             <td><a href="#" data-toggle="modal" data-target="#modalBackupKey"><?php if ($_SESSION['Data']['backup_password'] != "") { echo("<i class='fas fa-sync edit' title='Créer une nouvelle clé de secours'></i>"); } else { echo("<i class='fas fa-plus-square edit' title='Créer une clé de secours'></i>"); } ?></a></td>
                         </tr>
+                        <tr>
+                            <th scope="row"> Appareils connus</th>
+                            <td><?php echo(count(json_decode($_SESSION['Data']['known_devices'], true))) ?></td>
+                            <td><a href="#" data-toggle="modal" data-target="#modalDeleteKnownDevices"><i class='fas fa-minus-circle delete' title='Supprimer tous les appareils connus'></i></a></td>
+                        </tr>
                     <thead class="thead-light">
                         <tr>
                             <th scope="col" style="width: 45%;">PRÉFÉRENCES</th>
@@ -106,4 +111,5 @@ include("./includes/pages/modals/totp.php");
 include("./includes/pages/modals/download-data.php");
 include("./includes/pages/modals/change-password.php");
 include("./includes/pages/modals/change-username.php");
+include("./includes/pages/modals/delete-known-devices.php");
 ?>
