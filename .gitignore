@@ -6,3 +6,4 @@ Todo.txt
 .idea/src.iml
 .idea/vcs.xml
 .gitignore
+backup_uploads/*
