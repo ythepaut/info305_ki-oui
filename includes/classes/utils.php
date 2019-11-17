@@ -1,8 +1,8 @@
 <?php
 define("AES_METHOD", "AES-256-CBC");
 define("SIZE_FILE_NAME", 16);
-define("TARGET_DIR", "../../uploads/");
-define("TEMP_DIR", "../../uploads/tmp/");
+define("UPLOAD_DIR", "../../../live/uploads/");
+define("TEMP_DIR", "../../../live/tmp/");
 define("MAX_FILE_SIZE", 50 * 10**6);
 
 /**
@@ -83,25 +83,25 @@ function createCryptedZipFile($connection, $content, $size, $password, $oldName,
 		do {
 			$newName = randomString(SIZE_FILE_NAME);
 			$compt ++;
-		} while (file_exists(TARGET_DIR.$newName) && $compt < 100);
+		} while (file_exists(UPLOAD_DIR.$newName) && $compt < 100);
 	}
-    if (file_exists(TARGET_DIR.$newName)) {
+    if (file_exists(UPLOAD_DIR.$newName)) {
         return null;
     }
 
     $ownerId = $_SESSION["Data"]["id"];
     $ip = $_SERVER["REMOTE_ADDR"];
     $zipFile = new ZipArchive;
-    if ($zipFile->open(TARGET_DIR.$newName, ZipArchive::CREATE) === TRUE) {
+    if ($zipFile->open(UPLOAD_DIR.$newName, ZipArchive::CREATE) === TRUE) {
         $zipFile->addFromString($newName, $content);
         $zipFile->close();
     }
     else {
         throw new Exception("Le fichier zip n'a pas pu être créé");
     }
-    $zipText = file_get_contents(TARGET_DIR.$newName);
+    $zipText = file_get_contents(UPLOAD_DIR.$newName);
     list($encryptedText, $salt, $hash) = encryptText($zipText, $password);
-    file_put_contents(TARGET_DIR.$newName, $encryptedText);
+    file_put_contents(UPLOAD_DIR.$newName, $encryptedText);
     $query = $connection->prepare("INSERT INTO kioui_files (original_name, path, owner, salt, size, ip, content_hash) VALUES (?,?,?,?,?,?,?)");
     $query->bind_param("ssisiss", $oldName, $newName, $ownerId, $salt, $size, $ip, $hash);
     $query->execute();
@@ -120,7 +120,7 @@ function createCryptedZipFile($connection, $content, $size, $password, $oldName,
  * @param   string          $content            -   Contenu déchiffré du fichier
  */
 function unzipCryptedFile($connection, $cryptedFileName, $key) {
-    if (!file_exists(TARGET_DIR.$cryptedFileName)) {
+    if (!file_exists(UPLOAD_DIR.$cryptedFileName)) {
         return null;
     }
 
@@ -131,7 +131,7 @@ function unzipCryptedFile($connection, $cryptedFileName, $key) {
     $query->close();
     $fileData = $result->fetch_assoc();
 
-    $zipTextEncrypted = file_get_contents(TARGET_DIR.$cryptedFileName);
+    $zipTextEncrypted = file_get_contents(UPLOAD_DIR.$cryptedFileName);
     $zipText = decryptText($zipTextEncrypted, $_SESSION["UserPassword"], $fileData["salt"], $fileData["hash"]);
 
     if ($zipText === null) {
@@ -381,7 +381,7 @@ function changePassword($userId, $oldPassword, $newPassword, $newPasswordBis, $c
                     $query->execute();
                     $result_bis = $query->get_result();
                     $query->close();
-                    
+
                     $result = "SUCCESS#Changement de mot de passe effectuer#/espace-utilisateur/compte";
                 } else {
                     $result="ERROR_DIFFERENT_PASSWORD#Veuillez confirmer votre nouveau mot de passe";
@@ -445,6 +445,9 @@ function getNbSize($connection) {
     return convertUnits($sum);
 }
 
+function generateShareLink($password, $fileId, $connection) {
+    return generateDlLink($password, $fileId, $connection, $base = "share-file");
+}
 
 /**
  * Fonction qui génère le lien qui permet de décoder un fichier spécifique
@@ -455,7 +458,7 @@ function getNbSize($connection) {
  *
  * @return string
 */
-function generateDlLink($password, $fileId, $connection) {
+function generateDlLink($password, $fileId, $connection, $base = "dl") {
 	$result='';
 	if (isset($password, $fileId, $connection) && $password!='' && $fileId!='' && $connection!='') {
 		//récupération infos fichier
@@ -466,15 +469,15 @@ function generateDlLink($password, $fileId, $connection) {
         $query->close();
         $file = $result->fetch_assoc();
 		//génération du lien
-		$fileName=$file['path'];
+		$fileName = $file['path'];
         $filePassword = $_SESSION['UserPassword'];
-		$result= "https://ki-oui.ythepaut.com/dl/".$fileName."/".$filePassword;
+		$result= "https://ki-oui.ythepaut.com/" . $base . "/" . $fileName . "/" . $filePassword;
 	} else {
 		$result = "ERROR_MISSING_VARIABLES#Veuillez entrer toutes les variables.";
 	}
 	return $result;
 }
-// Format du lien : https://ki-oui.ythepaut.com/dl/{NOM_FICHIER}/{CLE_DECRYPTAGE}
+// Format du lien de téléchargement : https://ki-oui.ythepaut.com/dl/{NOM_FICHIER}/{CLE_DECRYPTAGE}
 
 /**
  * Télécharge un fichier

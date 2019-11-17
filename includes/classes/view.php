@@ -1,4 +1,5 @@
 <?php
+
 #Header
 include("./includes/pages/header.php");
 
@@ -32,7 +33,7 @@ switch ($page) {
                     break;
             }
         } elseif (isset($_SESSION['LoggedIn']) && $_SESSION['LoggedIn'] && ($_SESSION['tfa'] == "new_device" || $_SESSION['tfa'] == "totp")) {
-            
+
             include("./includes/pages/espace-utilisateur/validation-tfa.php");
 
         } else {
@@ -41,12 +42,16 @@ switch ($page) {
         }
         break;
 
-    case "ajout":
-        include("./includes/pages/ajout.php");
+    case "upload-file":
+        include("./includes/pages/upload-file.php");
 
         if (!(isset($_SESSION['LoggedIn']) && $_SESSION['LoggedIn'])) {
             $openLoginModal = true;
         }
+        break;
+
+    case "share-file":
+        include("./includes/pages/share-file.php");
         break;
 
     case "ajout-ok":

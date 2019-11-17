@@ -13,7 +13,7 @@ deleteFilesByRules($connection);
 /**
  * Fonction qui supprimme les fichiers en fonction de leurs limites (telechargement, temps ...)
  * (Tâche CRON)
- * 
+ *
  * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php
  *
  * @return void
@@ -43,15 +43,14 @@ function deleteFilesByRules($connection) {
 
 
 /**
- * Fonction qui supprimme un fichier.
- * 
+ * Fonction qui supprime un fichier.
+ *
  * @param integer           $id                 -   ID du fichier à supprimer
  * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php
  *
  * @return void
  */
 function deleteFile($id, $connection) {
-
     //Acquisition du fichier
     $query = $connection->prepare("SELECT * FROM kioui_files WHERE id = ?");
     $query->bind_param("i", $id);
@@ -64,7 +63,7 @@ function deleteFile($id, $connection) {
 
     if (isset($filePath) && $filePath != "") {
 
-        if (unlink('../../uploads/'.$filePath)) {
+        if (unlink(UPLOAD_DIR.$filePath)) {
 
             //Suppression de la BDD
             $query = $connection->prepare("DELETE FROM kioui_files WHERE id = ?");

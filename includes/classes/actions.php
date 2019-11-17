@@ -60,7 +60,7 @@ switch ($action) {
         header("Location: /");
         break;
 
-    case "upload":
+    case "upload-file":
         if (isset($_SESSION["LoggedIn"]) && $_SESSION['LoggedIn']) {
             $res = upload($connection);
 
@@ -79,23 +79,33 @@ switch ($action) {
 
         break;
 
-    case "download":
-        if (isset($_SESSION["LoggedIn"]) && $_SESSION['LoggedIn']) {
-            $fileName = (isset($_GET["filename"]) ? $_GET["filename"] : null);
-            $fileKey = (isset($_GET["filekey"]) ? $_GET["filekey"] : null);
-
-            if ($fileName === null || $fileKey === null) {
-                echo "mauvais GET";
-            }
-            else {
-                $res = downloadAction($connection, $fileName, $fileKey);
-
-                if ($res) {
-                    echo "<script>window.close();</script>";
-                    header("location:/espace-utilisateur/accueil-utilisateur");
-                }
-            }
+    case "download-file":
+        if (isset($_POST["filename"]) && $_POST["filename"] != "") {
+            $fileName = $_POST["filename"];
         }
+        else {
+            $fileName = null;
+        }
+
+        if (isset($_POST["filekey"]) && $_POST["filekey"] != "") {
+            $fileKey = $_POST["filekey"];
+        }
+        else {
+            $fileKey = null;
+        }
+
+        if ($fileName === null) {
+            $_SESSION["error"] = "Pas de nom de fichier";
+        }
+        elseif ($fileKey === null) {
+            $_SESSION["error"] = "Pas de clé de fichier";
+        }
+        else {
+            $_SESSION["error"] = downloadAction($connection, $fileName, $fileKey);
+        }
+
+        header("location:/share-file");
+
         break;
 
     case "delete":
@@ -207,7 +217,7 @@ function sendTFACode($em, $connection) {
         $query->execute();
 
         sendMail($em, $_SESSION['Data']['email'], "Votre code de verification KI-OUI", $randomString, "Nous avons détecté une nouvelle connexion d'un appareil inconnu. Saisissez le code ci-dessus pour completer votre connexion.<br /><br />Si vous n'êtes pas à l'origine de cette requete, changez votre mot de passe et contactez le support.", "https://ki-oui.ythepaut.com/", "KI-OUI");
-        
+
         $result = "SUCCESS#Un autre e-mail contenant votre code a été envoyé.#null";
     }
 
@@ -577,7 +587,7 @@ function requestData($checked, $passwd, $connection) {
                     $userData = $result->fetch_assoc();
 
                     $salt = randomString(16);
-                    $file = "../../uploads/tmp/kioui-fr-user-data-fetch-" . $_SESSION['Data']['id'] . "-" . $salt . ".json";
+                    $file = TEMP_DIR."kioui-fr-user-data-fetch-" . $_SESSION['Data']['id'] . "-" . $salt . ".json";
 
                     $user_data_file = fopen($file, "w");
                     fwrite($user_data_file, json_encode($userData));
@@ -647,11 +657,11 @@ function contactForm($em, $email, $subject, $message) {
 
 /**
  * Fonction qui change le nom d'un utilisateur
- * 
+ *
  * @param   mysqlconnection $connection			- 	Connection à la base de données SQL
  * @param   string          $newUsername        -   le nouveau nom de l'utilisateur
  * @param   integer         $userId             -   l'indentifiant de l'utilisateur
- * 
+ *
  * @return  string
  */
 function changeUsername($connection, $newUsername, $userId){
@@ -745,20 +755,6 @@ function upload($connection) {
 
             $newFileName = createCryptedZipFile($connection, $content, $size, $password, $originalName);
         }
-
-        /*
-        $content = unzipCryptedFile($connection, $newFileName, $password);
-
-        $query = $connection->prepare("SELECT original_name FROM kioui_files WHERE path = ?");
-        $query->bind_param("s", $newFileName);
-        $query->execute();
-        $result = $query->get_result();
-        $query->close();
-        $result = $result->fetch_assoc();
-        $originalName = $result["original_name"];
-
-        downloadFile($content, $name = $originalName, $from_string = true);
-        */
     }
 
     return $res;
@@ -768,7 +764,7 @@ function downloadAction($connection, $fileName, $fileKey) {
     $content = unzipCryptedFile($connection, $fileName, $fileKey);
 
     if ($content === null) {
-        die("URL invalide");
+        return "Clé invalide";
     }
 
     $query = $connection->prepare("SELECT original_name FROM kioui_files WHERE path = ?");
@@ -781,7 +777,7 @@ function downloadAction($connection, $fileName, $fileKey) {
 
     downloadFile($content, $name = $originalName, $from_string = true);
 
-    return true;
+    return "ok";
 }
 
 /**
@@ -811,9 +807,9 @@ function deleteFile($fileId, $connection) {
         $fileOwner = $fileData['owner'];
 
         if (isset($filePath) && $filePath != "" && $fileOwner == $_SESSION['Data']['id']) {
-
+            /*
             // suppression dans le répertoire
-            if (unlink('../../uploads/'.$filePath)) {
+            if (unlink(UPLOAD_DIR.$filePath)) {
 
                 // suppression dans la BDD
                 $query = $connection->prepare("DELETE FROM kioui_files WHERE id = ? ");
@@ -824,6 +820,22 @@ function deleteFile($fileId, $connection) {
                 $result = "SUCCESS#Fichier supprimé avec succès.#/espace-utilisateur/accueil";
             }
             else {$result = "ERROR_NOT_DELETED#Suppression du fichier impossible.";}
+            */
+
+            // suppression dans le répertoire
+            $deleted = unlink(UPLOAD_DIR.$filePath);
+
+            $query = $connection->prepare("DELETE FROM kioui_files WHERE id = ? ");
+            $query->bind_param("i", $fileId);
+            $query->execute();
+            $query->close();
+
+            if ($deleted) {
+                $result = "SUCCESS#Fichier supprimé avec succès.#/espace-utilisateur/accueil";
+            }
+            else {
+                $result = "WARNING_FILE_DONT_EXIST#Le fichier n'existe pas sur le disque.#/espace-utilisateur/accueil";
+            }
         }
         else {$result = "ERROR_DONT_EXIST#Fichier inexistant.";}
     }
