@@ -26,16 +26,16 @@ function randomString($n) {
 /**
  * Fonction chiffrant un texte à partir d'un mot de passe et d'un sel
  *
- * @param	string		$text						-	Texte à chiffrer
- * @param	string		$password					-	Mot de passe
- * @param	string		$salt						-	Sel, null par défaut,
+ * @param    string        $text                        -    Texte à chiffrer
+ * @param    string        $password                    -    Mot de passe
+ * @param    string        $salt                        -    Sel, null par défaut,
  *
- * 														si null alors sera créé
- * @param	boolean		$raw						-	Si vrai alors retourne du binaire,
- * 														sinon retourne en base 64
+ *                                                         si null alors sera créé
+ * @param    boolean        $raw                        -    Si vrai alors retourne du binaire,
+ *                                                         sinon retourne en base 64
  *
- * @return	array		$cryptedText, $salt, $hash	-	Liste contenant le texte crypté,
- * 														le sel utilisé et le hash du texte original
+ * @return    array        $cryptedText, $salt, $hash    -    Liste contenant le texte crypté,
+ *                                                         le sel utilisé et le hash du texte original
  */
 function encryptText($text, $password, $salt = null, $raw = true) {
     if ($salt == null) {
@@ -58,8 +58,7 @@ function decryptText($cryptedText, $password, $salt, $hash = null, $raw = true) 
     $text = openssl_decrypt($cryptedText, AES_METHOD, $password . $salt, OPENSSL_RAW_DATA, $initVector);
     if ($hash === null || hash_equals(hash_hmac('sha512', $text, $password . $salt, false), $hash)) {
         return $text;
-    }
-    else {
+    } else {
         return null;
     }
 }
@@ -68,23 +67,23 @@ function decryptText($cryptedText, $password, $salt, $hash = null, $raw = true) 
 /**
  * Fonction créant un fichier zip chiffré et l'ajoutant à la base de données
  *
- * @param 	mysqlconnection	$connection			- 	Connection à la base de données SQL
- * @param 	string			$content			-	Contenu du fichier à chiffrer
- * @param	int				$size				-	Taille du fichier
+ * @param     mysqlconnection    $connection            -     Connection à la base de données SQL
+ * @param     string            $content            -    Contenu du fichier à chiffrer
+ * @param    int                $size                -    Taille du fichier
  * @param   string          $password           -   Clé de cryptage
- * @param	string			$oldName			-	Ancien nom du fcihier : nom original
- * @param 	string			$newName			-	Nouveau nom du fichier : facultatif, si null sera initialisé random
+ * @param    string            $oldName            -    Ancien nom du fcihier : nom original
+ * @param     string            $newName            -    Nouveau nom du fichier : facultatif, si null sera initialisé random
  *
- * @return	string			$newName			-	Nouveau nom du fichier
+ * @return    string            $newName            -    Nouveau nom du fichier
  */
 function createCryptedZipFile($connection, $content, $size, $password, $oldName, $newName = null) {
     $compt = 0;
-	if ($newName === null) {
-		do {
-			$newName = randomString(SIZE_FILE_NAME);
-			$compt ++;
-		} while (file_exists(UPLOAD_DIR.$newName) && $compt < 100);
-	}
+    if ($newName === null) {
+        do {
+            $newName = randomString(SIZE_FILE_NAME);
+            $compt ++;
+        } while (file_exists(UPLOAD_DIR.$newName) && $compt < 100);
+    }
     if (file_exists(UPLOAD_DIR.$newName)) {
         return null;
     }
@@ -95,8 +94,7 @@ function createCryptedZipFile($connection, $content, $size, $password, $oldName,
     if ($zipFile->open(UPLOAD_DIR.$newName, ZipArchive::CREATE) === TRUE) {
         $zipFile->addFromString($newName, $content);
         $zipFile->close();
-    }
-    else {
+    } else {
         throw new Exception("Le fichier zip n'a pas pu être créé");
     }
     $zipText = file_get_contents(UPLOAD_DIR.$newName);
@@ -113,7 +111,7 @@ function createCryptedZipFile($connection, $content, $size, $password, $oldName,
 /**
  * Fonction déchiffrant un fichier zip
  *
- * @param   mysqlconnection	$connection			- 	Connection à la base de données SQL
+ * @param   mysqlconnection    $connection            -     Connection à la base de données SQL
  * @param   string          $cryptedFileName    -   Nom du fichier chiffré (son nom sur le serveur)
  * @param   string          $key                -   Clé de déchiffrage
  *
@@ -137,8 +135,7 @@ function unzipCryptedFile($connection, $cryptedFileName, $key) {
     if ($zipText === null) {
         // Hash différent
         return null;
-    }
-    else {
+    } else {
         file_put_contents(TEMP_DIR.$cryptedFileName, $zipText);
 
         $zipFile = new ZipArchive;
@@ -218,35 +215,35 @@ if (file_exists(getcwd() . '/includes/classes/PHPMailer/PHPMailerAutoload.php'))
  * @return void
  */
 function sendMail($em, $to, $subject, $title, $body, $button_link, $button_text) {
-	$message = file_get_contents(getcwd() . "/PHPMailer/email_format/email-layout1.php");
-	$message .= $title . file_get_contents(getcwd() . "/PHPMailer/email_format/email-layout2.php");
-	$message .= $body . file_get_contents(getcwd() . "/PHPMailer/email_format/email-layout3.php");
-	$message .= $button_link . file_get_contents(getcwd() . "/PHPMailer/email_format/email-layout4.php");
-	$message .= $button_text . file_get_contents(getcwd() . "/PHPMailer/email_format/email-layout5.php");
-	$phpmail = new PHPMailer(true);
-	try {
-		//Server settings
-		$phpmail->SMTPDebug = 0;                                 // Enable verbose debug output
-		$phpmail->isSMTP();                                      // Set mailer to use SMTP
-		$phpmail->Host = 'SSL0.OVH.NET';  						 // Specify main and backup SMTP servers
-		$phpmail->SMTPAuth = true;                               // Enable SMTP authentication
-		$phpmail->Username = $em['address'];                 // SMTP username
-		$phpmail->Password = $em['password'];                           // SMTP password
-		$phpmail->SMTPSecure = 'ssl';  //tls/ssl                          // Enable TLS encryption, `ssl` also accepted
-		$phpmail->Port = 465;//587//465                                    // TCP port to connect to
-		//Recipients
-		$phpmail->setFrom('ki-oui@ythepaut.com', 'KI-OUI');
-		$phpmail->addAddress($to);
-		$phpmail->addReplyTo('noreply@ythepaut.com', 'Ne pas repondre');
-		//Content
-		$phpmail->isHTML(true);                                  // Set email format to HTML
-		$phpmail->CharSet = 'UTF-8';
-		$phpmail->Subject = $subject;
-		$phpmail->Body    = $message;
-		$phpmail->AltBody = $message;
-		$phpmail->send();
-	} catch (Exception $e) {
-	}
+    $message = file_get_contents(getcwd() . "/PHPMailer/email_format/email-layout1.php");
+    $message .= $title . file_get_contents(getcwd() . "/PHPMailer/email_format/email-layout2.php");
+    $message .= $body . file_get_contents(getcwd() . "/PHPMailer/email_format/email-layout3.php");
+    $message .= $button_link . file_get_contents(getcwd() . "/PHPMailer/email_format/email-layout4.php");
+    $message .= $button_text . file_get_contents(getcwd() . "/PHPMailer/email_format/email-layout5.php");
+    $phpmail = new PHPMailer(true);
+    try {
+        //Server settings
+        $phpmail->SMTPDebug = 0;                                 // Enable verbose debug output
+        $phpmail->isSMTP();                                      // Set mailer to use SMTP
+        $phpmail->Host = 'SSL0.OVH.NET';                           // Specify main and backup SMTP servers
+        $phpmail->SMTPAuth = true;                               // Enable SMTP authentication
+        $phpmail->Username = $em['address'];                 // SMTP username
+        $phpmail->Password = $em['password'];                           // SMTP password
+        $phpmail->SMTPSecure = 'ssl';  //tls/ssl                          // Enable TLS encryption, `ssl` also accepted
+        $phpmail->Port = 465;//587//465                                    // TCP port to connect to
+        //Recipients
+        $phpmail->setFrom('ki-oui@ythepaut.com', 'KI-OUI');
+        $phpmail->addAddress($to);
+        $phpmail->addReplyTo('noreply@ythepaut.com', 'Ne pas repondre');
+        //Content
+        $phpmail->isHTML(true);                                  // Set email format to HTML
+        $phpmail->CharSet = 'UTF-8';
+        $phpmail->Subject = $subject;
+        $phpmail->Body    = $message;
+        $phpmail->AltBody = $message;
+        $phpmail->send();
+    } catch (Exception $e) {
+    }
 }
 
 
@@ -259,28 +256,28 @@ function sendMail($em, $to, $subject, $title, $body, $button_link, $button_text)
  *
  * @return void
  */
-function sendMailwosmtp($to,$subject,$message) {
-	$headers = "From: KI-OUI <ki-oui@ythepaut.com>\r\n";
-	$headers .= "Reply-To: noreply@ythepaut.com\r\n";
-	mail($to, $subject, $message, $headers);
+function sendMailwosmtp($to, $subject, $message) {
+    $headers = "From: KI-OUI <ki-oui@ythepaut.com>\r\n";
+    $headers .= "Reply-To: noreply@ythepaut.com\r\n";
+    mail($to, $subject, $message, $headers);
 }
 
 
 /**
  * Fonction qui renvoie l'espace occupé par un utilisateur
  *
- * @param string             $idUser   			-   identifiant de l'utilisateur
+ * @param string             $idUser               -   identifiant de l'utilisateur
  * @param mysqlconnection    $connection        -   Connexion BDD effectuée dans le fichier config-db.php
  *
  * @return integer                              -   Espace occupé par l'utilisateur en octets
  */
-function getSize($idUser, $connection){
-	$size = 0;
+function getSize($idUser, $connection) {
+    $size = 0;
 
     //Acquisiton des fichiers
 
     $files = getFiles($idUser, $connection);
-    foreach ($files as $file){
+    foreach ($files as $file) {
         $size += $file['size'];
     }
 
@@ -291,15 +288,15 @@ function getSize($idUser, $connection){
 /**
  * Fonction qui renvoie les fichiers de l'utilisateur
  *
- * @param string             $idUser   			-   identifiant de l'utilisateur
+ * @param string             $idUser               -   identifiant de l'utilisateur
  * @param mysqlconnection    $connection        -   Connexion BDD effectuée dans le fichier config-db.php
  * @param string             $sort              -   Trie en fct de la colonne
  *
  * @return array
  */
 function getFiles($idUser, $connection, $sort = 'id/DESC') {
-	$filesUser=[];
-	//Acquisiton des fichiers
+    $filesUser=[];
+    //Acquisiton des fichiers
     $files = mysqli_query($connection, "SELECT * FROM kioui_files ORDER BY " . explode("/", $sort)[0] . " " . explode("/", $sort)[1]);
     while ($folder = mysqli_fetch_assoc($files)) {
         if ($folder['owner'] == $idUser) {
@@ -313,26 +310,26 @@ function getFiles($idUser, $connection, $sort = 'id/DESC') {
 /**
  * Fonction qui renvoie la conversion d'une taille de fichier en octets en une chaine de charactères avec les unitées
  *
- * @param interger             $size       		- taille en octets d'un fichier
+ * @param interger             $size               - taille en octets d'un fichier
  *
  * @return string
  */
-function convertUnits($size){
-	$unit = "";
-	$stringSize = NULL;
+function convertUnits($size) {
+    $unit = "";
+    $stringSize = NULL;
 
-	if (floor($size/10**6) > 0){
-		$unit = " Mo";
-		$stringSize = round($size/10**6, 2);
-	} else if (floor($size/10**3) > 0){
-		$unit = " Ko";
-		$stringSize = round($size/10**3, 2);
-	} else{
-		$unit = " o";
-		$stringSize = $size;
-	}
-	$stringSize = ((string) $stringSize) . $unit;
-	return $stringSize;
+    if (floor($size/10**6) > 0) {
+        $unit = " Mo";
+        $stringSize = round($size/10**6, 2);
+    } else if (floor($size/10**3) > 0) {
+        $unit = " Ko";
+        $stringSize = round($size/10**3, 2);
+    } else {
+        $unit = " o";
+        $stringSize = $size;
+    }
+    $stringSize = ((string) $stringSize) . $unit;
+    return $stringSize;
 }
 
 
@@ -359,7 +356,7 @@ function getNbUsers($connection) {
 function getNbFiles($connection) {
 
     $result = mysqli_query($connection, "SELECT * FROM kioui_files");
-    return mysqli_num_rows ( $result );
+    return mysqli_num_rows ($result);
 }
 
 
@@ -386,30 +383,30 @@ function generateShareLink($password, $fileId, $connection) {
 /**
  * Fonction qui génère le lien qui permet de décoder un fichier spécifique
  *
- * @param string              $password       		- mot de passe de l'utilisateur hash(mdp + sel_user)
- * @param integer  			  $fileId  				- id du fichier
+ * @param string              $password               - mot de passe de l'utilisateur hash(mdp + sel_user)
+ * @param integer                $fileId                  - id du fichier
  * @param mysqlconnection     $connection           - Connexion BDD effectuée dans le fichier config-db.php
  *
  * @return string
 */
 function generateDlLink($password, $fileId, $connection, $base = "dl") {
-	$result='';
-	if (isset($password, $fileId, $connection) && $password!='' && $fileId!='' && $connection!='') {
-		//récupération infos fichier
-		$query = $connection->prepare("SELECT * FROM kioui_files WHERE id = ?");
+    $result='';
+    if (isset($password, $fileId, $connection) && $password!='' && $fileId!='' && $connection!='') {
+        //récupération infos fichier
+        $query = $connection->prepare("SELECT * FROM kioui_files WHERE id = ?");
         $query->bind_param("s", $fileId);
         $query->execute();
         $result = $query->get_result();
         $query->close();
         $file = $result->fetch_assoc();
-		//génération du lien
-		$fileName = $file['path'];
+        //génération du lien
+        $fileName = $file['path'];
         $filePassword = $_SESSION['UserPassword'];
-		$result= "https://ki-oui.ythepaut.com/" . $base . "/" . $fileName . "/" . $filePassword;
-	} else {
-		$result = "ERROR_MISSING_VARIABLES#Veuillez entrer toutes les variables.";
-	}
-	return $result;
+        $result= "https://ki-oui.ythepaut.com/" . $base . "/" . $fileName . "/" . $filePassword;
+    } else {
+        $result = "ERROR_MISSING_VARIABLES#Veuillez entrer toutes les variables.";
+    }
+    return $result;
 }
 // Format du lien de téléchargement : https://ki-oui.ythepaut.com/dl/{NOM_FICHIER}/{CLE_DECRYPTAGE}
 
@@ -428,8 +425,7 @@ function downloadFile($content, $name = null, $from_string = false) {
     if ($from_string) {
         $file = TEMP_DIR . randomString(16);
         file_put_contents($file, $content);
-    }
-    else {
+    } else {
         $file = $content;
     }
 
@@ -458,8 +454,7 @@ function downloadFile($content, $name = null, $from_string = false) {
 
     if (array_key_exists($fileExtension, $knownMimeTypes)) {
         $mimeType = $knownMimeTypes[$fileExtension];
-    }
-    else {
+    } else {
         $mimeType = "application/octet-stream";
     }
 
@@ -478,8 +473,7 @@ function downloadFile($content, $name = null, $from_string = false) {
         if ($from_string) {
             unlink($file);
         }
-    }
-    else {
+    } else {
         header("Location : /404");
     }
 }
@@ -510,8 +504,7 @@ function downloadFileOld($filename, $name, $mimeType='') {
 
         if (array_key_exists($fileExtension, $knownMimeTypes)) {
             $mimeType = $knownMimeTypes[$fileExtension];
-        }
-        else {
+        } else {
             $mimeType = "application/force-download";
         }
     }
@@ -539,8 +532,7 @@ function downloadFileOld($filename, $name, $mimeType='') {
         }
 
         fclose($filename);
-    }
-    else {
+    } else {
         die("Erreur : impossible d'ouvrir le fichier");
     }
 }

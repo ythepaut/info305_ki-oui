@@ -72,12 +72,10 @@ switch ($action) {
 
             if ($res) {
                 header("location:/espace-utilisateur/accueil-utilisateur");
-            }
-            else {
+            } else {
                 header("location:/ajout-nok");
             }
-        }
-        else {
+        } else {
             header("location:/ajout-nok");
         }
 
@@ -88,25 +86,21 @@ switch ($action) {
     case "download-file":
         if (isset($_POST["filename"]) && $_POST["filename"] != "") {
             $fileName = $_POST["filename"];
-        }
-        else {
+        } else {
             $fileName = null;
         }
 
         if (isset($_POST["filekey"]) && $_POST["filekey"] != "") {
             $fileKey = $_POST["filekey"];
-        }
-        else {
+        } else {
             $fileKey = null;
         }
 
         if ($fileName === null) {
             $_SESSION["error"] = "Pas de nom de fichier";
-        }
-        elseif ($fileKey === null) {
+        } elseif ($fileKey === null) {
             $_SESSION["error"] = "Pas de clé de fichier";
-        }
-        else {
+        } else {
             $_SESSION["error"] = downloadAction($connection, $fileName, $fileKey);
         }
 
@@ -687,7 +681,7 @@ function changeUsername($connection, $newUsername, $userId){
             if ($userData['id'] == "") {
                 //changement nom d'utilisateur bdd
                 $query = $connection->prepare("UPDATE kioui_accounts SET username = ? WHERE kioui_accounts.id = ?");
-                $query->bind_param("si",$newUsername,$userId);
+                $query->bind_param("si", $newUsername, $userId);
                 $query->execute();
                 $result_bis = $query->get_result();
                 $query->close();
@@ -750,8 +744,7 @@ function upload($connection) {
 
     if ($success) {
         $log .= "Success";
-    }
-    else {
+    } else {
         $log .= "Failure";
     }
 
@@ -856,14 +849,12 @@ function deleteFile($fileId, $connection) {
 
                 if ($deleted) {
                     $result = "SUCCESS#Fichier supprimé avec succès.#/espace-utilisateur/accueil";
-                }
-                else {
+                } else {
                     $result = "WARNING_FILE_DOESNT_EXIST#Le fichier n'existe pas sur le disque.#/espace-utilisateur/accueil";
                 }
             }
         }
-    }
-    else {
+    } else {
         $result = "ERROR_INVALID_SESSION#Votre session est invalide. Déconnectez vous puis reconnectez vous. Si le problème persiste contactez le support.";
     }
 
@@ -1019,7 +1010,7 @@ function changePassword($userId, $oldPassword, $newPassword, $newPasswordBis, $c
                 if($newPassword == $newPasswordBis) {
 
                     //Décrypter et rencrypter tous les fichiers
-                    $files = getFiles($userId,$connection);
+                    $files = getFiles($userId, $connection);
                     //Obtenir les deux clés de décryptage et de cryptage
                     $oldUserKey = hash('sha512', $oldPassword . $userData['salt']);
                     $newUserKey = hash('sha512', $newPassword . $userData['salt']);
