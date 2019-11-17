@@ -803,13 +803,10 @@ function downloadAction($connection, $fileName, $fileKey) {
  * @return  string
  */
 function deleteFile($fileId, $connection) {
-
     $result = "ERROR_UNKNOWN#Une erreur est survenue.";
 
     if (isValidSession($connection)) {
-
         if (isset($fileId)) {
-
             // acquisition du fichier crypté
             $query = $connection->prepare("SELECT * FROM kioui_files WHERE id = ? ");
             $query->bind_param("i", $fileId);
@@ -821,48 +818,50 @@ function deleteFile($fileId, $connection) {
             $filePath = $fileData['path'];
             $fileOwner = $fileData['owner'];
 
-        if (isset($filePath) && $filePath != "" && $fileOwner == $_SESSION['Data']['id']) {
-            /*
-            // suppression dans le répertoire
-            if (unlink(UPLOAD_DIR.$filePath)) {
+            if (isset($filePath) && $filePath != "" && $fileOwner == $_SESSION['Data']['id']) {
+                /*
+                // suppression dans le répertoire
+                if (unlink(UPLOAD_DIR.$filePath)) {
 
-                    // suppression dans la BDD
-                    $query = $connection->prepare("DELETE FROM kioui_files WHERE id = ? ");
-                    $query->bind_param("i", $fileId);
-                    $query->execute();
-                    $query->close();
+                        // suppression dans la BDD
+                        $query = $connection->prepare("DELETE FROM kioui_files WHERE id = ? ");
+                        $query->bind_param("i", $fileId);
+                        $query->execute();
+                        $query->close();
 
-                    $result = "SUCCESS#Fichier supprimé avec succès.#/espace-utilisateur/accueil";
+                        $result = "SUCCESS#Fichier supprimé avec succès.#/espace-utilisateur/accueil";
+
+                    } else {
+                        $result = "ERROR_NOT_DELETED#Suppression du fichier impossible.";
+                    }
 
                 } else {
-                    $result = "ERROR_NOT_DELETED#Suppression du fichier impossible.";
+                    $result = "ERROR_DONT_EXIST#Fichier inexistant.";
                 }
+                else {$result = "ERROR_NOT_DELETED#Suppression du fichier impossible.";}
+                */
 
-            } else {
-                $result = "ERROR_DONT_EXIST#Fichier inexistant.";
-            }
-            else {$result = "ERROR_NOT_DELETED#Suppression du fichier impossible.";}
-            */
+                // suppression dans le répertoire
+                $deleted = unlink(UPLOAD_DIR.$filePath);
 
-            // suppression dans le répertoire
-            $deleted = unlink(UPLOAD_DIR.$filePath);
+                $query = $connection->prepare("DELETE FROM kioui_files WHERE id = ? ");
+                $query->bind_param("i", $fileId);
+                $query->execute();
+                $query->close();
 
-            $query = $connection->prepare("DELETE FROM kioui_files WHERE id = ? ");
-            $query->bind_param("i", $fileId);
-            $query->execute();
-            $query->close();
-
-            if ($deleted) {
-                $result = "SUCCESS#Fichier supprimé avec succès.#/espace-utilisateur/accueil";
-            }
-            else {
-                $result = "WARNING_FILE_DOESNT_EXIST#Le fichier n'existe pas sur le disque.#/espace-utilisateur/accueil";
+                if ($deleted) {
+                    $result = "SUCCESS#Fichier supprimé avec succès.#/espace-utilisateur/accueil";
+                }
+                else {
+                    $result = "WARNING_FILE_DOESNT_EXIST#Le fichier n'existe pas sur le disque.#/espace-utilisateur/accueil";
+                }
             }
         }
-
-    } else {
+    }
+    else {
         $result = "ERROR_INVALID_SESSION#Votre session est invalide. Déconnectez vous puis reconnectez vous. Si le problème persiste contactez le support.";
     }
+
     return $result;
 }
 
