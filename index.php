@@ -23,11 +23,4 @@ include_once("./includes/classes/utils.php");
 #Affichage de la page web
 include("./includes/classes/view.php");
 
-/*
-https://ki-oui.ythepaut.com/share-file/KdQH6CsQLN8undhb/797627c112aebba19fae260f49b4715d75aefdaf42c72fbea333aec80d0fdb393ff0118d0afe64c12d527193491b8d76c727154b3b4d272dd841089a53183149
-
-
-RewriteRule ^share-file/([A-Za-z0-9-]+)/([A-Za-z0-9-]+)$ includes/pages/share-file.php?filename=$1&filekey=$2 [L]
- */
-
 ?>
