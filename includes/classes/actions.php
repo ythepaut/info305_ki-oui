@@ -704,6 +704,74 @@ function changeUsername($connection, $newUsername, $userId){
     return $result;
 }
 /**
+ * Fonction qui change le mot de passe d'un utilisateur donné
+ *
+ * @param integer             $userId       		- id de l'utilisateur
+ * @param string			  $oldPassword			- ancien mot de passe
+ * @param string			  $newPassword			- nouveau mot de passe
+ * @param string			  $newPasswordBis	    - Confirmation du nouveau mot de passe
+ * @param mysqlconnection     $connection           - Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return string
+*/
+function changePassword($userId, $oldPassword, $newPassword, $newPasswordBis, $connection) {
+    $result = "ERROR_UNKNOWN#Une erreur est survenue.";
+    if(isValidSession($connection)){
+        if (isset($userId, $oldPassword, $newPassword) && $userId != "" && $oldPassword != "" && $newPassword != "") {
+            //Recuperation des données
+            $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE id = ?");
+            $query->bind_param("i", $userId);
+            $query->execute();
+            $result_bis = $query->get_result();
+            $query->close();
+            $userData = $result_bis->fetch_assoc();
+
+            //Identifiants correct ?
+            if (isset($userData['id']) && $userData['id'] != null && password_verify(hash('sha512', hash('sha512', $oldPassword . $userData['salt'])), $userData['password'])) {
+                //nouveau mot de passe correct ?
+                if (strlen($newPassword) >= 8 && preg_match("#[0-9]+#", $newPassword) && preg_match("#[a-zA-Z]+#", $newPassword)) {
+                    if($newPassword == $newPasswordBis){
+                        //décrypter et rencrypter tous les fichiers
+                        $files = getFiles($userId,$connection);
+                        //obtenir les deux clés de décryptage et de cryptage
+                        $oldUserKey = hash('sha512', $oldPassword . $userData['salt']);
+                        $newUserKey = hash('sha512', $newPassword . $userData['salt']);
+
+                        foreach ($files as $file) {
+                            $content = unzipCryptedFile($connection, $file['path'], $oldUserKey);
+                            createCryptedZipFile($connection, $content, $file['size'], $newPassword, $file['original_name']);
+                            //suppresion du fichier
+                            deleteFile($file['id'],$connection);
+
+                        }
+                        //obtention mdp a insérer
+                        $new_password_salted_hashed = password_hash(hash('sha512', hash('sha512', $newPassword . $userData['salt'])), PASSWORD_DEFAULT, ['cost' => 12]);
+                        //changement mdp bdd
+                        $query = $connection->prepare("UPDATE kioui_accounts SET password = ? WHERE kioui_accounts.id = ?");
+                        $query->bind_param("si",$new_password_salted_hashed,$userId);
+                        $query->execute();
+                        $result_bis = $query->get_result();
+                        $query->close();
+
+                        $result = "SUCCESS#Changement de mot de passe effectuer#/espace-utilisateur/compte";
+                    } else {
+                        $result="ERROR_DIFFERENT_PASSWORD#Veuillez confirmer votre nouveau mot de passe";
+                    }
+                } else {
+                    $result = "ERROR_WEAK_PASSWORD#Veuillez choisir un mot de passe plus fort";
+                }
+            } else {
+                $result = "ERROR_WRONG_PASSWORD#Veuillez rentrer les bons identifiants ";
+            }
+        } else {
+            $result = "ERROR_MISSING_FIELDS#Veuillez remplir tous les champs.";
+        }
+    } else {
+        $result = "ERROR_INVALID_SESSION#Votre session est invalide. Déconnectez vous puis reconnectez vous. Si le problème persiste contactez le support.";
+    }
+    return $result;
+}
+/**
  * Upload des fichiers
  *
  * @param   mysqlconnection $connection			- 	Connection à la base de données SQL
