@@ -27,22 +27,15 @@
                             </div>
 
                             <br />
-                            <br />
 
                             <input type="hidden" name="action" value="delete" />
-                            <button type="submit "value="valider">Oui</button>
+                            <input type="submit" value="Supprimer" name="Supprimer" />
+
+                            <button type="button" data-dismiss="modal">Annuler</button>
 
                             <div style="display: none;" id="hint_delete"></div>
 
                         </form>
-
-
-                        <br />
-                        <br />
-
-                        <div style="text-align: center;">
-                            <button type="button" data-dismiss="modal">Annuler</button>
-                        </div>
 
 
                     </div>

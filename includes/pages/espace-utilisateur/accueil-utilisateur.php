@@ -109,54 +109,67 @@
             <div class="row">
                 <div class="col panel-outline">
 
-                    <div class="row">
-                    <div class="col-lg-8">
-                        <h4 class="panel-title">Mes fichiers</h4>
-                    </div>
-                    <div class="col-lg" style="padding: 15px 0px 12px 0px;">
-                        <span>Tier par : </span>
-                        <div class="btn-group" role="group" aria-label="Trie">
-                            <button type="button" onclick="window.alert('J\'ai perdu.')">Nom</button>
-                            <button type="button" onclick="window.alert('J\'ai perdu.')">Date d'ajout</button>
-                            <button type="button" onclick="window.alert('J\'ai perdu.')">Nombre de téléchargements</button>
-                        </div>
-                    </div>
-                    </div>
+                    <h4 class="panel-title">Mes fichiers</h4>
+
+                    <?php
+                    //Tri
+                    if(isset($_GET['sp'])) {
+                        switch ($_GET['sp']) {
+                            case "sort-by-name":
+                                $_SESSION['table_files_sort'] = "original_name/ASC";
+                                break;
+                            case "sort-by-size":
+                                $_SESSION['table_files_sort'] = "size/DESC";
+                                break;
+                            case "sort-by-dl":
+                                $_SESSION['table_files_sort'] = "download_count/DESC";
+                                break;
+                            case "sort-by-date":
+                            default:
+                                $_SESSION['table_files_sort'] = "id/DESC";
+                                break;
+                        }
+                    }
+                    ?>
 
                     <table class="table">
                         <thead class="thead">
-                            <th style="width=60%;">Nom du fichier</th>
-                            <th style="width=20%;">Taille du fichier</th>
+                            <th style="width=35%;">Nom du fichier &nbsp;<a href="/espace-utilisateur/sort-by-name"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "original_name/ASC") {echo("active"); } ?>" title="Trier par nom"></i></a></th>
+                            <th style="width=15%;">Taille du fichier &nbsp;<a href="/espace-utilisateur/sort-by-size"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "size/DESC") {echo("active"); } ?>" title="Trier par taille"></i></a></th>
+                            <th style="width=15%;">Date &nbsp;<a href="/espace-utilisateur/sort-by-date"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "id/DESC") {echo("active"); } ?>" title="Trier par date"></i></a></th>
+                            <th style="width=15%;">Téléchargements &nbsp;<a href="/espace-utilisateur/sort-by-dl"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "download_count/DESC") {echo("active"); } ?>" title="Trier nombre de téléchargements"></i></a></th>
                             <th style="width=auto;">Actions</th>
                         </thead>
                         <?php
-                        $files = getFiles($_SESSION['Data']['id'],$connection);
-                        $res = "";
+
+
+                        $files = getFiles($_SESSION['Data']['id'], $connection, $_SESSION['table_files_sort']);
+                        $table = "";
                         foreach($files as $file){
-                            $res .= "<tr>\n";
-                            $res .= "<td>";
-                            $res .= $file["original_name"];
-                            $res .= "</td>\n";
-                            $res .= "<td>";
-                            $res .= convertUnits($file["size"]);
-                            $res .= "</td>\n";
-                            $res .= "<td>";
-                            $res .= "<a href='#' data-toggle='modal' data-target='#modalShareLink' onclick='editModalShare(\"" . generateShareLink($_SESSION['UserPassword'], $file['id'], $connection) . "\")'><i class='fas fa-share-alt edit'></i></a>";
-                            $res .= "&nbsp; &nbsp; &nbsp;\n";
-                            $res .= "<a href='#' data-toggle='modal' data-target='#modalDeleteFile' onclick='editModalDelete(" . $file['id'] . ")'><i class='fas fa-trash-alt edit'></i></a>";
-                            $res .= "&nbsp; &nbsp; &nbsp;\n";
 
                             $path = $file["path"];
                             $key = $_SESSION['UserPassword'];
                             $originalName = htmlspecialchars($file["original_name"]);
                             $originalName = str_replace("'", "&apos;", $originalName);
-                            $originalName = str_replace('"', '&quot;', $originalName);
+                            $originalName = str_replace("\"", '&quot;', $originalName);
 
-                            $res .= "<a href='#' data-toggle='modal' data-target='#modalDirectDownload' onclick='editModalDirectDownload(".'"'."$path".'"'.", ".'"'."$key".'"'.", ".'"'.$originalName.'"'.")'><i class='fas fa-download edit'></i></a>\n";
-                            $res .= "</td>\n";
-                            $res .= "</tr>\n";
+                            $originalName = (strlen($originalName) > 70) ? substr($originalName, 0, 67) . "..." : $originalName;
+
+                            //Colonne Nom
+                            $table .=  "<tr><td><span title='" . htmlspecialchars($file["original_name"]) . "'>" . $originalName . "</span></td>\n";
+                            //Colonne Taille
+                            $table .=  "<td>" . convertUnits($file["size"]) . "</td>\n";
+                            //Colonne Date
+                            $table .=  "<td>" . date("d/m/Y", $file["upload_date"]) . "&nbsp;&nbsp;&nbsp;" . date("H:i:s", $file["upload_date"]) . "</td>\n";
+                            //Colonne Date
+                            $table .=  "<td>" . $file["download_count"] . "</td>\n";
+                            //Colonne Action
+                            $table .=  "<td>" . "<a href='#' data-toggle='modal' data-target='#modalShareLink' onclick='editModalShare(\"" . generateShareLink($_SESSION['UserPassword'], $file['id'], $connection) . "\")'><i class='fas fa-share-alt edit'></i></a>" . "&nbsp; &nbsp; &nbsp;" .
+                                                "<a href='#' data-toggle='modal' data-target='#modalDirectDownload' onclick='editModalDirectDownload(".'"'."$path".'"'.", ".'"'."$key".'"'.", ".'"'.$originalName.'"'.")'><i class='fas fa-download edit'></i></a>" . "&nbsp; &nbsp; &nbsp;" .
+                                                "<a href='#' data-toggle='modal' data-target='#modalDeleteFile' onclick='editModalDelete(" . $file['id'] . ")'><i class='fas fa-trash-alt delete'></i></a>" . "</td></tr>\n";
+
                         }
-                        echo($res);
+                        echo($table);
                         ?>
                     </table>
                 </div>

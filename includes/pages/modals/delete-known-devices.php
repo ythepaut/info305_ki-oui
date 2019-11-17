@@ -17,10 +17,11 @@
                     </div>
 
                     <div class="col-lg">
-                    <form action="<?php echo(getSrc('./includes/classes/actions.php')); ?>" method="POST" class="ajax">
+                    <form action="<?php echo(getSrc('./includes/classes/actions.php')); ?>" method="POST" class="ajax" style="text-align: center;">
                         
                         <span>Êtes-vous sûr de vouloir supprimer tous vos appareils enregistrés ?</span>
 
+                        <br />
                         <br />
                         
 

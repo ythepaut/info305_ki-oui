@@ -220,6 +220,21 @@ i.disabled:hover {
 }
 
 
+i.sort.active {
+    color: #2e86de;
+    cursor: pointer;
+}
+i.sort {
+    color: #222f3e;
+    cursor: pointer;
+    transition: all 0.5s;
+}
+i.sort:hover:not(.active) {
+    color: #111;
+    cursor: pointer;
+    transition: all 0.5s;
+}
+
 i.edit {
     color: #54a0ff;
     cursor: pointer;

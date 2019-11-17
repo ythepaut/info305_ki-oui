@@ -277,7 +277,7 @@ function sendMailwosmtp($to,$subject,$message) {
 function getSize($idUser, $connection){
 	$size = 0;
 
-    //on récupère tout les fichiers
+    //Acquisiton des fichiers
 
     $files = getFiles($idUser, $connection);
     foreach ($files as $file){
@@ -293,13 +293,14 @@ function getSize($idUser, $connection){
  *
  * @param string             $idUser   			-   identifiant de l'utilisateur
  * @param mysqlconnection    $connection        -   Connexion BDD effectuée dans le fichier config-db.php
+ * @param string             $sort              -   Trie en fct de la colonne
  *
  * @return array
  */
-function getFiles($idUser, $connection) {
+function getFiles($idUser, $connection, $sort = 'id/DESC') {
 	$filesUser=[];
-	//On récupère tout les fichiers
-    $files = mysqli_query($connection, "SELECT * FROM kioui_files");
+	//Acquisiton des fichiers
+    $files = mysqli_query($connection, "SELECT * FROM kioui_files ORDER BY " . explode("/", $sort)[0] . " " . explode("/", $sort)[1]);
     while ($folder = mysqli_fetch_assoc($files)) {
         if ($folder['owner'] == $idUser) {
             $filesUser[] = $folder;

@@ -64,9 +64,14 @@
                         </tr>
                     </thead>
                         <tr>
-                            <th scope="row"> Recevoir des notifications par e-mail</th>
+                            <th scope="row"> Reception des alertes de sécurité par e-mail</th>
                             <td></td>
-                            <td><i class="fas fa-toggle-on enabled" title="Désactiver"></i></td>
+                            <td><a href="#" style="cursor: not-allowed;"><i class="fas fa-toggle-on enabled" style="cursor: not-allowed;" title="Non désactivable"></i></a></td>
+                        </tr>
+                        <tr>
+                            <th scope="row"> Reception des notifications par e-mail</th>
+                            <td></td>
+                            <td><a href="#"><i class="fas fa-toggle-off disabled" title="Activer"></i></a></td>
                         </tr>
                     <thead class="thead-light">
                         <tr>
