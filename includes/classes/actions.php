@@ -856,7 +856,7 @@ function deleteFile($fileId, $connection) {
                 $result = "SUCCESS#Fichier supprimé avec succès.#/espace-utilisateur/accueil";
             }
             else {
-                $result = "WARNING_FILE_DONT_EXIST#Le fichier n'existe pas sur le disque.#/espace-utilisateur/accueil";
+                $result = "WARNING_FILE_DOESNT_EXIST#Le fichier n'existe pas sur le disque.#/espace-utilisateur/accueil";
             }
         }
 
