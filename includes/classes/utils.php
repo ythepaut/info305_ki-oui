@@ -130,7 +130,7 @@ function unzipCryptedFile($connection, $cryptedFileName, $key) {
     $fileData = $result->fetch_assoc();
 
     $zipTextEncrypted = file_get_contents(UPLOAD_DIR.$cryptedFileName);
-    $zipText = decryptText($zipTextEncrypted, $_SESSION["UserPassword"], $fileData["salt"], $fileData["hash"]);
+    $zipText = decryptText($zipTextEncrypted, $key, $fileData["salt"], $fileData["hash"]);
 
     if ($zipText === null) {
         // Hash différent

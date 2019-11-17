@@ -1013,9 +1013,8 @@ function changePassword($userId, $oldPassword, $newPassword, $newPasswordBis, $c
 
                         //Décrypter et rencrypter tous les fichiers
                         $files = getFiles($userId, $connection);
-                        //Obtenir les deux clés de décryptage et de cryptage
+                        //Obtenir la clés de décryptage et de cryptage
                         $oldUserKey = hash('sha512', $oldPassword . $userData['salt']);
-                        $newUserKey = hash('sha512', $newPassword . $userData['salt']);
 
                         foreach ($files as $file) {
                             $content = unzipCryptedFile($connection, $file['path'], $oldUserKey);
@@ -1031,6 +1030,10 @@ function changePassword($userId, $oldPassword, $newPassword, $newPasswordBis, $c
                         $query->bind_param("si", $new_password_salted_hashed, $userId);
                         $query->execute();
                         $query->close();
+                        //changement mdp session
+                        if (isset($_SESSION)){
+                            $_SESSION['UserPassword']=hash('sha512', $newPassword . $userData['salt']));
+                        }
 
                         $result = "SUCCESS#Votre mot de passe a été modifié avec succès.#/espace-utilisateur/compte";
 
