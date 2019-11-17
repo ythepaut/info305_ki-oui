@@ -14,7 +14,7 @@
 
         <link rel="stylesheet" type="text/css" href="<?php echo(getSrc('./css/style.css')); ?>" />
 
-        <!--Chart.js(pour les graphiques)-->
+        <!--ChartJs -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
     </head>
 
@@ -45,6 +45,7 @@
             if (!isset($_SESSION['LoggedIn'])) {
                 include("./includes/pages/modals/login.php");
                 include("./includes/pages/modals/register.php");
+                include("./includes/pages/modals/forgot-password.php");
             }
 
             include("./includes/pages/modals/upload-file-error.php");

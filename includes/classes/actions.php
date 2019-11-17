@@ -23,7 +23,10 @@ switch ($action) {
         die(verifEmail($_GET['token'], $connection));
         break;
     case "change-password":
-        die(changePassword($_SESSION['Data']['id'],$_POST['change-password_oldPassword'],$_POST['change-password_newPassword'],$connection));
+        die(changePassword($_SESSION['Data']['id'], $_POST['change-password_oldPassword'], $_POST['change-password_newPassword'], $connection));
+        break;
+    case "forgot-pwd":
+        die(forgotPassword($_POST['forgot-pwd_email'], $_POST['forgot-pwd_backup-key'], $_POST['forgot-pwd_new-passwd'], $_POST['forgot-pwd_new-passwd2'], $connection));
         break;
     case "change-username":
         die(changeUsername($connection, $_POST['change-username_newusername'], $_SESSION['Data']['id']));
@@ -866,7 +869,6 @@ function deleteFile($fileId, $connection) {
 }
 
 
-
 /**
  * Suppression des appareils enregistrés
  * (Formulaire AJAX)
@@ -886,4 +888,174 @@ function deleteKnownDevices($connection) {
     return "SUCCESS#Appareils enregistrés supprimés avec succès.#/espace-utilisateur/compte";
 }
 
+
+/**
+ * Fonction qui change le mot de passe si oublié
+ * (Formulaire AJAX)
+ *
+ * @param string            $email              -   Adresse e-mail de l'utilisateur
+ * @param string            $backupKey          -   Clé de secours de l'utilisateur
+ * @param string            $passwd             -   Nouveau mot de passe de l'utilisateur
+ * @param string            $passwd2            -   Nouveau mot de passe de l'utilisateur (confirmation)
+ * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return  string
+ */
+function forgotPassword($email, $backupKey, $passwd, $passwd2, $connection) {
+
+    $result = "ERROR_UNKNOWN#Une erreur est survenue.";
+
+    if (isset($email, $backupKey, $passwd, $passwd2) && $email != "" && $backupKey != "" && $passwd != "") {
+
+        if (strlen($passwd) >= 8 && preg_match("#[0-9]+#", $passwd) && preg_match("#[a-zA-Z]+#", $passwd)) {
+
+            if ($passwd == $passwd2) {
+
+                //Recuperation des données utilisateur
+                $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE email = ?");
+                $query->bind_param("s", $email);
+                $query->execute();
+                $result = $query->get_result();
+                $query->close();
+                $userData = $result->fetch_assoc();
+
+                if ($userData['backup_password'] != "") {
+
+                    //Tentative de decryptage du mot de passe
+                    $success = false;
+                    $oldPassword = "";
+
+                    try {
+                        $oldPassword = openssl_decrypt(base64_decode($userData['backup_password']), AES_METHOD, $backupKey . $userData['salt'], OPENSSL_RAW_DATA, substr($userData['salt'], 0, 16));
+                        $success = true;
+                    } catch (Exception $ex) {
+                        $success = false;
+                    }
+                    if ($success && $oldPassword != "") {
+
+                        $files = getFiles($userData['id'], $connection);
+                        $oldUserKey = $oldPassword;
+                        $newUserKey = hash('sha512', $passwd . $userData['salt']);
+
+
+                        foreach ($files as $file) {
+                            $content = unzipCryptedFile($connection, $file['path'], $oldUserKey);
+                            createCryptedZipFile($connection, $content, $file['size'], $passwd, $file['original_name']);
+                            deleteFile($file['id'], $connection);
+                            //Suppresion du fichier
+                        }
+                        
+                        $new_password_salted_hashed = password_hash(hash('sha512', hash('sha512', $passwd . $userData['salt'])), PASSWORD_DEFAULT, ['cost' => 12]);
+
+                        $bckppwd = "";
+
+                        $query = $connection->prepare("UPDATE kioui_accounts SET password = ? , backup_password = ? WHERE id = ?");
+                        $query->bind_param("ssi", $new_password_salted_hashed, $bckppwd, $userData['id']);
+                        $query->execute();
+                        $query->close();
+
+                        $result = "SUCCESS#Votre mot de passe a bien été modifié, et votre clé réinitialisé.#null";
+
+                    } else {
+                        $result = "ERROR_INVALID_EMAIL_OR_KEY#L'adresse e-mail ou la clé de secours est invalide.";
+                    }
+
+                } else {
+                    $result = "ERROR_INVALID_EMAIL_OR_KEY#L'adresse e-mail ou la clé de secours est invalide.";
+                }
+
+            } else {
+                $result = "ERROR_INVALID_PASSWD2#Les deux mots de passe doivent correspondre.";
+            }
+
+        } else {
+            $result = "ERROR_INVALID_PASSWD#Votre mot de passe doit faire au moins 8 caractères, contenir au moins une lettre et un chiffre.";
+        }
+
+    } else {
+        $result = "ERROR_MISSING_FIELDS#Veuillez remplir tous les champs.";
+    }
+
+
+    return $result;
+
+}
+
+
+/**
+ * Fonction qui change le mot de passe d'un utilisateur donné
+ * (Formulaire AJAX)
+ *
+ * @param integer             $userId       		- id de l'utilisateur
+ * @param string			  $oldPassword			- ancien mot de passe
+ * @param string			  $newPassword			- nouveau mot de passe
+ * @param string			  $newPasswordBis	    - Confirmation du nouveau mot de passe
+ * @param mysqlconnection     $connection           - Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return string
+*/
+function changePassword($userId, $oldPassword, $newPassword, $newPasswordBis, $connection) {
+
+    $result = "ERROR_UNKNOWN#Une erreur est survenue.";
+
+	if (isset($userId, $oldPassword, $newPassword) && $userId != "" && $oldPassword != "" && $newPassword != "") {
+        
+		//Recuperation des données
+		$query = $connection->prepare("SELECT * FROM kioui_accounts WHERE id = ?");
+		$query->bind_param("i", $userId);
+		$query->execute();
+		$result_bis = $query->get_result();
+		$query->close();
+		$userData = $result_bis->fetch_assoc();
+
+		//Identifiants correct ?
+		if (isset($userData['id']) && $userData['id'] != null && password_verify(hash('sha512', hash('sha512', $oldPassword . $userData['salt'])), $userData['password'])) {
+            
+            //Nouveau mot de passe correct ?
+			if (strlen($newPassword) >= 8 && preg_match("#[0-9]+#", $newPassword) && preg_match("#[a-zA-Z]+#", $newPassword)) {
+            
+                if($newPassword == $newPasswordBis) {
+
+                    //Décrypter et rencrypter tous les fichiers
+                    $files = getFiles($userId,$connection);
+                    //Obtenir les deux clés de décryptage et de cryptage
+                    $oldUserKey = hash('sha512', $oldPassword . $userData['salt']);
+                    $newUserKey = hash('sha512', $newPassword . $userData['salt']);
+
+                    foreach ($files as $file) {
+                        $content = unzipCryptedFile($connection, $file['path'], $oldUserKey);
+                        createCryptedZipFile($connection, $content, $file['size'], $newPassword, $file['original_name']);
+                        //Suppresion du fichier
+                        deleteFile($file['id'], $connection);
+                    }
+
+                    //Obtention mdp a insérer
+                    $new_password_salted_hashed = password_hash(hash('sha512', hash('sha512', $newPassword . $userData['salt'])), PASSWORD_DEFAULT, ['cost' => 12]);
+                    //Changement mdp bdd
+                    $query = $connection->prepare("UPDATE kioui_accounts SET password = ? WHERE id = ?");
+                    $query->bind_param("si", $new_password_salted_hashed, $userId);
+                    $query->execute();
+                    $query->close();
+
+                    $result = "SUCCESS#Changement de mot de passe effectuer#/espace-utilisateur/compte";
+
+                } else {
+                    $result="ERROR_DIFFERENT_PASSWORD#Veuillez confirmer votre nouveau mot de passe";
+                }
+
+            } else {
+                $result = "ERROR_WEAK_PASSWORD#Veuillez choisir un mot de passe plus fort";
+            }
+
+		} else {
+            $result = "ERROR_WRONG_PASSWORD#Veuillez rentrer les bons identifiants ";
+        }
+        
+	} else {
+        $result = "ERROR_MISSING_FIELDS#Veuillez remplir tous les champs.";
+    }
+
+    return $result;
+}
+                        
 ?>

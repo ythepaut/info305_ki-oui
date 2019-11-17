@@ -43,7 +43,7 @@
                                 </div>
 
                                 <div class="col-lg-6">
-                                    <a href="#" class="link">Mot de passe oublié</a>
+                                    <a href="#" data-dismiss="modal" data-toggle="modal" data-target="#modalForgotPwd" class="link">Mot de passe oublié</a>
                                 </div>
                             </div>
                             <br />
