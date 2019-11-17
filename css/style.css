@@ -445,22 +445,42 @@ div.alert.alert-success {
 
 /* Footer */
 
-
+/*
 footer {
     position: absolute;
     bottom: 0;
     width: 100%;
+    margin-top: 100%;
 	color: #fff;
 	background-color: #576574;
 	text-align: center;
 	font-size: 14px;
 }
 
+.page-container {
+  position: relative;
+  min-height: 100vh;
+  padding-bottom: 100% initial;
+}
+
+.page-content {
+    padding-bottom: 236px;
+}
+
+*/
+
+footer {
+    bottom:-1;
+    color: #fff;
+    background-color: #576574;
+    text-align: center;
+    font-size: 14px;
+}
+
 .footer {
-	/*margin-top: 20px;*/
-	background-color: #222f3e;
-	padding: 20px;
-	text-align: left;
+    background-color: #222f3e;
+    padding: 20px;
+    text-align: left;
 }
 
 footer > .copy {
