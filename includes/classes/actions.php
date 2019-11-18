@@ -1030,9 +1030,9 @@ function changePassword($userId, $oldPassword, $newPassword, $newPasswordBis, $c
                         $query->bind_param("si", $new_password_salted_hashed, $userId);
                         $query->execute();
                         $query->close();
-                        //changement mdp session
-                        if (isset($_SESSION)){
-                            $_SESSION['UserPassword']=hash('sha512', $newPassword . $userData['salt']));
+                        //Mis à jour de la session
+                        if (isset($_SESSION)) {
+                            $_SESSION['UserPassword'] = hash('sha512', $newPassword . $userData['salt']);
                         }
 
                         $result = "SUCCESS#Votre mot de passe a été modifié avec succès.#/espace-utilisateur/compte";
