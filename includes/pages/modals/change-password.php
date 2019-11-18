@@ -38,7 +38,7 @@
                                 <div class="input-group-prepend">
                                     <span class="input-group-text label-icon" id="icon_change-password_confirmnewpassword"><i class="fas fa-key"></i></span>
                                 </div>
-                                <input type="password" name="change-password_newPasswordBis" class="form-control" placeholder="Réécriver le nouveau mot de passe" aria-describedby="icon_change-password_confirmnewpassword" required />
+                                <input type="password" name="change-password_newPasswordBis" class="form-control" placeholder="Nouveau mot de passe (confirmation)" aria-describedby="icon_change-password_confirmnewpassword" required />
                             </div>
 
                             <input type="hidden" name="action" value="change-password" />
