@@ -59,6 +59,18 @@
                             }
                         });
 
+                        <?php
+
+                        $pourcentage = round((getSize($_SESSION['Data']['id'], $connection) / $_SESSION['Data']['quota']) * 100, 2);
+                        $occupe = round(getSize($_SESSION['Data']['id'], $connection)/(10**6), 2);
+                        $occupe = ($occupe <= $_SESSION['Data']['quota']/(10**6)) ? $occupe : $_SESSION['Data']['quota']/(10**6);
+                        $restant = round($_SESSION['Data']['quota']/(10**6) - getSize($_SESSION['Data']['id'],$connection)/(10**6), 2);
+                        $restant = ($occupe < $_SESSION['Data']['quota']/(10**6)) ? $restant : 0;
+
+                        $couleur = ($restant > 0) ? "#54a0ff" : "#ee5253";
+
+                        ?>
+
                         var options = {
                             maintainAspectRatio: false,
                             rotation: 1 * Math.PI,
@@ -72,8 +84,8 @@
                             },
                             elements: {
                                 center: {
-                                    text: "<?php echo(substr((getSize($_SESSION['Data']['id'], $connection) / $_SESSION['Data']['quota']) * 100, 0, 4)); ?>%",
-                                    color: '#54a0ff',
+                                    text: "<?php echo($pourcentage); ?>%",
+                                    color: '<?php echo($couleur); ?>',
                                     fontStyle: 'Helvetica',
                                     sidePadding: 42
                                 }
@@ -82,8 +94,8 @@
                         //variable contenant l'espace utilisé par l'utilisateur
                         var data = {
                             datasets: [{
-                                data:[<?php echo(substr(getSize($_SESSION['Data']['id'],$connection)/(10**6),0,5)); ?>, <?php echo(substr(200 - getSize($_SESSION['Data']['id'],$connection)/(10**6),0,5)); ?>],
-                                backgroundColor:["rgb(84, 160, 255)","rgb(200, 214, 229)"],
+                                data:[<?php echo($occupe); ?>, <?php echo($restant); ?>],
+                                backgroundColor:["<?php echo($couleur); ?>","rgb(200, 214, 229)"],
                                 weight: 15,
                             }],
                             labels: [
