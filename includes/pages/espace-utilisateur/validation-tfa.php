@@ -90,7 +90,6 @@
 
                     </form>
                     <div style="display: none;" id="hint_validate-tfa"></div>
-                    <br />
 
                     <form action="<?php echo(getSrc('./includes/classes/actions.php')); ?>" method="POST" class="ajax">
                     <div class="row">

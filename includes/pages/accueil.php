@@ -53,7 +53,7 @@
         </div>
 
 		<div class="inner col-lg-4">
-			<h2>Transparant</h2>
+			<h2>Transparent</h2>
 			<i class="fab fa-github-alt"></i>
 			<p>Le code source de Ki-Oui est disponible.<br />Vous pouvez vérifier comment vos données sont sécurisées à tout moment.</p>
 		</div>

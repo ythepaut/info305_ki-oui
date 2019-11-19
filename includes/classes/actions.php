@@ -508,6 +508,18 @@ function validateTOTP($code, $connection) {
     $ga = new PHP_GoogleAuthenticator();
     if ($_SESSION['Data']['totp'] == "" || $ga->verifyCode($_SESSION['Data']['totp'], $code) == 1) {
         $_SESSION['tfa'] = "trusted";
+
+        $userDevices = json_decode($_SESSION['Data']['known_devices']);
+
+        $device = array("hostname" => gethostbyaddr($_SERVER['REMOTE_ADDR']), "ip" => $_SERVER['REMOTE_ADDR'], "useragent" => $_SERVER["HTTP_USER_AGENT"]);
+        array_push($userDevices, $device);
+
+        $newDevices = json_encode($userDevices);
+
+        $query = $connection->prepare("UPDATE kioui_accounts SET known_devices = ? , tfa_code = 0 , tfa_expire = 0 WHERE id = ?");
+        $query->bind_param("si", $newDevices, $_SESSION['Data']['id']);
+        $query->execute();
+
         $result = "SUCCESS#Validation effectuée.#/espace-utilisateur/accueil";
     } else {
         $result = "ERROR_TOTP_INVALID#Le code saisi est invalide.";

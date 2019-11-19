@@ -162,7 +162,7 @@
         <br />
         <p>&nbsp;&nbsp;&nbsp;&nbsp;L'<b>Utilisateur</b> s’engage et reconnaît que les données personnelles fournies au <b>Service</b> sont véridiques et exactes, étant responsable de la communication de tout changement les concernant.</p>
         <p>&nbsp;&nbsp;&nbsp;&nbsp;Les <b>Utilisateurs</b> peuvent exercer leurs droits d'accès, de rectification, d’annulation et d’opposition :</p>
-        <p>&nbsp;&nbsp;&nbsp;&nbsp;Pour exercer vos droits, vous êtes invités à vous connecter sur votre espace personnel section « compte », ou à nous contacter via notre adresse e-mail contact@ythepaut.com. Le Règlement Général sur la Protection des Données (RGPD : n° 2016-679) vous garantit les droits suivants :
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;Pour exercer vos droits, vous êtes invités à vous connecter sur votre espace personnel section « compte », ou à nous contacter via notre adresse e-mail contact@ythepaut.com. Le Règlement Général sur la Protection des Données (RGPD : n° 2016-679) vous garantit les droits suivants :<br />
         &nbsp;&nbsp;&nbsp;•&nbsp;Droit de demander l'accès à vos données personnelles.<br />
         &nbsp;&nbsp;&nbsp;•&nbsp;Droit de demander la rectification (si elles sont incorrectes) ou la suppression.<br />
         &nbsp;&nbsp;&nbsp;•&nbsp;Droit de demander la limitation de leur traitement, dans ce cas, vos données personnelles ne seront retenus par le <b>Service</b> que pour établir ou se défendre contre les réclamations.<br />

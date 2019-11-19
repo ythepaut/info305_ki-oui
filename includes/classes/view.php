@@ -29,13 +29,7 @@ switch ($page) {
                     break;
                 case "administration":
                     if ($_SESSION['Data']['access_level'] == "ADMINISTRATOR") {
-                        $tab = (isset($_GET['tab']) ? $_GET['tab'] : "utilisateurs");
-                        switch ($tab) {
-                            case "utilisateurs":
-                            default:
-                                include("./includes/pages/espace-utilisateur/administration.php");
-                                break;
-                        }
+                        include("./includes/pages/espace-utilisateur/administration.php");
                     } else {
                         include("./includes/pages/espace-utilisateur/accueil-utilisateur.php");
                     }

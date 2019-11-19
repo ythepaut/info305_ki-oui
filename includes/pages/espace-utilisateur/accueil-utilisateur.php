@@ -63,7 +63,6 @@
 
                         $pourcentage = round((getSize($_SESSION['Data']['id'], $connection) / $_SESSION['Data']['quota']) * 100, 2);
                         $occupe = round(getSize($_SESSION['Data']['id'], $connection)/(10**6), 2);
-                        $occupe = ($occupe <= $_SESSION['Data']['quota']/(10**6)) ? $occupe : $_SESSION['Data']['quota']/(10**6);
                         $restant = round($_SESSION['Data']['quota']/(10**6) - getSize($_SESSION['Data']['id'], $connection)/(10**6), 2);
                         $restant = ($occupe < $_SESSION['Data']['quota']/(10**6)) ? $restant : 0;
 
