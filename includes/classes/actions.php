@@ -58,6 +58,9 @@ switch ($action) {
     case "download-data":
         die(downloadData($connection, $_GET['download-data_file']));
         break;
+    case "delete-account-procedure":
+        die(deleteAccountProcedure($_POST['delete-account-procedure_passwd'], $connection, $em));
+        break;
     case "contact":
         die(contactForm($em, $_POST['contact-email'], $_POST['contact-subject'], $_POST['contact-message']));
         break;
@@ -145,7 +148,23 @@ function login($email, $passwd, $connection, $em) {
         if (isset($userData['id']) && $userData['id'] != null && password_verify(hash('sha512', hash('sha512', $passwd . $userData['salt'])), $userData['password'])) {
 
             //Verification du compte
-            if ($userData['access_level'] != "" && $userData['status'] == "ALIVE") {
+            if ($userData['access_level'] != "" && ($userData['status'] == "ALIVE" || $userData['status'] == "DELETE_PROCEDURE")) {
+
+
+                if ($userData['status'] == "DELETE_PROCEDURE") { //Annulation procedure de suppression
+
+                    $newStatus = "ALIVE";
+                    $newExpire = 0;
+
+                    $query = $connection->prepare("UPDATE kioui_accounts SET status = ? , account_expire = ? WHERE id = ?");
+                    $query->bind_param("sii", $newStatus, $newExpire, $userData['id']);
+                    $query->execute();
+                    $query->close();
+
+                    sendMail($em, $_SESSION['Data']['email'], "Suppression de votre compte", "ANNULATION DE LA PROCEDURE DE SUPPRESSION", "Bonjour " . $_SESSION['Data']['username'] . ".<br />Suite à votre connexion, la procédure de suppression de votre compte a été annulée.", "https://ki-oui.ythepaut.com/", "KI-OUI");
+
+                }
+
 
                 //Verification TOTP
                 $_SESSION['tfa'] = ($userData['totp'] != "") ? "totp" : "trusted";
@@ -991,9 +1010,9 @@ function forgotPassword($email, $backupKey, $passwd, $passwd2, $connection) {
  * Fonction qui change le mot de passe d'un utilisateur donné
  * (Formulaire AJAX)
  *
- * @param integer             $userId       		- id de l'utilisateur
- * @param string			  $oldPassword			- ancien mot de passe
- * @param string			  $newPassword			- nouveau mot de passe
+ * @param integer             $userId       		- ID de l'utilisateur
+ * @param string			  $oldPassword			- Ancien mot de passe
+ * @param string			  $newPassword			- Nouveau mot de passe
  * @param string			  $newPasswordBis	    - Confirmation du nouveau mot de passe
  * @param mysqlconnection     $connection           - Connexion BDD effectuée dans le fichier config-db.php
  *
@@ -1035,14 +1054,14 @@ function changePassword($userId, $oldPassword, $newPassword, $newPasswordBis, $c
                             deleteFile($file['id'], $connection);
                         }
 
-                        //Obtention mdp a insérer
+                        //Obtention MDP a insérer
                         $new_password_salted_hashed = password_hash(hash('sha512', hash('sha512', $newPassword . $userData['salt'])), PASSWORD_DEFAULT, ['cost' => 12]);
-                        //Changement mdp bdd
+                        //Changement MDP bdd
                         $query = $connection->prepare("UPDATE kioui_accounts SET password = ? WHERE id = ?");
                         $query->bind_param("si", $new_password_salted_hashed, $userId);
                         $query->execute();
                         $query->close();
-                        //Mis à jour de la session
+                        //Mise à jour de la session
                         if (isset($_SESSION)) {
                             $_SESSION['UserPassword'] = hash('sha512', $newPassword . $userData['salt']);
                         }
@@ -1070,6 +1089,57 @@ function changePassword($userId, $oldPassword, $newPassword, $newPasswordBis, $c
     }
 
     return $result;
+}
+
+
+/**
+ * Fonction qui démarre la procedure de suppression de compte
+ * (Formulaire AJAX)
+ *
+ * @param string			  $passwd			    - Mot de passe de l'utilisateur
+ * @param mysqlconnection     $connection           - Connexion BDD effectuée dans le fichier config-db.php
+ * @param array               $em                   -   Identifiants email dans le fichier config-email.php
+ *
+ * @return string
+*/
+function deleteAccountProcedure($passwd, $connection, $em) {
+
+    $result = "ERROR_UNKNOWN#Une erreur est survenue.";
+
+    if (isValidSession($connection)) {
+
+        if (password_verify(hash('sha512', hash('sha512', $passwd . $_SESSION['Data']['salt'])), $_SESSION['Data']['password'])) {
+
+            if ($_SESSION['Data']['access_level'] != "ADMINISTRATOR") {
+
+                $newStatus = "DELETE_PROCEDURE";
+                $expire = time() + 3600*24*15; //J+15
+
+                $query = $connection->prepare("UPDATE kioui_accounts SET status = ? , account_expire = ? WHERE id = ?");
+                $query->bind_param("sii", $newStatus, $expire, $_SESSION['Data']['id']);
+                $query->execute();
+                $query->close();
+
+                sendMail($em, $_SESSION['Data']['email'], "Suppression de votre compte", "LANCEMENT DE LA PROCEDURE DE SUPPRESSION", "Bonjour " . $_SESSION['Data']['username'] . ".<br />Suite à votre demande, la procédure de suppression de votre compte a débuté. Votre compte et vos données seront supprimmés et irrécuperables dans 15 jours.<br />Pour annuler la procedure, reconnectez-vous avant le " . date("d/m/Y H:m", $expire) . ".<br /><br />Si vous n'êtes pas à l'origine de cette action, reconnectez-vous à votre espace, changez votre mot de passe et contactez le support.", "https://ki-oui.ythepaut.com/espace-utilisateur/compte", "Annuler la procedure");
+
+                session_destroy();
+
+                $result = "SUCCESS#Procedure de suppression lancée.#/";
+
+            } else {
+                $result = "ERROR_ACCESSLEVEL_TOOHIGH#Votre niveau d'accès ne vous permet pas de clôturer votre compte : Vous êtes Administrateur.";
+            }
+        
+        } else {
+            $result = "ERROR_WRONG_PASSWORD#Mot de passe invalide.";
+        }
+
+    } else {
+        $result = "ERROR_INVALID_SESSION#Votre session est invalide. Déconnectez vous puis reconnectez vous. Si le problème persiste contactez le support.";
+    }
+
+    return $result;
+    
 }
                         
 ?>

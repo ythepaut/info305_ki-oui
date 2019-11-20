@@ -20,7 +20,7 @@
                 </div>
 
                 <div class="col-lg-2">
-                    <h3>LIENS UTILS</h3>
+                    <h3>LIENS UTILES</h3>
                     <ul>
                         <li><a href="/">Accueil</a></li>
                         <li><a href="/espace-utilisateur">Espace utilisateur</a></li>

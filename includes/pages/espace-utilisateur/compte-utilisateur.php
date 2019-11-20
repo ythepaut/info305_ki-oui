@@ -93,7 +93,7 @@
                         <tr>
                             <th scope="row"> Clôturer mon compte et supprimer toutes mes données</th>
                             <td></td>
-                            <td><i class="fas fa-window-close delete" title="Fermer mon compte"></i></td>
+                            <td><a href="#" data-toggle="modal" data-target="#modalDeleteAccountProcedure"><i class="fas fa-window-close delete" title="Fermer mon compte"></i></a></td>
                         </tr>
                     </tbody>
                 </table>
@@ -117,4 +117,5 @@ include("./includes/pages/modals/download-data.php");
 include("./includes/pages/modals/change-password.php");
 include("./includes/pages/modals/change-username.php");
 include("./includes/pages/modals/delete-known-devices.php");
+include("./includes/pages/modals/delete-account-procedure.php");
 ?>
