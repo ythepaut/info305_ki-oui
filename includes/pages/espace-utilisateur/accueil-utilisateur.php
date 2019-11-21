@@ -154,13 +154,15 @@
                         <?php
 
 
+                        $key = $_SESSION['UserPassword'];
                         $files = getFiles($_SESSION['Data']['id'], $connection, $_SESSION['table_files_sort']);
                         $table = "";
-                        foreach($files as $file){
 
+                        foreach($files as $file){
                             $path = $file["path"];
-                            $key = $_SESSION['UserPassword'];
-                            $originalName = htmlspecialchars($file["original_name"]);
+
+                            $originalName = decryptText($file["original_name"], $key, $file["salt"], null, false);
+                            $originalName = htmlspecialchars($originalName);
                             $originalName = str_replace("'", "&apos;", $originalName);
                             $originalName = str_replace("\"", '&quot;', $originalName);
 

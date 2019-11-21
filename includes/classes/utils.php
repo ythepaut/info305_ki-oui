@@ -26,16 +26,15 @@ function randomString($n) {
 /**
  * Fonction chiffrant un texte à partir d'un mot de passe et d'un sel
  *
- * @param    string        $text                        -    Texte à chiffrer
- * @param    string        $password                    -    Mot de passe
- * @param    string        $salt                        -    Sel, null par défaut,
+ * @param    string        $text                        -   Texte à chiffrer
+ * @param    string        $password                    -   Mot de passe
+ * @param    string        $salt                        -   Sel, null par défaut,
+ *                                                          si null alors sera créé
+ * @param    boolean       $raw                         -   Si vrai alors retourne du binaire,
+ *                                                          sinon retourne en base 64
  *
- *                                                         si null alors sera créé
- * @param    boolean        $raw                        -    Si vrai alors retourne du binaire,
- *                                                         sinon retourne en base 64
- *
- * @return    array        $cryptedText, $salt, $hash    -    Liste contenant le texte crypté,
- *                                                         le sel utilisé et le hash du texte original
+ * @return    array        $cryptedText, $salt, $hash   -   Liste contenant le texte crypté,
+ *                                                          le sel utilisé et le hash du texte original
  */
 function encryptText($text, $password, $salt = null, $raw = true) {
     if ($salt == null) {
@@ -67,14 +66,14 @@ function decryptText($cryptedText, $password, $salt, $hash = null, $raw = true) 
 /**
  * Fonction créant un fichier zip chiffré et l'ajoutant à la base de données
  *
- * @param     mysqlconnection    $connection            -     Connection à la base de données SQL
- * @param     string            $content            -    Contenu du fichier à chiffrer
- * @param    int                $size                -    Taille du fichier
+ * @param   mysqlconnection $connection         -   Connection à la base de données SQL
+ * @param   string          $content            -   Contenu du fichier à chiffrer
+ * @param   int             $size               -   Taille du fichier
  * @param   string          $password           -   Clé de cryptage
- * @param    string            $oldName            -    Ancien nom du fcihier : nom original
- * @param     string            $newName            -    Nouveau nom du fichier : facultatif, si null sera initialisé random
+ * @param   string          $oldName            -   Ancien nom du fcihier : nom original
+ * @param   string          $newName            -   Nouveau nom du fichier : facultatif, si null sera initialisé random
  *
- * @return    string            $newName            -    Nouveau nom du fichier
+ * @return  string          $newName            -   Nouveau nom du fichier
  */
 function createCryptedZipFile($connection, $content, $size, $password, $oldName, $newName = null) {
     $compt = 0;
@@ -98,12 +97,16 @@ function createCryptedZipFile($connection, $content, $size, $password, $oldName,
         throw new Exception("Le fichier zip n'a pas pu être créé");
     }
     $zipText = file_get_contents(UPLOAD_DIR.$newName);
-    list($encryptedText, $salt, $hash) = encryptText($zipText, $password);
+
+    list($oldName, $salt, $hash) = encryptText($oldName, $password, null, false);
+    list($encryptedText, $salt, $hash) = encryptText($zipText, $password, $salt);
+
     file_put_contents(UPLOAD_DIR.$newName, $encryptedText);
     $query = $connection->prepare("INSERT INTO kioui_files (original_name, path, owner, salt, size, ip, content_hash) VALUES (?,?,?,?,?,?,?)");
     $query->bind_param("ssisiss", $oldName, $newName, $ownerId, $salt, $size, $ip, $hash);
     $query->execute();
     $query->close();
+
     return $newName;
 }
 
@@ -111,11 +114,12 @@ function createCryptedZipFile($connection, $content, $size, $password, $oldName,
 /**
  * Fonction déchiffrant un fichier zip
  *
- * @param   mysqlconnection    $connection            -     Connection à la base de données SQL
+ * @param   mysqlconnection $connection         -   Connection à la base de données SQL
  * @param   string          $cryptedFileName    -   Nom du fichier chiffré (son nom sur le serveur)
  * @param   string          $key                -   Clé de déchiffrage
  *
- * @param   string          $content            -   Contenu déchiffré du fichier
+ * @return  string          $content            -   Contenu déchiffré du fichier
+ * @return  string          $name               -   Nom du fichier déchiffré
  */
 function unzipCryptedFile($connection, $cryptedFileName, $key) {
     if (!file_exists(UPLOAD_DIR.$cryptedFileName)) {
@@ -129,13 +133,12 @@ function unzipCryptedFile($connection, $cryptedFileName, $key) {
     $query->close();
     $fileData = $result->fetch_assoc();
 
+    $name = decryptText($fileData["original_name"], $key, $fileData["salt"], null, false);
+
     $zipTextEncrypted = file_get_contents(UPLOAD_DIR.$cryptedFileName);
     $zipText = decryptText($zipTextEncrypted, $key, $fileData["salt"], $fileData["hash"]);
 
-    if ($zipText === null) {
-        // Hash différent
-        return null;
-    } else {
+    if ($zipText !== null) {
         file_put_contents(TEMP_DIR.$cryptedFileName, $zipText);
 
         $zipFile = new ZipArchive;
@@ -148,8 +151,10 @@ function unzipCryptedFile($connection, $cryptedFileName, $key) {
         unlink(TEMP_DIR.$cryptedFileName);
         unlink(TEMP_DIR."zip/".$cryptedFileName);
 
-        return $content;
+        return array($content, $name);
     }
+
+    return array(null, null);
 }
 
 
@@ -297,10 +302,10 @@ function getSize($idUser, $connection) {
 function getFiles($idUser, $connection, $sort = 'id/DESC') {
     $filesUser=[];
     //Acquisiton des fichiers
-    $files = mysqli_query($connection, "SELECT * FROM kioui_files ORDER BY " . explode("/", $sort)[0] . " " . explode("/", $sort)[1]);
-    while ($folder = mysqli_fetch_assoc($files)) {
-        if ($folder['owner'] == $idUser) {
-            $filesUser[] = $folder;
+    $query = mysqli_query($connection, "SELECT * FROM kioui_files ORDER BY " . explode("/", $sort)[0] . " " . explode("/", $sort)[1]);
+    while ($file = mysqli_fetch_assoc($query)) {
+        if ($file['owner'] == $idUser) {
+            $filesUser[] = $file;
         }
     }
     return $filesUser;

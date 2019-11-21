@@ -262,7 +262,6 @@ function sendTFACode($em, $connection) {
  * @return string
  */
 function register($username, $email, $passwd, $passwd2, $cgu, $recaptchatoken, $connection, $em, $recaptcha) {
-
     $result = "ERROR_UNKNOWN#Une erreur est survenue.";
 
     //Verification des champs
@@ -405,7 +404,7 @@ function backupKey($key, $connection) {
 
         if (isset($key) && strlen($key) == 16) {
 
-            $backup_password = encryptText($_SESSION['UserPassword'], $key, $_SESSION['Data']['salt'], $raw=false)[0];
+            $backup_password = encryptText($_SESSION['UserPassword'], $key, $_SESSION['Data']['salt'], null, false)[0];
 
             $query = $connection->prepare("UPDATE kioui_accounts SET backup_password = ? WHERE id = ?");
             $query->bind_param("si", $backup_password, $_SESSION['Data']['id']);
@@ -609,7 +608,6 @@ function requestData($checked, $passwd, $connection) {
             if (true) {
 
                 try {
-
                     $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE id = ?");
                     $query->bind_param("i", $_SESSION['Data']['id']);
                     $query->execute();
@@ -793,6 +791,8 @@ function upload($connection) {
             $content = file_get_contents($_FILES["files"]["tmp_name"][$i]);
             $size = $_FILES["files"]["size"][$i];
 
+            var_dump($originalName);
+
             $newFileName = createCryptedZipFile($connection, $content, $size, $password, $originalName);
         }
     }
@@ -802,19 +802,11 @@ function upload($connection) {
 
 
 function downloadAction($connection, $fileName, $fileKey) {
-    $content = unzipCryptedFile($connection, $fileName, $fileKey);
+    list($content, $originalName) = unzipCryptedFile($connection, $fileName, $fileKey);
 
     if ($content === null) {
         return "Clé invalide";
     }
-
-    $query = $connection->prepare("SELECT original_name FROM kioui_files WHERE path = ?");
-    $query->bind_param("s", $fileName);
-    $query->execute();
-    $result = $query->get_result();
-    $query->close();
-    $result = $result->fetch_assoc();
-    $originalName = $result["original_name"];
 
     downloadFile($content, $name = $originalName, $from_string = true);
 
@@ -963,12 +955,12 @@ function forgotPassword($email, $backupKey, $passwd, $passwd2, $connection) {
 
 
                         foreach ($files as $file) {
-                            $content = unzipCryptedFile($connection, $file['path'], $oldUserKey);
-                            createCryptedZipFile($connection, $content, $file['size'], $passwd, $file['original_name']);
+                            list($content, $name) = unzipCryptedFile($connection, $file['path'], $oldUserKey);
+                            createCryptedZipFile($connection, $content, $file['size'], $passwd, $name);
                             deleteFile($file['id'], $connection);
                             //Suppresion du fichier
                         }
-                        
+
                         $new_password_salted_hashed = password_hash(hash('sha512', hash('sha512', $passwd . $userData['salt'])), PASSWORD_DEFAULT, ['cost' => 12]);
 
                         $bckppwd = "";
@@ -1025,7 +1017,7 @@ function changePassword($userId, $oldPassword, $newPassword, $newPasswordBis, $c
     if (isValidSession($connection)) {
 
         if (isset($userId, $oldPassword, $newPassword) && $userId != "" && $oldPassword != "" && $newPassword != "") {
-            
+
             //Recuperation des données
             $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE id = ?");
             $query->bind_param("i", $userId);
@@ -1036,10 +1028,10 @@ function changePassword($userId, $oldPassword, $newPassword, $newPasswordBis, $c
 
             //Identifiants correct ?
             if (isset($userData['id']) && $userData['id'] != null && password_verify(hash('sha512', hash('sha512', $oldPassword . $userData['salt'])), $userData['password'])) {
-                
+
                 //Nouveau mot de passe correct ?
                 if (strlen($newPassword) >= 8 && preg_match("#[0-9]+#", $newPassword) && preg_match("#[a-zA-Z]+#", $newPassword)) {
-                
+
                     if($newPassword == $newPasswordBis) {
 
                         //Décrypter et rencrypter tous les fichiers
@@ -1048,8 +1040,8 @@ function changePassword($userId, $oldPassword, $newPassword, $newPasswordBis, $c
                         $oldUserKey = hash('sha512', $oldPassword . $userData['salt']);
 
                         foreach ($files as $file) {
-                            $content = unzipCryptedFile($connection, $file['path'], $oldUserKey);
-                            createCryptedZipFile($connection, $content, $file['size'], $newPassword, $file['original_name']);
+                            list($content, $name) = unzipCryptedFile($connection, $file['path'], $oldUserKey);
+                            createCryptedZipFile($connection, $content, $file['size'], $newPassword, $name);
                             //Suppresion du fichier
                             deleteFile($file['id'], $connection);
                         }
@@ -1079,7 +1071,7 @@ function changePassword($userId, $oldPassword, $newPassword, $newPasswordBis, $c
             } else {
                 $result = "ERROR_WRONG_PASSWORD#Mot de passe invalide.";
             }
-            
+
         } else {
             $result = "ERROR_MISSING_FIELDS#Veuillez remplir tous les champs.";
         }
@@ -1129,7 +1121,7 @@ function deleteAccountProcedure($passwd, $connection, $em) {
             } else {
                 $result = "ERROR_ACCESSLEVEL_TOOHIGH#Votre niveau d'accès ne vous permet pas de clôturer votre compte : Vous êtes Administrateur.";
             }
-        
+
         } else {
             $result = "ERROR_WRONG_PASSWORD#Mot de passe invalide.";
         }
@@ -1139,7 +1131,8 @@ function deleteAccountProcedure($passwd, $connection, $em) {
     }
 
     return $result;
-    
+
 }
-                        
+
+
 ?>
