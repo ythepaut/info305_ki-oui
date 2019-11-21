@@ -41,6 +41,14 @@
             </div>
     	</nav>
 
+        <noscript>
+            <?php
+                if (!isset($_GET["page"]) || $_GET["page"] != "no-script") {
+                    echo("<meta http-equiv='refresh' content='0; url=/no-script' />");
+                }
+            ?>
+        </noscript>
+
         <?php
             if (!isset($_SESSION['LoggedIn'])) {
                 include("./includes/pages/modals/login.php");
