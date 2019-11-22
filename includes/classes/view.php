@@ -25,7 +25,7 @@ switch ($page) {
                     include("./includes/pages/espace-utilisateur/compte-utilisateur.php");
                     break;
                 case "assistance":
-                    include("./includes/pages/espace-utilisateur/assistance-utilisateur.php");
+                    include("./includes/pages/espace-utilisateur/assistance-utilisateur/assistance.php");
                     break;
                 case "administration":
                     if ($_SESSION['Data']['access_level'] == "ADMINISTRATOR") {

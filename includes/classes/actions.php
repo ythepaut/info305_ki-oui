@@ -1218,31 +1218,50 @@ function respondTicket($id, $message, $connection) {
     $query->close();
     $ticket = $result->fetch_assoc();
 
-    if (isValidSession($connection) && $ticket['user'] != "" && $ticket['user'] == $_SESSION['Data']['id']) {
+    //Autorisé à repondre ? => Session valide ET emetteur du ticket OU admin
+    if (isValidSession($connection) && $ticket['user'] != "" && ($ticket['user'] == $_SESSION['Data']['id'] || $_SESSION['Data']['access_level'] == "ADMINISTRATOR")) {
 
-        if (isset($message) && strlen($message) > 3) {
+        if ($ticket['status'] == "OPEN" || $ticket['status'] == "RESPONDED") {
 
-            $oldConversationArray = json_decode($ticket['conversation'], true);
-            
-            $messageArray = array(
-                "senderRole" => "USER",
-                "senderName" => $_SESSION['Data']['username'],
-                "date" => time(),
-                "message" => $message
-            );
-            array_push($oldConversationArray, $messageArray);
+            if (isset($message) && strlen($message) > 3) {
 
-            $conversation = json_encode($oldConversationArray);
+                $oldConversationArray = json_decode($ticket['conversation'], true);
+                
+                $role = ($_SESSION['Data']['access_level'] == "ADMINISTRATOR") ? "SUPPORT" : "USER";
 
-            $query = $connection->prepare("UPDATE kioui_tickets SET conversation = ? WHERE id = ?");
-            $query->bind_param("si", $conversation, $id);
-            $query->execute();
-            $query->close();
+                $messageArray = array(
+                    "senderRole" => $role,
+                    "senderName" => $_SESSION['Data']['username'],
+                    "date" => time(),
+                    "message" => $message
+                );
+                array_push($oldConversationArray, $messageArray);
 
-            $result = "SUCCESS#Réponse envoyée.#./";
+                $conversation = json_encode($oldConversationArray);
+
+                $newStatus = ($_SESSION['Data']['access_level'] == "ADMINISTRATOR") ? "RESPONDED" : "OPEN";
+
+                $query = $connection->prepare("UPDATE kioui_tickets SET conversation = ? , status = ? WHERE id = ?");
+                $query->bind_param("ssi", $conversation, $newStatus, $id);
+                $query->execute();
+                $query->close();
+
+                //Assignation
+                if ($_SESSION['Data']['access_level'] == "ADMINISTRATOR") {
+                    $query = $connection->prepare("UPDATE kioui_tickets SET assigned = ? WHERE id = ?");
+                    $query->bind_param("ii", $_SESSION['Data']['id'], $id);
+                    $query->execute();
+                    $query->close();
+                }
+
+                $result = "SUCCESS#Réponse envoyée.#./";
+
+            } else {
+                $result = "ERROR_MISSING_FIELDS#Veuillez remplir tous les champs.";
+            }
 
         } else {
-            $result = "ERROR_MISSING_FIELDS#Veuillez remplir tous les champs.";
+            $result = "ERROR_TICKET_CLOSED#Cette demande est fermée. Vous ne pouvez plus y repondre.";
         }
 
     } else {
