@@ -1,19 +1,27 @@
 RewriteEngine On
+
+#Force HTTPS
 RewriteCond %{HTTP_HOST} ^ki-oui.ythepaut\.com [NC]
 RewriteCond %{SERVER_PORT} 80
 RewriteRule ^(.*)$ https://ki-oui.ythepaut.com/$1 [R,L]
 
+#Pages erreur
 ErrorDocument 404 https://ki-oui.ythepaut.com/404
 ErrorDocument 403 https://ki-oui.ythepaut.com/403
 ErrorDocument 401 https://ki-oui.ythepaut.com/401
 
+#Actions de formulaire GET
 RewriteRule ^logout/?$ includes/classes/actions.php?action=logout [L]
 RewriteRule ^dl-data/([A-Za-z0-9-]+)/?$ includes/classes/actions.php?action=download-data&download-data_file=$1 [L]
 RewriteRule ^dl/([A-Za-z0-9-]+)/([A-Za-z0-9-]+)/?$ includes/classes/actions.php?action=download-file&filename=$1&filekey=$2 [L]
 RewriteRule ^share-file/([A-Za-z0-9-]+)/([A-Za-z0-9-]+)/?$ index.php?page=share-file&filename=$1&filekey=$2 [L]
 RewriteRule ^share-file/([A-Za-z0-9-]+)/?$ index.php?page=share-file&filename=$1&filekey [L]
 RewriteRule ^verif-email/([A-Za-z0-9_.]+)/?$ includes/classes/actions.php?action=verif-email&token=$1 [L]
+
+#Redirections de page
 RewriteRule ^([a-z0-9-]+)/?$ index.php?page=$1 [L]
 RewriteRule ^espace-utilisateur/([a-z0-9-]+)/?$ index.php?page=espace-utilisateur&sp=$1 [L]
+RewriteRule ^espace-utilisateur/assistance/([0-9-]+)/?$ index.php?page=espace-utilisateur&sp=assistance&ticket=$1 [L]
 
+#Desactivation de la visualisation du systeme de fichier
 Options -Indexes

@@ -28,7 +28,7 @@
 
             <div class="form-group">
                 <label for="contact-message">Votre message</label>
-                <textarea class="form-control"rows="10" name="contact-message" id="contact-message" required></textarea>
+                <textarea class="form-control" rows="10" name="contact-message" id="contact-message" required></textarea>
             </div>
 
             <br />

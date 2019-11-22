@@ -4,8 +4,9 @@
 
         
         <section class="col-lg-10 panel-background">
+        <div class="row">
 
-            <div class="col-lg-12 panel-outline">
+            <div class="col panel-outline">
                 <h4 class="panel-title">Mon compte</h4>
 
                     
@@ -99,7 +100,7 @@
                 </table>
 
 
-
+            </div>
             </section>
 
         </div>

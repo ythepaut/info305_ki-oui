@@ -101,9 +101,11 @@ function createCryptedZipFile($connection, $content, $size, $password, $oldName,
     list($oldName, $salt, $hash) = encryptText($oldName, $password, null, false);
     list($encryptedText, $salt, $hash) = encryptText($zipText, $password, $salt);
 
+    $uploadDate = time();
+
     file_put_contents(UPLOAD_DIR.$newName, $encryptedText);
-    $query = $connection->prepare("INSERT INTO kioui_files (original_name, path, owner, salt, size, ip, content_hash) VALUES (?,?,?,?,?,?,?)");
-    $query->bind_param("ssisiss", $oldName, $newName, $ownerId, $salt, $size, $ip, $hash);
+    $query = $connection->prepare("INSERT INTO kioui_files (original_name, path, owner, salt, size, ip, content_hash, upload_date) VALUES (?,?,?,?,?,?,?,?)");
+    $query->bind_param("ssisissi", $oldName, $newName, $ownerId, $salt, $size, $ip, $hash, $uploadDate);
     $query->execute();
     $query->close();
 

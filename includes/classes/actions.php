@@ -64,6 +64,9 @@ switch ($action) {
     case "contact":
         die(contactForm($em, $_POST['contact-email'], $_POST['contact-subject'], $_POST['contact-message']));
         break;
+    case "create-ticket":
+        die(createTicket($_POST['create-ticket_subject'], $_POST['create-ticket_message'], $connection));
+        break;
     case "logout":
         session_destroy();
         header("Location: /");
@@ -687,7 +690,7 @@ function contactForm($em, $email, $subject, $message) {
 /**
  * Fonction qui change le nom d'un utilisateur
  *
- * @param   mysqlconnection $connection			- 	Connection à la base de données SQL
+ * @param   mysqlconnection $connection            -     Connection à la base de données SQL
  * @param   string          $newUsername        -   le nouveau nom de l'utilisateur
  * @param   integer         $userId             -   l'indentifiant de l'utilisateur
  *
@@ -734,7 +737,7 @@ function changeUsername($connection, $newUsername, $userId){
 /**
  * Upload des fichiers
  *
- * @param   mysqlconnection $connection			- 	Connection à la base de données SQL
+ * @param   mysqlconnection $connection            -     Connection à la base de données SQL
  *
  * @return  boolean         $res                -   Si l'opération s'est bien passée ou non
  */
@@ -1002,10 +1005,10 @@ function forgotPassword($email, $backupKey, $passwd, $passwd2, $connection) {
  * Fonction qui change le mot de passe d'un utilisateur donné
  * (Formulaire AJAX)
  *
- * @param integer             $userId       		- ID de l'utilisateur
- * @param string			  $oldPassword			- Ancien mot de passe
- * @param string			  $newPassword			- Nouveau mot de passe
- * @param string			  $newPasswordBis	    - Confirmation du nouveau mot de passe
+ * @param integer             $userId               - ID de l'utilisateur
+ * @param string              $oldPassword            - Ancien mot de passe
+ * @param string              $newPassword            - Nouveau mot de passe
+ * @param string              $newPasswordBis        - Confirmation du nouveau mot de passe
  * @param mysqlconnection     $connection           - Connexion BDD effectuée dans le fichier config-db.php
  *
  * @return string
@@ -1088,7 +1091,7 @@ function changePassword($userId, $oldPassword, $newPassword, $newPasswordBis, $c
  * Fonction qui démarre la procedure de suppression de compte
  * (Formulaire AJAX)
  *
- * @param string			  $passwd			    - Mot de passe de l'utilisateur
+ * @param string              $passwd                - Mot de passe de l'utilisateur
  * @param mysqlconnection     $connection           - Connexion BDD effectuée dans le fichier config-db.php
  * @param array               $em                   -   Identifiants email dans le fichier config-email.php
  *
@@ -1131,7 +1134,60 @@ function deleteAccountProcedure($passwd, $connection, $em) {
     }
 
     return $result;
+}
 
+
+
+/**
+ * Fonction qui crée un ticket de support
+ * (Formulaire AJAX)
+ *
+ * @param string              $subject              - Sujet du ticket
+ * @param array               $message              - Description du ticket
+ * @param mysqlconnection     $connection           - Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return string
+*/
+function createTicket($subject, $message, $connection) {
+
+    $result = "ERROR_UNKNOWN#Une erreur est survenue.";
+
+    if (isValidSession($connection)) {
+
+        if (isset($subject, $message) && strlen($subject) > 3 && strlen($message) > 3 && strlen($subject) < 200) {
+
+            $ticketStatus = "OPEN";
+            $ticketPriority = "MEDIUM";
+            $ticketAssigned = 0;
+            $date = time();
+
+            $conversationArray = array(
+                array(
+                    "senderRole" => "USER",
+                    "senderName" => $_SESSION['Data']['username'],
+                    "date" => time(),
+                    "message" => $message
+                )
+            );
+
+            $conversation = json_encode($conversationArray);
+
+            $query = $connection->prepare("INSERT INTO kioui_tickets (user, subject, status, priority, assigned, conversation, date) VALUES (?,?,?,?,?,?,?)");
+            $query->bind_param("isssisi", $_SESSION['Data']['id'], $subject, $ticketStatus, $ticketPriority, $ticketAssigned, $conversation, $date);
+            $query->execute();
+            $query->close();
+
+            $result = "SUCCESS#Demande de support créée.#/espace-utilisateur/assistance";
+
+        } else {
+            $result = "ERROR_MISSING_FIELDS#Veuillez remplir tous les champs.";
+        }
+
+    } else {
+        $result = "ERROR_INVALID_SESSION#Votre session est invalide. Déconnectez vous puis reconnectez vous. Si le problème persiste contactez le support.";
+    }
+
+    return $result;
 }
 
 

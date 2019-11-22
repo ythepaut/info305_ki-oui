@@ -60,7 +60,7 @@ function deleteAccountProcedure($connection, $em) {
         if ($account['access_level'] != "ADMINISTRATOR" && $account['account_expire'] < time()) { //Supprimer ?
 
             $queryFiles = "SELECT * FROM kioui_files WHERE owner = " . $account['id'];
-            $resultsFiles = mysqli_query($connection, $query);
+            $resultsFiles = mysqli_query($connection, $queryFiles);
 
             //Suppression des fichiers
             while ($file = mysqli_fetch_assoc($resultsFiles)) {
