@@ -67,6 +67,9 @@ switch ($action) {
     case "create-ticket":
         die(createTicket($_POST['create-ticket_subject'], $_POST['create-ticket_message'], $connection));
         break;
+    case "respond-ticket":
+        die(respondTicket($_POST['respond-ticket_id'], $_POST['respond-ticket_message'], $connection));
+        break;
     case "logout":
         session_destroy();
         header("Location: /");
@@ -237,6 +240,7 @@ function sendTFACode($em, $connection) {
         $query = $connection->prepare("UPDATE kioui_accounts SET tfa_code = ? , tfa_expire = ? WHERE id = ?");
         $query->bind_param("iii", $randomString, $expire, $_SESSION['Data']['id']);
         $query->execute();
+        $query->close();
 
         sendMail($em, $_SESSION['Data']['email'], "Votre code de verification KI-OUI", $randomString, "Nous avons détecté une nouvelle connexion d'un appareil inconnu. Saisissez le code ci-dessus pour completer votre connexion.<br /><br />Si vous n'êtes pas à l'origine de cette requete, changez votre mot de passe et contactez le support.", "https://ki-oui.ythepaut.com/", "KI-OUI");
 
@@ -317,6 +321,7 @@ function register($username, $email, $passwd, $passwd2, $cgu, $recaptchatoken, $
                                     $query = $connection->prepare("INSERT INTO kioui_accounts (email, username, password, salt, access_level, status, ip, registration_date, email_token, known_devices) VALUES (?,?,?,?,?,?,?,?,?,?)");
                                     $query->bind_param("sssssssiss", $email, $username, $password_salted_hashed, $salt, $accesslevel, $status, $ip, $registrationDate, $emailToken, $firstDevice);
                                     $query->execute();
+                                    $query->close();
 
                                     sendMail($em, $email, "Bienvenue sur KI-OUI. Verifiez votre e-mail.", "Bienvenue !", "Merci de vous être inscrit " . $username . ".<br />Veuillez confirmer votre adresse e-mail pour pouvoir commencer à utiliser nos services en cliquant sur le lien ci-dessous.<br /><br />Si vous n'êtes pas à l'origine de cette action, ignorez cet e-mail.", "https://ki-oui.ythepaut.com/verif-email/" . $emailToken, "Vérifier mon e-mail");
 
@@ -540,6 +545,7 @@ function validateTOTP($code, $connection) {
         $query = $connection->prepare("UPDATE kioui_accounts SET known_devices = ? , tfa_code = 0 , tfa_expire = 0 WHERE id = ?");
         $query->bind_param("si", $newDevices, $_SESSION['Data']['id']);
         $query->execute();
+        $query->close();
 
         $result = "SUCCESS#Validation effectuée.#/espace-utilisateur/accueil";
     } else {
@@ -578,6 +584,7 @@ function validateTFA($code, $connection) {
         $query = $connection->prepare("UPDATE kioui_accounts SET known_devices = ? , tfa_code = 0 , tfa_expire = 0 WHERE id = ?");
         $query->bind_param("si", $newDevices, $_SESSION['Data']['id']);
         $query->execute();
+        $query->close();
 
         $result = "SUCCESS#Validation effectuée.#/espace-utilisateur/accueil";
     } else {
@@ -1137,13 +1144,12 @@ function deleteAccountProcedure($passwd, $connection, $em) {
 }
 
 
-
 /**
  * Fonction qui crée un ticket de support
  * (Formulaire AJAX)
  *
  * @param string              $subject              - Sujet du ticket
- * @param array               $message              - Description du ticket
+ * @param string              $message              - Description du ticket
  * @param mysqlconnection     $connection           - Connexion BDD effectuée dans le fichier config-db.php
  *
  * @return string
@@ -1178,6 +1184,62 @@ function createTicket($subject, $message, $connection) {
             $query->close();
 
             $result = "SUCCESS#Demande de support créée.#/espace-utilisateur/assistance";
+
+        } else {
+            $result = "ERROR_MISSING_FIELDS#Veuillez remplir tous les champs.";
+        }
+
+    } else {
+        $result = "ERROR_INVALID_SESSION#Votre session est invalide. Déconnectez vous puis reconnectez vous. Si le problème persiste contactez le support.";
+    }
+
+    return $result;
+}
+
+
+/**
+ * Fonction qui crée un ticket de support
+ * (Formulaire AJAX)
+ *
+ * @param string              $id                   - ID du ticket
+ * @param string              $message              - Message de reponse
+ * @param mysqlconnection     $connection           - Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return string
+*/
+function respondTicket($id, $message, $connection) {
+
+    $result = "ERROR_UNKNOWN#Une erreur est survenue.";
+
+    $query = $connection->prepare("SELECT * FROM kioui_tickets WHERE id = ?");
+    $query->bind_param("i", $id);
+    $query->execute();
+    $result = $query->get_result();
+    $query->close();
+    $ticket = $result->fetch_assoc();
+
+    if (isValidSession($connection) && $ticket['user'] != "" && $ticket['user'] == $_SESSION['Data']['id']) {
+
+        if (isset($message) && strlen($message) > 3) {
+
+            $oldConversationArray = json_decode($ticket['conversation'], true);
+            
+            $messageArray = array(
+                "senderRole" => "USER",
+                "senderName" => $_SESSION['Data']['username'],
+                "date" => time(),
+                "message" => $message
+            );
+            array_push($oldConversationArray, $messageArray);
+
+            $conversation = json_encode($oldConversationArray);
+
+            $query = $connection->prepare("UPDATE kioui_tickets SET conversation = ? WHERE id = ?");
+            $query->bind_param("si", $conversation, $id);
+            $query->execute();
+            $query->close();
+
+            $result = "SUCCESS#Réponse envoyée.#./";
 
         } else {
             $result = "ERROR_MISSING_FIELDS#Veuillez remplir tous les champs.";
