@@ -70,7 +70,7 @@ function decryptText($cryptedText, $password, $salt, $hash = null, $raw = true) 
  * @param   string          $content            -   Contenu du fichier à chiffrer
  * @param   int             $size               -   Taille du fichier
  * @param   string          $password           -   Clé de cryptage
- * @param   string          $oldName            -   Ancien nom du fcihier : nom original
+ * @param   string          $oldName            -   Ancien nom du fichier : nom original
  * @param   string          $newName            -   Nouveau nom du fichier : facultatif, si null sera initialisé random
  *
  * @return  string          $newName            -   Nouveau nom du fichier

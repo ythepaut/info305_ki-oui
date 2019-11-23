@@ -1062,10 +1062,11 @@ function changePassword($userId, $oldPassword, $newPassword, $newPasswordBis, $c
                         $files = getFiles($userId, $connection);
                         //Obtenir la clés de décryptage et de cryptage
                         $oldUserKey = hash('sha512', $oldPassword . $userData['salt']);
+                        $newUserKey = hash('sha512', $newPassword . $userData['salt']);
 
                         foreach ($files as $file) {
                             list($content, $name) = unzipCryptedFile($connection, $file['path'], $oldUserKey);
-                            createCryptedZipFile($connection, $content, $file['size'], $newPassword, $name);
+                            createCryptedZipFile($connection, $content, $file['size'], $newUserKey, $name);
                             //Suppresion du fichier
                             deleteFile($file['id'], $connection);
                         }
