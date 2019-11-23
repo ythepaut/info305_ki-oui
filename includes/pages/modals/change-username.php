@@ -22,6 +22,12 @@
                         
                             <div class="input-group mb-3">
                                 <div class="input-group-prepend">
+                                    <span class="input-group-text label-icon" id="icon_change-username_password"><i class="fas fa-key"></i></span>
+                                </div>
+                                <input type="password" name="change-username_password" class="form-control" placeholder="Mot de passe" aria-describedby="icon_change-username_password" required />
+                            </div>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
                                     <span class="input-group-text label-icon" id="icon_change-username_newusername"><i class="fas fa-user"></i></span>
                                 </div>
                                 <input type="text" name="change-username_newusername" class="form-control" placeholder="Nouveau nom d'utilisateur" aria-describedby="icon_change-username_newusername" required />

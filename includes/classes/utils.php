@@ -325,7 +325,31 @@ function convertUnits($size) {
     $unit = "";
     $stringSize = NULL;
 
-    if (floor($size/10**6) > 0) {
+    if (floor($size/10**24) > 0) {
+        $unit = " Yo";
+        $stringSize = round($size/10**24, 2);
+    }
+    else if (floor($size/10**21) > 0) {
+        $unit = " Zo";
+        $stringSize = round($size/10**21, 2);
+    }
+    else if (floor($size/10**18) > 0) {
+        $unit = " Eo";
+        $stringSize = round($size/10**18, 2);
+    }
+    else if (floor($size/10**15) > 0) {
+        $unit = " Po";
+        $stringSize = round($size/10**15, 2);
+    }
+    else if (floor($size/10**12) > 0) {
+        $unit = " To";
+        $stringSize = round($size/10**12, 2);
+    }
+    else if (floor($size/10**9) > 0) {
+        $unit = " Go";
+        $stringSize = round($size/10**9, 2);
+    }
+    else if (floor($size/10**6) > 0) {
         $unit = " Mo";
         $stringSize = round($size/10**6, 2);
     } else if (floor($size/10**3) > 0) {

@@ -29,7 +29,7 @@ switch ($action) {
         die(forgotPassword($_POST['forgot-pwd_email'], $_POST['forgot-pwd_backup-key'], $_POST['forgot-pwd_new-passwd'], $_POST['forgot-pwd_new-passwd2'], $connection));
         break;
     case "change-username":
-        die(changeUsername($connection, $_POST['change-username_newusername'], $_SESSION['Data']['id']));
+        die(changeUsername($connection, $_POST['change-username_newusername'],$_POST['change-username_password'], $_SESSION['Data']['id']));
         break;
     case "backup-key":
         die(backupKey($_POST['backup-key_key'], $connection));
@@ -697,42 +697,56 @@ function contactForm($em, $email, $subject, $message) {
 /**
  * Fonction qui change le nom d'un utilisateur
  *
- * @param   mysqlconnection $connection            -     Connection à la base de données SQL
+ * @param   mysqlconnection $connection         -   Connection à la base de données SQL
  * @param   string          $newUsername        -   le nouveau nom de l'utilisateur
+ * @param   string          $password           -   le mot de passe de l'utilisateur
  * @param   integer         $userId             -   l'indentifiant de l'utilisateur
  *
  * @return  string
  */
-function changeUsername($connection, $newUsername, $userId){
+function changeUsername($connection, $newUsername, $password, $userId){
 
     $result="ERROR_UNKNOWN#Une erreur est survenue.";
 
     if (isValidSession($connection)) {
-
-        if (strlen($newUsername) <= 16 && strlen($newUsername) >= 3) {
-            //Verification données nom d'utilisateur
-            $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE username = ?");
-            $query->bind_param("s", $newUsername);
+        if (isset($newUsername, $password, $userId) && $newUsername != "" && $password != "" && $userId != "") {
+            //vérification du mdp
+            $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE id = ?");
+            $query->bind_param("i", $userId);
             $query->execute();
             $result_bis = $query->get_result();
             $query->close();
             $userData = $result_bis->fetch_assoc();
-            if ($userData['id'] == "") {
-                //changement nom d'utilisateur bdd
-                $query = $connection->prepare("UPDATE kioui_accounts SET username = ? WHERE kioui_accounts.id = ?");
-                $query->bind_param("si", $newUsername, $userId);
-                $query->execute();
-                $result_bis = $query->get_result();
-                $query->close();
+            if (isset($userData['id']) && $userData['id'] != null && password_verify(hash('sha512', hash('sha512', $password . $userData['salt'])), $userData['password'])) {
+                if (strlen($newUsername) <= 16 && strlen($newUsername) >= 3) {
+                    //Verification données nom d'utilisateur
+                    $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE username = ?");
+                    $query->bind_param("s", $newUsername);
+                    $query->execute();
+                    $result_bis = $query->get_result();
+                    $query->close();
+                    $userData = $result_bis->fetch_assoc();
+                    if ($userData['id'] == "") {
+                        //changement nom d'utilisateur bdd
+                        $query = $connection->prepare("UPDATE kioui_accounts SET username = ? WHERE kioui_accounts.id = ?");
+                        $query->bind_param("si", $newUsername, $userId);
+                        $query->execute();
+                        $result_bis = $query->get_result();
+                        $query->close();
 
-                $result = "SUCCESS#Votre nom d'utilisateur a bien été changé#/espace-utilisateur/compte";
+                        $result = "SUCCESS#Votre nom d'utilisateur a bien été changé#/espace-utilisateur/compte";
+                    } else {
+                        $result = "ERROR_USER_USERNAME#Ce nom d'utilisateur est déjà utilisé.";
+                    }
+                } else {
+                    $result = "ERROR_INVALID_USERNAME#Votre nom d'utilisateur doit faire entre 3 et 16 caractères.";
+                }
             } else {
-                $result = "ERROR_USER_USERNAME#Ce nom d'utilisateur est déjà utilisé.";
+                $result = "ERROR_WRONG_PASSWORD#Veuillez entrez le bon mot de passe";
             }
         } else {
-            $result = "ERROR_INVALID_USERNAME#Votre nom d'utilisateur doit faire entre 3 et 16 caractères.";
+            $result = "ERROR_MISSING_FIELDS#Veuillez remplir tous les champs.";
         }
-
     } else {
         $result = "ERROR_INVALID_SESSION#Votre session est invalide. Déconnectez vous puis reconnectez vous. Si le problème persiste contactez le support.";
     }
