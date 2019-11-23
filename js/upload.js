@@ -100,29 +100,6 @@ function transformSize(size) {
 }
 
 /**
- * Vérifie la validité des fichiers
- *
- * @param  {file[]} files       Fichiers ajoutés
- *
- * @return {bool}   ok          Si les fichiers sont valides ou non
- */
-function checkFiles(files) {
-    var ok = true;
-
-    for (var file of files) {
-        if (file.size >= MAX_SIZE) {
-            ok = false;
-        }
-    }
-
-    if (!ok) {
-        $('#modalUploadFileError').modal();
-    }
-
-    return ok;
-}
-
-/**
  * Met à jour le tableau des fichiers
  *
  * @param  {file[]}  files      Tableau des nouveaux fichiers
@@ -148,22 +125,24 @@ function updateTab(files) {
  * @param  {event}  e           Événement d'ajout
  */
 function fileAdded(e) {
-    var ok = checkFiles(this.files);
-
-    if (ok) {
-        for (var file of this.files) {
-            all_files.push(file);
-        }
-
-        updateTab(this.files);
-    }
-    else {
-        resetInput();
+    for (var file of this.files) {
+        all_files.push(file);
     }
 
+    updateTab(this.files);
     setNewInput();
     updateLabelTitle();
     updateFirstLineTab();
+
+    var size = 0;
+
+    for (let file of all_files) {
+        size += file.size;
+    }
+
+    if (size > MAX_SIZE) {
+        $('#modalUploadFileError').modal();
+    }
 }
 
 /**
@@ -175,8 +154,27 @@ function init() {
     updateFirstLineTab();
 }
 
+function sendFiles() {
+    var form = document.querySelector("#uploadForm");
+
+    var size = 0;
+
+    for (let file of all_files) {
+        size += file.size;
+    }
+
+    console.log(size);
+
+    if (size > MAX_SIZE) {
+        $('#modalUploadFileError').modal();
+    }
+    else {
+        form.submit();
+    }
+}
+
 var all_files = [];
 // Tous les fichiers
 
-var MAX_SIZE = 50 * Math.pow(10, 6);
-// Qu'on ne peut pas mettre en const car le script est importé 2 fois, merci
+var MAX_SIZE = 200 * Math.pow(10, 6);
+// Qu'on ne peut pas mettre en const car le script est importé 2 fois lol

@@ -10,7 +10,9 @@
                         </div>
 
                         <div class="col-lg-12 align-self-center">
-                            <h5> Le fichier demandé est trop volumineux <br /> (taille > 50 Mo) </h5>
+                            <h5> L'envoi est trop volumineux <br />
+                                Espace restant : <?php echo(convertUnits($_SESSION["Data"]["quota"])); ?>
+                            </h5>
                         </div>
                     </div>
                 </div>
