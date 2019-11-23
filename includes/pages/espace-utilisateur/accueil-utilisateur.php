@@ -62,6 +62,7 @@
                         <?php
 
                         $pourcentage = round((getSize($_SESSION['Data']['id'], $connection) / $_SESSION['Data']['quota']) * 100, 2);
+                        $pourcentage = ($pourcentage == 0) ? "0.00" : $pourcentage;
                         $occupe = round(getSize($_SESSION['Data']['id'], $connection)/(10**6), 2);
                         $restant = round($_SESSION['Data']['quota']/(10**6) - getSize($_SESSION['Data']['id'], $connection)/(10**6), 2);
                         $restant = ($occupe < $_SESSION['Data']['quota']/(10**6)) ? $restant : 0;
@@ -192,12 +193,47 @@
                             if ($count == 12) {
                                 $grid .= "</div>";
                                 $grid .= "<div class='row'>";
-                                $count = 0;
+                                $count = 1;
                             }
+
+                            $extension = explode(".", decryptText($file["original_name"], $key, $file["salt"], null, false))[count(explode(".", decryptText($file["original_name"], $key, $file["salt"], null, false))) - 1];
+                            $fileImg = "https://img.icons8.com/dusk/256/000000/file--v2.png";
+                            switch ($extension) {
+                                case "png":
+                                case "jpg":
+                                case "jpeg":
+                                case "gif":
+                                    $fileImg = "https://img.icons8.com/dusk/256/000000/picture.png";
+                                    break;
+                                case "pdf":
+                                    $fileImg = "https://img.icons8.com/dusk/256/000000/pdf.png";
+                                    break;
+                                case "wav":
+                                case "mp3":
+                                case "flac":
+                                    $fileImg = "https://img.icons8.com/dusk/256/000000/musical.png";
+                                    break;
+                                case "mp4":
+                                case "wmv":
+                                    $fileImg = "https://img.icons8.com/dusk/256/000000/video-file.png";
+                                    break;
+                                case "zip":
+                                case "gz":
+                                case "rar":
+                                case "7zip":
+                                    $fileImg = "https://img.icons8.com/dusk/256/000000/archive-folder.png";
+                                    break;
+                                case "txt":
+                                    $fileImg = "https://img.icons8.com/dusk/256/000000/txt.png";
+                                    break;
+
+                            }
+
+
                             $originalName = (strlen($originalName) > 19) ? substr($originalName, 0, 16) . "..." : $originalName;
                             $grid .= "<div class='col-lg-1 item-grid'><a href='#' style='color: #000;' data-toggle='modal' data-target='#modalShareLink' onclick='editModalShare(\"" . generateShareLink($_SESSION['UserPassword'], $file['id'], $connection) . "\")'>" .
                                      "<h3 title='" . htmlspecialchars(decryptText($file["original_name"], $key, $file["salt"], null, false)) . "'>" . $originalName . "</h3>\n" .
-                                     "<img src='https://img.icons8.com/dusk/256/000000/file--v2.png' alt='Logo' /><br />\n" .
+                                     "<img src='" . $fileImg . "' alt='Logo' /><br />\n" .
                                      "</a></div>";
                             
                         

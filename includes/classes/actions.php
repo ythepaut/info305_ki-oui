@@ -973,16 +973,17 @@ function forgotPassword($email, $backupKey, $passwd, $passwd2, $connection) {
                     }
                     if ($success && $oldPassword != "") {
 
+                        //Décrypter et rencrypter tous les fichiers
                         $files = getFiles($userData['id'], $connection);
+                        //Obtenir la clés de décryptage et de cryptage
                         $oldUserKey = $oldPassword;
                         $newUserKey = hash('sha512', $passwd . $userData['salt']);
 
-
                         foreach ($files as $file) {
                             list($content, $name) = unzipCryptedFile($connection, $file['path'], $oldUserKey);
-                            createCryptedZipFile($connection, $content, $file['size'], $passwd, $name);
-                            deleteFile($file['id'], $connection);
+                            createCryptedZipFile($connection, $content, $file['size'], $newUserKey, $name);
                             //Suppresion du fichier
+                            deleteFile($file['id'], $connection);
                         }
 
                         $new_password_salted_hashed = password_hash(hash('sha512', hash('sha512', $passwd . $userData['salt'])), PASSWORD_DEFAULT, ['cost' => 12]);
