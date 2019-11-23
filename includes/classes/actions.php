@@ -82,10 +82,10 @@ switch ($action) {
             if ($res) {
                 header("location:/espace-utilisateur/accueil-utilisateur");
             } else {
-                header("location:/ajout-nok");
+                echo "Erreur";
             }
         } else {
-            header("location:/ajout-nok");
+            echo "non connecté ?";
         }
 
         die();
@@ -763,7 +763,7 @@ function changeUsername($connection, $newUsername, $password, $userId){
  * @return  boolean         $res                -   Si l'opération s'est bien passée ou non
  */
 function upload($connection) {
-    $res = true;
+    $res = false;
 
     if (!isset($_FILES["files"]) || !isset($_SESSION["Data"]) || !isset($_SESSION["LoggedIn"])) {
         return false;
@@ -771,54 +771,34 @@ function upload($connection) {
 
     $nbFiles = count($_FILES["files"]["name"]);
 
-    $success = true;
-
-    $log = "";
+    $totalSize = 0;
 
     for ($i=0; $i<$nbFiles-1; $i++) {
-        $log .= "Nom : "      . $_FILES["files"]["name"][$i]     . " <br />";
-        $log .= "Type : "     . $_FILES["files"]["type"][$i]     . " <br />";
-        $log .= "Tmp name : " . $_FILES["files"]["tmp_name"][$i] . " <br />";
-        $log .= "Error : "    . $_FILES["files"]["error"][$i]    . "<br />";
-        $log .= "Size : "     . $_FILES["files"]["size"][$i]     . "<br />";
-
         if ($_FILES["files"]["error"][$i] == UPLOAD_ERR_OK && is_uploaded_file($_FILES["files"]["tmp_name"][$i])) {
-            $log .= "Content : ";
-            $log .= file_get_contents($_FILES["files"]["tmp_name"][$i]);
-            $log .= "<br />";
-        }
-
-        $log .= "<br />";
-
-        if ($_FILES["files"]["size"][$i] > MAX_FILE_SIZE) {
-            $success = false;
+            $totalSize += $_FILES["files"]["size"][$i];
         }
     }
 
-    if ($success) {
-        $log .= "Success";
-    } else {
-        $log .= "Failure";
+    $maxSize = $_SESSION["Data"]["quota"];
+    $usedSpace = getSize($_SESSION["Data"]["id"], $connection);
+
+    if ($totalSize > $maxSize - $usedSpace) {
+        $res = false;
     }
+    else {
+        $password = $_SESSION["UserPassword"];
 
-    $log .= "<br /><br />";
-
-    // echo $log;
-
-    $res = $success;
-
-    $password = $_SESSION["UserPassword"];
-
-    if ($success) {
         for ($i=0; $i<$nbFiles-1; $i++) {
-            $originalName = $_FILES["files"]["name"][$i];
-            $content = file_get_contents($_FILES["files"]["tmp_name"][$i]);
-            $size = $_FILES["files"]["size"][$i];
+            if ($_FILES["files"]["error"][$i] == UPLOAD_ERR_OK && is_uploaded_file($_FILES["files"]["tmp_name"][$i])) {
+                $originalName = $_FILES["files"]["name"][$i];
+                $content = file_get_contents($_FILES["files"]["tmp_name"][$i]);
+                $size = $_FILES["files"]["size"][$i];
 
-            var_dump($originalName);
-
-            $newFileName = createCryptedZipFile($connection, $content, $size, $password, $originalName);
+                $newFileName = createCryptedZipFile($connection, $content, $size, $password, $originalName);
+            }
         }
+
+        $res = true;
     }
 
     return $res;
@@ -1242,7 +1222,7 @@ function respondTicket($id, $message, $connection) {
             if (isset($message) && strlen($message) > 3) {
 
                 $oldConversationArray = json_decode($ticket['conversation'], true);
-                
+
                 $role = ($_SESSION['Data']['access_level'] == "ADMINISTRATOR") ? "SUPPORT" : "USER";
 
                 $messageArray = array(
