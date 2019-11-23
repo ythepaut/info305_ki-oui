@@ -21,22 +21,22 @@
                     <form action="<?php echo(getSrc('./includes/classes/actions.php')); ?>" method="POST" class="ajax">
                     <table class="table">
                         <thead class="thead">
-                            <th style="width:20%;"><!--Expediteur--></th>
-                            <th style="width:67%;"><!--Message--></th>
-                            <th style="width:13%;"><!--Date--></th>
+                            <th style="width:15%;"><!--Expediteur--></th>
+                            <th style="width:70%;"><!--Message--></th>
+                            <th style="width:15%;"><!--Date--></th>
                         </thead>
 
                         <?php
                             $table = "";
                             $conversation = json_decode($ticket['conversation'], true);
                             foreach ($conversation as $message) {
-                                $sender = $message['senderName'];
-                                $sender = ($message['senderRole'] == 'SUPPORT') ? "<span class='badge badge-danger'>Administrateur</span> &nbsp; " . $sender : $sender;
+                                $sender = htmlspecialchars($message['senderName']);
+                                $sender = ($message['senderRole'] == 'SUPPORT') ? "<span class='badge badge-danger'>Administrateur</span> <br /> " . $sender : $sender;
                                 $messageStr = htmlspecialchars($message['message']);
                                 $messageStr = str_replace("\n", "<br />", $messageStr);
-                                $table .= "<tr><td>" . $sender ."</td>\n";
+                                $table .= "<tr><td style='text-align: center;'>" . $sender ."</td>\n";
                                 $table .= "<td>" . $messageStr ."</td>\n";
-                                $table .= "<td>" . date("d/m/Y", $message['date']) . "&nbsp;&nbsp;&nbsp;" . date("H:i:s", $message['date']) ."</td></tr>";
+                                $table .= "<td title='" . date("d/m/Y", $message['date']) . "&nbsp;&nbsp;&nbsp;" . date("H:i:s", $message['date']) . "'>" . "<span class='badge badge-secondary'>" . time_elapsed_string("@" . $message['date']) . "</span>" ."</td></tr>";
                             }
                             echo($table);
                         ?>

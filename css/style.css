@@ -305,15 +305,28 @@ button:disabled:not(.close), input[type="submit"]:disabled, a.button:disabled {
 
 /* Espace utilisateur */
 
+@media only screen and (max-width: 1000px) {
+    .user-nav.mobile {
+        max-width: 5000px !important;
+    }
+}
 .user-nav {
-    background-color: #283849;
+    background-color: #222f3e;
     margin: 0px;
     padding: 0px;
+    max-width: 250px;
 }
 .user-nav li {
     display: block;
     width: 100%;
     background-color: #222f3e;
+    transition: all 0.2s;
+}
+.user-nav li:hover, .user-nav li:active, .user-nav li.active {
+    background-color: #283849;
+}
+.user-nav li.active {
+    border-left: solid 3px #10ac84;
 }
 
 .user-nav li a {
@@ -321,11 +334,10 @@ button:disabled:not(.close), input[type="submit"]:disabled, a.button:disabled {
     color: #fff;
     font-size: 16px;
     padding: 16px 24px;
-    transition: ease 0.3s;
 }
 
-.user-nav li a:hover {
-    transform: translateX(10px);
+.user-nav li a i {
+    width: 20px;
 }
 
 ul.white a, ul.white a:hover, ul.white a:visited, ul.white  a:active {
@@ -358,6 +370,27 @@ section.panel-background {
 
 canvas.quota {
 	margin-bottom: 20px;
+}
+
+.item-grid {
+    background-color: #fff;
+    border-radius: 0.25rem;
+    border: solid 1px #e4e4e4;
+}
+.item-grid {
+    margin: 5px;
+}
+.item-grid h3 {
+    margin-top: 5px;
+    font-weight: bold;
+    font-size : 15px;
+    text-align: center;
+    height: 36px;
+}
+.item-grid img {
+    text-align: center;
+    padding: 0px 10px;
+    width: 105px;
 }
 
 /* Graphiques pour l'espace utilisateur */

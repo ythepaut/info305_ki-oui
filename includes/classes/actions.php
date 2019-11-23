@@ -328,7 +328,7 @@ function register($username, $email, $passwd, $passwd2, $cgu, $recaptchatoken, $
                                     $result = "SUCCESS#Compte créé. Veuillez confirmer votre e-mail avant de vous connecter.#null";
 
                                 } else {
-                                    $result = "ERROR_USER_USERNAME#Ce nom d'utilisateur est déjà utilisé.";
+                                    $result = "ERROR_USED_USERNAME#Ce nom d'utilisateur est déjà utilisé.";
                                 }
 
                             } else {
@@ -736,13 +736,13 @@ function changeUsername($connection, $newUsername, $password, $userId){
 
                         $result = "SUCCESS#Votre nom d'utilisateur a bien été changé#/espace-utilisateur/compte";
                     } else {
-                        $result = "ERROR_USER_USERNAME#Ce nom d'utilisateur est déjà utilisé.";
+                        $result = "ERROR_USED_USERNAME#Ce nom d'utilisateur est déjà utilisé.";
                     }
                 } else {
                     $result = "ERROR_INVALID_USERNAME#Votre nom d'utilisateur doit faire entre 3 et 16 caractères.";
                 }
             } else {
-                $result = "ERROR_WRONG_PASSWORD#Veuillez entrez le bon mot de passe";
+                $result = "ERROR_INVALID_CREDENTIALS#Mot de passe invalide.";
             }
         } else {
             $result = "ERROR_MISSING_FIELDS#Veuillez remplir tous les champs.";
@@ -1093,7 +1093,7 @@ function changePassword($userId, $oldPassword, $newPassword, $newPasswordBis, $c
                 }
 
             } else {
-                $result = "ERROR_WRONG_PASSWORD#Mot de passe invalide.";
+                $result = "ERROR_INVALID_CREDENTIALS#Mot de passe invalide.";
             }
 
         } else {
@@ -1147,7 +1147,7 @@ function deleteAccountProcedure($passwd, $connection, $em) {
             }
 
         } else {
-            $result = "ERROR_WRONG_PASSWORD#Mot de passe invalide.";
+            $result = "ERROR_INVALID_CREDENTIALS#Mot de passe invalide.";
         }
 
     } else {

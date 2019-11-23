@@ -2,7 +2,7 @@
     <div class="row">
         <?php include("./includes/pages/espace-utilisateur/nav-utilisateur.php"); ?>
 
-        <section class="col-lg-10 panel-background">
+        <section class="col-lg panel-background">
             <div class="row">
 
                 <div class="col-lg-4 panel-outline">
@@ -120,7 +120,8 @@
             <div class="row">
                 <div class="col panel-outline">
 
-                    <h4 class="panel-title">Mes fichiers</h4>
+                    <h4 class="panel-title">Mes fichiers &nbsp;<?php if (isset($_GET['sp']) && $_GET['sp'] == "grid") { ?> <a href="/espace-utilisateur/sort-by-date" style="position: absolute; right: 20px;"><i class="fas fa-table sort" title="Affichage tableau"></i></a> <?php } else { ?> <a href="/espace-utilisateur/grid" style="position: absolute; right: 20px;"><i class="fas fa-th sort" title="Affichage grille"></i></a> <?php } ?></h4>
+                    
 
                     <?php
                     //Tri
@@ -143,6 +144,8 @@
                     }
                     ?>
 
+                    <?php if (!(isset($_GET['sp']) && $_GET['sp'] == "grid")) { ?>
+
                     <table class="table">
                         <thead class="thead">
                             <th style="width:40%;">Nom du fichier &nbsp;<a href="/espace-utilisateur/sort-by-name"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "original_name/ASC") {echo("active"); } ?>" title="Trier par nom"></i></a></th>
@@ -151,12 +154,15 @@
                             <th style="width:15%;">Téléchargements &nbsp;<a href="/espace-utilisateur/sort-by-dl"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "download_count/DESC") {echo("active"); } ?>" title="Trier nombre de téléchargements"></i></a></th>
                             <th style="width:15%;">Actions</th>
                         </thead>
+                    <?php } ?>
                         <?php
 
 
                         $key = $_SESSION['UserPassword'];
                         $files = getFiles($_SESSION['Data']['id'], $connection, $_SESSION['table_files_sort']);
                         $table = "";
+                        $grid = "<div class='row'>";
+                        $count = 0;
 
                         foreach($files as $file){
                             $path = $file["path"];
@@ -169,7 +175,7 @@
                             $originalName = (strlen($originalName) > 70) ? substr($originalName, 0, 67) . "..." : $originalName;
 
                             //Colonne Nom
-                            $table .=  "<tr><td><span title='" . htmlspecialchars($file["original_name"]) . "'>" . $originalName . "</span></td>\n";
+                            $table .=  "<tr><td><span title='" . htmlspecialchars(decryptText($file["original_name"], $key, $file["salt"], null, false)) . "'>" . $originalName . "</span></td>\n";
                             //Colonne Taille
                             $table .=  "<td>" . convertUnits($file["size"]) . "</td>\n";
                             //Colonne Date
@@ -181,10 +187,37 @@
                                                 "<a href='#' data-toggle='modal' data-target='#modalDirectDownload' onclick='editModalDirectDownload(".'"'."$path".'"'.", ".'"'."$key".'"'.", ".'"'.$originalName.'"'.")'><i class='fas fa-download edit'></i></a>" . "&nbsp; &nbsp; &nbsp;" .
                                                 "<a href='#' data-toggle='modal' data-target='#modalDeleteFile' onclick='editModalDelete(" . $file['id'] . ")'><i class='fas fa-trash-alt delete'></i></a>" . "</td></tr>\n";
 
+                            //Affichage grille
+                            $count++;
+                            if ($count == 12) {
+                                $grid .= "</div>";
+                                $grid .= "<div class='row'>";
+                                $count = 0;
+                            }
+                            $originalName = (strlen($originalName) > 19) ? substr($originalName, 0, 16) . "..." : $originalName;
+                            $grid .= "<div class='col-lg-1 item-grid'><a href='#' style='color: #000;' data-toggle='modal' data-target='#modalShareLink' onclick='editModalShare(\"" . generateShareLink($_SESSION['UserPassword'], $file['id'], $connection) . "\")'>" .
+                                     "<h3 title='" . htmlspecialchars(decryptText($file["original_name"], $key, $file["salt"], null, false)) . "'>" . $originalName . "</h3>\n" .
+                                     "<img src='https://img.icons8.com/dusk/256/000000/file--v2.png' alt='Logo' /><br />\n" .
+                                     "</a></div>";
+                            
+                        
+                        
                         }
-                        echo($table);
+
+                        if (isset($_GET['sp']) && $_GET['sp'] == "grid") {
+                            echo($grid . "</div>");
+                        } else {
+                            echo($table);
+                        }
+
                         ?>
+
+                    <?php if (!(isset($_GET['sp']) && $_GET['sp'] == "grid")) { ?>
                     </table>
+                    <?php } ?>
+
+
+
                 </div>
             </div>
         </section>

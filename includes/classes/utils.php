@@ -411,6 +411,7 @@ function generateShareLink($password, $fileId, $connection) {
     return generateDlLink($password, $fileId, $connection, $base = "share-file");
 }
 
+
 /**
  * Fonction qui génère le lien qui permet de décoder un fichier spécifique
  *
@@ -566,6 +567,44 @@ function downloadFileOld($filename, $name, $mimeType='') {
     } else {
         die("Erreur : impossible d'ouvrir le fichier");
     }
+}
+
+
+/**
+ * Fonction retourne le temps ecoulé sous forme de chaine de caractères. e.g : "Il y a 3 minutes"
+ *
+ * @param integer             $datetime             - Timestamp de reference
+ * @param boolean             $full                 - Retourner la chaine complete ? e.g : "Il y a 2 mois, 12 jours, 4 heures, 8 minutes et 48 secondes"
+ *
+ * @return string
+*/
+function time_elapsed_string($datetime, $full = false) {
+    $now = new DateTime;
+    $ago = new DateTime($datetime);
+    $diff = $now->diff($ago);
+
+    $diff->w = floor($diff->d / 7);
+    $diff->d -= $diff->w * 7;
+
+    $string = array(
+        'y' => 'an',
+        'm' => 'mois',
+        'w' => 'semaine',
+        'd' => 'jour',
+        'h' => 'heure',
+        'i' => 'minute',
+        's' => 'seconde',
+    );
+    foreach ($string as $k => &$v) {
+        if ($diff->$k) {
+            $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+        } else {
+            unset($string[$k]);
+        }
+    }
+
+    if (!$full) $string = array_slice($string, 0, 1);
+    return $string ? 'Il y a ' . implode(', ', $string) : 'A l\'instant';
 }
 
 ?>
