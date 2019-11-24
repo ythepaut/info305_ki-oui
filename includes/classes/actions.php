@@ -20,17 +20,13 @@ switch ($action) {
         die(register($_POST['register_username'], $_POST['register_email'], $_POST['register_passwd'], $_POST['register_passwd2'], $_POST['register_cgu'], $_POST['register_recaptchatoken'], $connection, $em, $recaptcha));
         break;
     case "verif-email":
-        if ($_SESSION["status"]=="REGISTRATION") {
-            die(verifEmail($_GET['token'], $connection));
-        } else {
-            die(changeEmail ($connection, $_GET["token"]));
-        }    
+        die(verifEmail($_GET['token'], $connection));
         break;
     case "change-email":
-        die(changeEmailConfirmation($connection, $em, $_SESSION['Data']['id'], $_POST['change-email_newEmail'], $_POST['change-email_password']));    
+        die(changeEmailConfirmation($_POST['change-email_newEmail'], $_POST['change-email_password'], $connection, $em));    
         break;
     case "change-password":
-        die(changePassword($_SESSION['Data']['id'], $_POST['change-password_oldPassword'], $_POST['change-password_newPassword'], $_POST['change-password_newPasswordBis'], $connection));
+        die(changePassword($_POST['change-password_oldPassword'], $_POST['change-password_newPassword'], $_POST['change-password_newPasswordBis'], $connection));
         break;
     case "forgot-pwd":
         die(forgotPassword($_POST['forgot-pwd_email'], $_POST['forgot-pwd_backup-key'], $_POST['forgot-pwd_new-passwd'], $_POST['forgot-pwd_new-passwd2'], $connection));
@@ -339,7 +335,7 @@ function register($username, $email, $passwd, $passwd2, $cgu, $recaptchatoken, $
                                 }
 
                             } else {
-                                $result = "ERROR_USER_EMAIL#Cette adresse e-mail est déjà utilisée.";
+                                $result = "ERROR_USED_EMAIL#Cette adresse e-mail est déjà utilisée.";
                             }
 
                         } else {
@@ -367,39 +363,6 @@ function register($username, $email, $passwd, $passwd2, $cgu, $recaptchatoken, $
     }
 
     return $result . "#<script>window.href.location = '/';</script>";
-}
-
-
-/**
- * Verification d'email après enregistrement
- *
- * @param string            $token              -   Jeton de verification e-mail
- * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php
- *
- * @return void
- */
-function verifEmail($token, $connection) {
-
-    $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE email_token = ?");
-    $query->bind_param("s", $token);
-    $query->execute();
-    $result = $query->get_result();
-    $query->close();
-    $userData = $result->fetch_assoc();
-
-    if ($userData['status'] == "REGISTRATION") {
-
-        $newStatus = "ALIVE";
-
-        $query = $connection->prepare("UPDATE kioui_accounts SET status = ? , email_token = NULL WHERE email_token = ?");
-        $query->bind_param("ss", $newStatus, $token);
-        $query->execute();
-        $query->close();
-
-    }
-
-    header("Location: /");
-
 }
 
 
@@ -1022,21 +985,21 @@ function forgotPassword($email, $backupKey, $passwd, $passwd2, $connection) {
  *
  * @return string
 */
-function changePassword($userId, $oldPassword, $newPassword, $newPasswordBis, $connection) {
+function changePassword($oldPassword, $newPassword, $newPasswordBis, $connection) {
 
     $result = "ERROR_UNKNOWN#Une erreur est survenue.";
 
     if (isValidSession($connection)) {
 
-        if (isset($userId, $oldPassword, $newPassword) && $userId != "" && $oldPassword != "" && $newPassword != "") {
+        if (isset($oldPassword, $newPassword) &&$oldPassword != "" && $newPassword != "") {
 
             //Recuperation des données
             $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE id = ?");
-            $query->bind_param("i", $userId);
+            $query->bind_param("i", $_SESSION['Data']['id']);
             $query->execute();
-            $result_bis = $query->get_result();
+            $result = $query->get_result();
             $query->close();
-            $userData = $result_bis->fetch_assoc();
+            $userData = $result->fetch_assoc();
 
             //Identifiants correct ?
             if (isset($userData['id']) && $userData['id'] != null && password_verify(hash('sha512', hash('sha512', $oldPassword . $userData['salt'])), $userData['password'])) {
@@ -1273,74 +1236,113 @@ function respondTicket($id, $message, $connection) {
 
     return $result;
 }
+
+
 /**
  * Fonction qui envoie le mail pour confirmer le changement d'email
+ * @param string              $newEmail             - Email de remplacement
+ * @param string              $password             - Mot de passe de l'utilisateur
  * @param mysqlconnection     $connection           - Connexion BDD effectuée dans le fichier config-db.php
  * @param array               $em                   - Identifiants email dans le fichier config-email.php
- * @param                     $idUser               - l'identifiant de l'utilisateur
- * @param                     $newEmail             - le nouvel email
- * @param                     $password             - le mor de passe de l'utilisateur
  * 
  */
-function changeEmailConfirmation ($connection, $em, $idUser, $newEmail, $password) {
+function changeEmailConfirmation($newEmail, $password, $connection, $em) {
     $result = "ERROR_UNKNOWN#Une erreur est survenue.";
-    //session valide?
+    
     if (isValidSession($connection)) {
-        if (isset($idUser, $newEmail, $password) && $idUser != "" && $newEmail != "" && $password != "") {
-            //Recuperation des données
-            $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE id = ?");
-            $query->bind_param("i", $userId);
-            $query->execute();
-            $result_bis = $query->get_result();
-            $query->close();
-            $userData = $result_bis->fetch_assoc();
-            //vérification mdp
-            if (password_verify(hash('sha512', hash('sha512', $password . $_SESSION['Data']['salt'])), $_SESSION['Data']['password'])) {
-                $emailToken = randomString(64);
-                $link = "https://ki-oui-c.ythepaut.com/verif-email/" . $emailToken ;
-                
-                $query = $connection->prepare("UPDATE kioui_accounts SET email_tmp = ? , email_token = ? WHERE id = ?");
-                $query->bind_param("ssi", $newEmail, $emailToken, $idUser);
-                $query->execute();
-                $query->close();
 
-                sendMail($em, $newEmail, "Changement de votre adresse e-mail", "CHANGEMENT DE VOTRE ADRESSE E-MAIL", "Veuillez confirmer le changement d'adresse e-mail", $link, "Confimer");
-                $result = "SUCCESS#Le mail de confirmation viens de vous être envoyer";
+        if (isset($newEmail, $password) && filter_var($newEmail, FILTER_VALIDATE_EMAIL) && $password != "") {
+
+            //Verification email non utilisée
+            $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE email = ? OR email_toconfirm = ?");
+            $query->bind_param("ss", $newEmail, $newEmail);
+            $query->execute();
+            $result = $query->get_result();
+            $query->close();
+            $verifData = $result->fetch_assoc();
+
+            if ($verifData['id'] == "") {
+
+                //Recuperation des données
+                $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE id = ?");
+                $query->bind_param("i", $_SESSION['Data']['id']);
+                $query->execute();
+                $result = $query->get_result();
+                $query->close();
+                $userData = $result->fetch_assoc();
+
+                //Vérification MDP
+                if (password_verify(hash('sha512', hash('sha512', $password . $_SESSION['Data']['salt'])), $_SESSION['Data']['password'])) {
+
+                    $emailToken = randomString(64);
+                    $link = "https://ki-oui.ythepaut.com/verif-email/" . $emailToken ;
+
+                    $query = $connection->prepare("UPDATE kioui_accounts SET email_toconfirm = ? , email_token = ? WHERE id = ?");
+                    $query->bind_param("ssi", $newEmail, $emailToken, $_SESSION['Data']['id']);
+                    $query->execute();
+                    $query->close();
+
+                    sendMail($em, $newEmail, "Changement de votre adresse e-mail", "CHANGEMENT DE VOTRE ADRESSE E-MAIL", "Bonjour " . $userData['username'] . "Afin de completer votre demande de changement d'adresse e-mail, veuillez cliquer sur le lien ci-dessous.<br /><br />Si vous n'êtes pas à l'origine de cette demande, changez votre mot de passe et contactez le support.", $link, "Confirmer ma nouvelle adresse");
+                    $result = "SUCCESS#Un e-mail de vérification a été envoyé.#/espace-utilisateur/compte";
+
+                } else {
+                    $result = "ERROR_INVALID_CREDENTIALS#Mot de passe invalide.";
+                }
+
             } else {
-                $result = "ERROR_WRONG_PASSWORD#Mot de passe invalide.";
+                $result = "ERROR_USED_EMAIL#Cette adresse e-mail est déjà utilisée.";
             }
+
         } else {
             $result = "ERROR_MISSING_FIELDS#Veuillez remplir tous les champs.";
         }
+
     } else {
         $result = "ERROR_INVALID_SESSION#Votre session est invalide. Déconnectez vous puis reconnectez vous. Si le problème persiste contactez le support.";
     }
+
     return $result;
 }
+
+
 /**
- * Fonction qui change l'email d'un compte
- * @param mysqlconnection     $connection           - Connexion BDD effectuée dans le fichier config-db.php
- * @param                     $oldEmail             - l'email actuel de l'utilisateur
- * @param                     $hashKey              - le mdp contenue dans la bdd hashé
+ * Verification d'email après enregistrement ou apres changement email
+ *
+ * @param string            $token              -   Jeton de verification e-mail
+ * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return void
  */
-function changeEmail ($connection, $token) {
+function verifEmail($token, $connection) {
+
     $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE email_token = ?");
     $query->bind_param("s", $token);
     $query->execute();
     $result = $query->get_result();
     $query->close();
     $userData = $result->fetch_assoc();
-    
-    if ($userData["id"]!="") {
-        //vérification requete
-        if ($userData["email_tmp"]!=NULL) {
-            $query = $connection->prepare("UPDATE kioui_accounts SET email = ? , email_tmp = NULL , email_token = NULL WHERE id = ?");
-            $query->bind_param("si", $userData["email_tmp"], $userData["id"]);
-            $query->execute();
-            $query->close();
-        } 
-    } 
-    header("Location : /");
+
+    if ($userData['status'] == "REGISTRATION") {
+
+        $newStatus = "ALIVE";
+
+        $query = $connection->prepare("UPDATE kioui_accounts SET status = ? , email_token = NULL WHERE email_token = ?");
+        $query->bind_param("ss", $newStatus, $token);
+        $query->execute();
+        $query->close();
+
+    } elseif ($userData["id"] != "" && $userData["email_toconfirm"] != "") {
+
+        $none = "";
+        $query = $connection->prepare("UPDATE kioui_accounts SET email = ? , email_toconfirm = ? , email_token = ? WHERE id = ?");
+        $query->bind_param("sssi", $userData["email_toconfirm"], $none, $none, $userData["id"]);
+        $query->execute();
+        $query->close();
+
+    }
+
+    header("Location: /espace-utilisateur");
+
 }
 
 ?>

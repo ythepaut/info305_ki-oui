@@ -9,7 +9,7 @@
                 <div class="row">
 
                     <div class="col-lg-12"  style="text-align: center;">
-                        <h4 class="modal-title">CHANGEMENT D'E-MAIL</h4>
+                        <h4 class="modal-title">CHANGEMENT D'ADRESSE E-MAIL</h4>
                     </div>
                     
                     <div class="col-lg-2">
@@ -20,18 +20,19 @@
 
                         <form action="<?php echo(getSrc('./includes/classes/actions.php')); ?>" method="POST" class="ajax">
                         
-                            <div class="input-group mb-3">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text label-icon" id="icon_change-email_password"><i class="fas fa-key"></i></span>
-                                </div>
-                                <input type="password" name="change-email_password" class="form-control" placeholder="Mot de passe" aria-describedby="icon_change-email_password" required />
-                            </div>
 
                             <div class="input-group mb-3">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text label-icon" id="icon_change-email_newEmail"><i class="fas fa-at"></i></span>
                                 </div>
-                                <input type="email" name="change-email_newEmail" class="form-control" placeholder="Nouvel e-mail" aria-describedby="icon_change-email_newEmail" required />
+                                <input type="email" name="change-email_newEmail" class="form-control" placeholder="Nouvelle adresse e-mail" aria-describedby="icon_change-email_newEmail" required />
+                            </div>
+
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text label-icon" id="icon_change-email_password"><i class="fas fa-key"></i></span>
+                                </div>
+                                <input type="password" name="change-email_password" class="form-control" placeholder="Mot de passe requis pour confirmer votre action" aria-describedby="icon_change-email_password" required />
                             </div>
 
 

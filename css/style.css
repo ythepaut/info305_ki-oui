@@ -365,7 +365,8 @@ div.panel-outline {
 
 section.panel-background {
 	background-color: #f2f3f7;
-	color: #404957 !important;
+    color: #404957 !important;
+    min-height: 75vh;
 }
 
 canvas.quota {
