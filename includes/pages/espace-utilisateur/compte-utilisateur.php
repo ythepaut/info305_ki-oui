@@ -23,7 +23,7 @@
                         <tr>
                             <th scope="row"> Adresse e-mail</th>
                             <td><?php echo(htmlspecialchars($_SESSION['Data']['email'])); ?></td>
-                            <td><i class="fas fa-pen edit" title="Modifier"></i></td>
+                            <td><a href="#" data-toggle="modal" data-target="#modalChangeEmail"><i class="fas fa-pen edit" title="Modifier"></i></a></td>
                         </tr>
                         <tr>
                             <th scope="row"> Nom d'utilisateur</th>
@@ -117,6 +117,7 @@ include("./includes/pages/modals/totp.php");
 include("./includes/pages/modals/download-data.php");
 include("./includes/pages/modals/change-password.php");
 include("./includes/pages/modals/change-username.php");
+include("./includes/pages/modals/change-email.php");
 include("./includes/pages/modals/delete-known-devices.php");
 include("./includes/pages/modals/delete-account-procedure.php");
 ?>

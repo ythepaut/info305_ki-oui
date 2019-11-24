@@ -415,8 +415,8 @@ function generateShareLink($password, $fileId, $connection) {
  * Fonction qui génère le lien qui permet de décoder un fichier spécifique
  *
  * @param string              $password               - mot de passe de l'utilisateur hash(mdp + sel_user)
- * @param integer                $fileId                  - id du fichier
- * @param mysqlconnection     $connection           - Connexion BDD effectuée dans le fichier config-db.php
+ * @param integer             $fileId                 - id du fichier
+ * @param mysqlconnection     $connection             - Connexion BDD effectuée dans le fichier config-db.php
  *
  * @return string
 */
