@@ -59,6 +59,8 @@
                     <div class="col-lg-12">
 
                         <div style="display: none;" id="hint_change-password"></div>
+                        <br />
+                        <div class="alert alert-info"><i class="fas fa-info-circle info"></i> &nbsp;Cette opération peut prendre jusqu'à plusieurs minutes. Merci de ne pas fermer la fenetre pendant l'operation.</div>
                         
                     </div>
 

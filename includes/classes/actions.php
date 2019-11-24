@@ -89,10 +89,10 @@ switch ($action) {
             if ($res) {
                 header("location:/espace-utilisateur/accueil-utilisateur");
             } else {
-                header("location:/ajout-nok");
+                echo "Erreur";
             }
         } else {
-            header("location:/ajout-nok");
+            echo "non connecté ?";
         }
 
         die();
@@ -335,7 +335,7 @@ function register($username, $email, $passwd, $passwd2, $cgu, $recaptchatoken, $
                                     $result = "SUCCESS#Compte créé. Veuillez confirmer votre e-mail avant de vous connecter.#null";
 
                                 } else {
-                                    $result = "ERROR_USER_USERNAME#Ce nom d'utilisateur est déjà utilisé.";
+                                    $result = "ERROR_USED_USERNAME#Ce nom d'utilisateur est déjà utilisé.";
                                 }
 
                             } else {
@@ -743,13 +743,13 @@ function changeUsername($connection, $newUsername, $password, $userId){
 
                         $result = "SUCCESS#Votre nom d'utilisateur a bien été changé#/espace-utilisateur/compte";
                     } else {
-                        $result = "ERROR_USER_USERNAME#Ce nom d'utilisateur est déjà utilisé.";
+                        $result = "ERROR_USED_USERNAME#Ce nom d'utilisateur est déjà utilisé.";
                     }
                 } else {
                     $result = "ERROR_INVALID_USERNAME#Votre nom d'utilisateur doit faire entre 3 et 16 caractères.";
                 }
             } else {
-                $result = "ERROR_WRONG_PASSWORD#Veuillez entrez le bon mot de passe";
+                $result = "ERROR_INVALID_CREDENTIALS#Mot de passe invalide.";
             }
         } else {
             $result = "ERROR_MISSING_FIELDS#Veuillez remplir tous les champs.";
@@ -770,7 +770,7 @@ function changeUsername($connection, $newUsername, $password, $userId){
  * @return  boolean         $res                -   Si l'opération s'est bien passée ou non
  */
 function upload($connection) {
-    $res = true;
+    $res = false;
 
     if (!isset($_FILES["files"]) || !isset($_SESSION["Data"]) || !isset($_SESSION["LoggedIn"])) {
         return false;
@@ -778,54 +778,34 @@ function upload($connection) {
 
     $nbFiles = count($_FILES["files"]["name"]);
 
-    $success = true;
-
-    $log = "";
+    $totalSize = 0;
 
     for ($i=0; $i<$nbFiles-1; $i++) {
-        $log .= "Nom : "      . $_FILES["files"]["name"][$i]     . " <br />";
-        $log .= "Type : "     . $_FILES["files"]["type"][$i]     . " <br />";
-        $log .= "Tmp name : " . $_FILES["files"]["tmp_name"][$i] . " <br />";
-        $log .= "Error : "    . $_FILES["files"]["error"][$i]    . "<br />";
-        $log .= "Size : "     . $_FILES["files"]["size"][$i]     . "<br />";
-
         if ($_FILES["files"]["error"][$i] == UPLOAD_ERR_OK && is_uploaded_file($_FILES["files"]["tmp_name"][$i])) {
-            $log .= "Content : ";
-            $log .= file_get_contents($_FILES["files"]["tmp_name"][$i]);
-            $log .= "<br />";
-        }
-
-        $log .= "<br />";
-
-        if ($_FILES["files"]["size"][$i] > MAX_FILE_SIZE) {
-            $success = false;
+            $totalSize += $_FILES["files"]["size"][$i];
         }
     }
 
-    if ($success) {
-        $log .= "Success";
-    } else {
-        $log .= "Failure";
+    $maxSize = $_SESSION["Data"]["quota"];
+    $usedSpace = getSize($_SESSION["Data"]["id"], $connection);
+
+    if ($totalSize > $maxSize - $usedSpace) {
+        $res = false;
     }
+    else {
+        $password = $_SESSION["UserPassword"];
 
-    $log .= "<br /><br />";
-
-    // echo $log;
-
-    $res = $success;
-
-    $password = $_SESSION["UserPassword"];
-
-    if ($success) {
         for ($i=0; $i<$nbFiles-1; $i++) {
-            $originalName = $_FILES["files"]["name"][$i];
-            $content = file_get_contents($_FILES["files"]["tmp_name"][$i]);
-            $size = $_FILES["files"]["size"][$i];
+            if ($_FILES["files"]["error"][$i] == UPLOAD_ERR_OK && is_uploaded_file($_FILES["files"]["tmp_name"][$i])) {
+                $originalName = $_FILES["files"]["name"][$i];
+                $content = file_get_contents($_FILES["files"]["tmp_name"][$i]);
+                $size = $_FILES["files"]["size"][$i];
 
-            var_dump($originalName);
-
-            $newFileName = createCryptedZipFile($connection, $content, $size, $password, $originalName);
+                $newFileName = createCryptedZipFile($connection, $content, $size, $password, $originalName);
+            }
         }
+
+        $res = true;
     }
 
     return $res;
@@ -980,16 +960,17 @@ function forgotPassword($email, $backupKey, $passwd, $passwd2, $connection) {
                     }
                     if ($success && $oldPassword != "") {
 
+                        //Décrypter et rencrypter tous les fichiers
                         $files = getFiles($userData['id'], $connection);
+                        //Obtenir la clés de décryptage et de cryptage
                         $oldUserKey = $oldPassword;
                         $newUserKey = hash('sha512', $passwd . $userData['salt']);
 
-
                         foreach ($files as $file) {
                             list($content, $name) = unzipCryptedFile($connection, $file['path'], $oldUserKey);
-                            createCryptedZipFile($connection, $content, $file['size'], $passwd, $name);
-                            deleteFile($file['id'], $connection);
+                            createCryptedZipFile($connection, $content, $file['size'], $newUserKey, $name);
                             //Suppresion du fichier
+                            deleteFile($file['id'], $connection);
                         }
 
                         $new_password_salted_hashed = password_hash(hash('sha512', hash('sha512', $passwd . $userData['salt'])), PASSWORD_DEFAULT, ['cost' => 12]);
@@ -1101,7 +1082,7 @@ function changePassword($userId, $oldPassword, $newPassword, $newPasswordBis, $c
                 }
 
             } else {
-                $result = "ERROR_WRONG_PASSWORD#Mot de passe invalide.";
+                $result = "ERROR_INVALID_CREDENTIALS#Mot de passe invalide.";
             }
 
         } else {
@@ -1155,7 +1136,7 @@ function deleteAccountProcedure($passwd, $connection, $em) {
             }
 
         } else {
-            $result = "ERROR_WRONG_PASSWORD#Mot de passe invalide.";
+            $result = "ERROR_INVALID_CREDENTIALS#Mot de passe invalide.";
         }
 
     } else {
@@ -1248,7 +1229,7 @@ function respondTicket($id, $message, $connection) {
             if (isset($message) && strlen($message) > 3) {
 
                 $oldConversationArray = json_decode($ticket['conversation'], true);
-                
+
                 $role = ($_SESSION['Data']['access_level'] == "ADMINISTRATOR") ? "SUPPORT" : "USER";
 
                 $messageArray = array(
