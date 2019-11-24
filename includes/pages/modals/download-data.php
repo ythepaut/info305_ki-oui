@@ -25,19 +25,19 @@
                         <ul style="list-style-type: none; margin: 5px 0px;">
                             <li>
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" name="request-data_checked" value="data" id="request-data_db" checked disabled />
+                                    <input type="checkbox" class="custom-control-input" name="request-data_checkedData" id="request-data_db" checked="checked" />
                                     <label class="custom-control-label" for="request-data_db">Toutes les données de mon compte (Nom d'utilisateur, mot de passe crypté, email, etc...).</label>
                                 </div>
                             </li>
                             <li>
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" name="request-data_checked" value="encfiles" id="request-data_encrypted-files" disabled />
+                                    <input type="checkbox" class="custom-control-input" name="request-data_checkedEnc" id="request-data_encrypted-files" checked="checked" />
                                     <label class="custom-control-label" for="request-data_encrypted-files">Mes fichiers tels qu'ils sont stockés sur le serveur de KI-OUI.</label>
                                 </div>
                             </li>
                             <li>
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" name="request-data_checked" value="decfiles" id="request-data_decrypted-files" disabled />
+                                    <input type="checkbox" class="custom-control-input" name="request-data_checkedDec" id="request-data_decrypted-files" checked="checked" />
                                     <label class="custom-control-label" for="request-data_decrypted-files">Mes fichiers décryptés.</label>
                                 </div>
                             </li>

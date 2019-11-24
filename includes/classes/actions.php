@@ -14,7 +14,7 @@ $action = ($action == "" && isset($_GET['action']) && $_GET['action'] != "") ? $
 
 switch ($action) {
     case "login":
-        die(login($_POST['login_email'], $_POST['login_passwd'], $connection, $em));
+        die(login($_POST['login_email'], $_POST['login_passwd'], $_POST['login_remember'], $connection, $em));
         break;
     case "register":
         die(register($_POST['register_username'], $_POST['register_email'], $_POST['register_passwd'], $_POST['register_passwd2'], $_POST['register_cgu'], $_POST['register_recaptchatoken'], $connection, $em, $recaptcha));
@@ -32,7 +32,7 @@ switch ($action) {
         die(forgotPassword($_POST['forgot-pwd_email'], $_POST['forgot-pwd_backup-key'], $_POST['forgot-pwd_new-passwd'], $_POST['forgot-pwd_new-passwd2'], $connection));
         break;
     case "change-username":
-        die(changeUsername($connection, $_POST['change-username_newusername'],$_POST['change-username_password'], $_SESSION['Data']['id']));
+        die(changeUsername($_POST['change-username_newusername'],$_POST['change-username_password'], $connection));
         break;
     case "backup-key":
         die(backupKey($_POST['backup-key_key'], $connection));
@@ -56,10 +56,10 @@ switch ($action) {
         die(deleteKnownDevices($connection));
         break;
     case "request-data":
-        die(requestData($_POST['request-data_checked'], $_POST['request-data_passwd'], $connection));
+        die(requestData($_POST['request-data_checkedData'], $_POST['request-data_checkedEnc'], $_POST['request-data_checkedDec'], $_POST['request-data_passwd'], $connection));
         break;
     case "download-data":
-        die(downloadData($connection, $_GET['download-data_file']));
+        die(downloadData($connection, $_GET['download-data_file'], $_GET['download-data_extension']));
         break;
     case "delete-account-procedure":
         die(deleteAccountProcedure($_POST['delete-account-procedure_passwd'], $connection, $em));
@@ -134,12 +134,13 @@ switch ($action) {
  *
  * @param string            $email              -   Adresse e-mail de l'utilisateur
  * @param string            $passwd             -   Mot de passe de l'utilisateur
+ * @param string            $remember (opt.)    -   Valeur de la checkbox "se souvenir de moi"
  * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php
  * @param array             $em                 -   Identifiants email dans le fichier config-email.php
  *
  * @return string
  */
-function login($email, $passwd, $connection, $em) {
+function login($email, $passwd, $remember = "off", $connection, $em) {
     $result = "ERROR_UNKNOWN#Une erreur est survenue.";
 
     //Verification des champs
@@ -576,7 +577,7 @@ function validateTFA($code, $connection) {
  *
  * @return string
  */
-function requestData($checked, $passwd, $connection) {
+function requestData($dlData, $dlEnc, $dlDec, $passwd, $connection) {
     $result = "ERROR_UNKNOWN#Une erreur est survenue.";
 
     if (isValidSession($connection)) {
@@ -585,29 +586,69 @@ function requestData($checked, $passwd, $connection) {
         if (password_verify(hash('sha512', hash('sha512', $passwd . $_SESSION['Data']['salt'])), $_SESSION['Data']['password'])) {
 
             //Verification checkbox
-            if (true) {
+            if ($dlData == "on" || $dlEnc == "on" || $dlDec == "on") {
 
-                try {
-                    $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE id = ?");
-                    $query->bind_param("i", $_SESSION['Data']['id']);
-                    $query->execute();
-                    $result = $query->get_result();
-                    $query->close();
-                    $userData = $result->fetch_assoc();
+                $zip = new ZipArchive;
+                $salt = randomString(8);
+                if ($zip->open(TEMP_DIR . "kioui-fr-user-data-fetch-" . $_SESSION['Data']['id'] . "-" . $salt . ".zip", ZipArchive::CREATE) === TRUE) {
 
-                    $salt = randomString(16);
-                    $file = TEMP_DIR."kioui-fr-user-data-fetch-" . $_SESSION['Data']['id'] . "-" . $salt . ".json";
+                    $filesToDelete = array();
 
-                    $user_data_file = fopen($file, "w");
-                    fwrite($user_data_file, json_encode($userData));
-                    fclose($user_data_file);
+                    //Telechargement ligne utilisateur dans bdd
+                    if ($dlData == "on") {
 
-                    $result = "SUCCESS#Téléchargement...#/dl-data/" . $salt;
+                        //Recuperation des données
+                        $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE id = ?");
+                        $query->bind_param("i", $_SESSION['Data']['id']);
+                        $query->execute();
+                        $result = $query->get_result();
+                        $query->close();
+                        $userData = $result->fetch_assoc();
 
-                } catch (Exception $e) {
-                    $result = "ERROR#" . $e->get_message();
+                        //Ajout du fichier dans l'archive
+                        $zip->addFromString('data.json', json_encode($userData, JSON_PRETTY_PRINT));
+
+                    }
+
+                    //Telechargement des fichiers cryptés
+                    if ($dlEnc == "on") {
+
+                        //Recuperation des fichiers
+                        $files = getFiles($_SESSION['Data']['id'], $connection);
+
+                        foreach ($files as $file) {
+                            $zip->addFile(UPLOAD_DIR . $file['path'], 'encrypted/' . $file['path']);
+                        }
+
+                    }
+
+                    //Telechargement des fichiers décryptés
+                    if ($dlDec == "on") {
+
+                        //Recuperation des fichiers
+                        $files = getFiles($_SESSION['Data']['id'], $connection);
+
+                        foreach ($files as $file) {
+                            list($content, $name) = unzipCryptedFile($connection, $file['path'], $_SESSION['UserPassword']);
+                            $tmpFile = TEMP_DIR . "kioui-fr-user-data-fetch-" . $_SESSION['Data']['id'] . "-" . $salt . "-" . $name;
+                            file_put_contents($tmpFile, $content);
+                            $zip->addFile($tmpFile, 'unencrypted/' . $name);
+                            array_push($filesToDelete, $tmpFile);
+                        }
+
+                    }
+
+                    $zip->addFromString('lisez-moi.txt', "KI-OUI - Données personnelles\n\nLes données contenues dans cette archive doivent rester secretes.");
+                    $zip->close();
+
+                    //Suppression des fichiers temporaires
+                    foreach ($filesToDelete as $file) {
+                        unlink($file);
+                    }
+
                 }
 
+                $result = "SUCCESS#Téléchargement...#/dl-data/" . $salt . "/" . "zip";
 
             } else {
                 $result = "ERROR_INVALID_FIELDS#Veuillez cocher au moins une case.";
@@ -623,13 +664,14 @@ function requestData($checked, $passwd, $connection) {
 
     return $result;
 }
-function downloadData($connection, $salt) {
+function downloadData($connection, $salt, $extension) {
 
     if (isValidSession($connection)) {
 
-        $file = TEMP_DIR . "kioui-fr-user-data-fetch-" . $_SESSION['Data']['id'] . "-" . $salt . ".json";
+        $file = TEMP_DIR . "kioui-fr-user-data-fetch-" . $_SESSION['Data']['id'] . "-" . $salt . "." . $extension;
 
         downloadFile($file);
+        unlink($file);
     }
 
 }
@@ -664,44 +706,43 @@ function contactForm($em, $email, $subject, $message) {
     return $result;
 }
 
+
 /**
  * Fonction qui change le nom d'un utilisateur
  *
  * @param   mysqlconnection $connection         -   Connection à la base de données SQL
  * @param   string          $newUsername        -   le nouveau nom de l'utilisateur
  * @param   string          $password           -   le mot de passe de l'utilisateur
- * @param   integer         $userId             -   l'indentifiant de l'utilisateur
  *
  * @return  string
  */
-function changeUsername($connection, $newUsername, $password, $userId){
+function changeUsername($newUsername, $password, $connection){
 
     $result="ERROR_UNKNOWN#Une erreur est survenue.";
 
     if (isValidSession($connection)) {
-        if (isset($newUsername, $password, $userId) && $newUsername != "" && $password != "" && $userId != "") {
+        if (isset($newUsername, $password) && $newUsername != "" && $password != "") {
             //vérification du mdp
             $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE id = ?");
-            $query->bind_param("i", $userId);
+            $query->bind_param("i", $_SESSION['Data']['id']);
             $query->execute();
-            $result_bis = $query->get_result();
+            $result = $query->get_result();
             $query->close();
-            $userData = $result_bis->fetch_assoc();
+            $userData = $result->fetch_assoc();
             if (isset($userData['id']) && $userData['id'] != null && password_verify(hash('sha512', hash('sha512', $password . $userData['salt'])), $userData['password'])) {
                 if (strlen($newUsername) <= 16 && strlen($newUsername) >= 3) {
                     //Verification données nom d'utilisateur
                     $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE username = ?");
                     $query->bind_param("s", $newUsername);
                     $query->execute();
-                    $result_bis = $query->get_result();
+                    $result = $query->get_result();
                     $query->close();
-                    $userData = $result_bis->fetch_assoc();
+                    $userData = $result->fetch_assoc();
                     if ($userData['id'] == "") {
                         //changement nom d'utilisateur bdd
                         $query = $connection->prepare("UPDATE kioui_accounts SET username = ? WHERE kioui_accounts.id = ?");
-                        $query->bind_param("si", $newUsername, $userId);
+                        $query->bind_param("si", $newUsername, $_SESSION['Data']['id']);
                         $query->execute();
-                        $result_bis = $query->get_result();
                         $query->close();
 
                         $result = "SUCCESS#Votre nom d'utilisateur a bien été changé#/espace-utilisateur/compte";
@@ -922,7 +963,6 @@ function forgotPassword($email, $backupKey, $passwd, $passwd2, $connection) {
                         $success = false;
                     }
                     if ($success && $oldPassword != "") {
-
                         //Décrypter et rencrypter tous les fichiers
                         $files = getFiles($userData['id'], $connection);
                         //Obtenir la clés de décryptage et de cryptage
@@ -977,10 +1017,9 @@ function forgotPassword($email, $backupKey, $passwd, $passwd2, $connection) {
  * Fonction qui change le mot de passe d'un utilisateur donné
  * (Formulaire AJAX)
  *
- * @param integer             $userId               - ID de l'utilisateur
- * @param string              $oldPassword            - Ancien mot de passe
- * @param string              $newPassword            - Nouveau mot de passe
- * @param string              $newPasswordBis        - Confirmation du nouveau mot de passe
+ * @param string              $oldPassword          - Ancien mot de passe
+ * @param string              $newPassword          - Nouveau mot de passe
+ * @param string              $newPasswordBis       - Confirmation du nouveau mot de passe
  * @param mysqlconnection     $connection           - Connexion BDD effectuée dans le fichier config-db.php
  *
  * @return string
@@ -991,7 +1030,7 @@ function changePassword($oldPassword, $newPassword, $newPasswordBis, $connection
 
     if (isValidSession($connection)) {
 
-        if (isset($oldPassword, $newPassword) &&$oldPassword != "" && $newPassword != "") {
+        if (isset($oldPassword, $newPassword) && $oldPassword != "" && $newPassword != "") {
 
             //Recuperation des données
             $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE id = ?");
@@ -1007,10 +1046,10 @@ function changePassword($oldPassword, $newPassword, $newPasswordBis, $connection
                 //Nouveau mot de passe correct ?
                 if (strlen($newPassword) >= 8 && preg_match("#[0-9]+#", $newPassword) && preg_match("#[a-zA-Z]+#", $newPassword)) {
 
-                    if($newPassword == $newPasswordBis) {
+                    if ($newPassword == $newPasswordBis) {
 
                         //Décrypter et rencrypter tous les fichiers
-                        $files = getFiles($userId, $connection);
+                        $files = getFiles($userData['id'], $connection);
                         //Obtenir la clés de décryptage et de cryptage
                         $oldUserKey = hash('sha512', $oldPassword . $userData['salt']);
                         $newUserKey = hash('sha512', $newPassword . $userData['salt']);
@@ -1024,24 +1063,23 @@ function changePassword($oldPassword, $newPassword, $newPasswordBis, $connection
 
                         //Obtention MDP a insérer
                         $new_password_salted_hashed = password_hash(hash('sha512', hash('sha512', $newPassword . $userData['salt'])), PASSWORD_DEFAULT, ['cost' => 12]);
-                        //Changement MDP bdd
+                        //Changement MDP DBB
                         $query = $connection->prepare("UPDATE kioui_accounts SET password = ? WHERE id = ?");
-                        $query->bind_param("si", $new_password_salted_hashed, $userId);
+                        $query->bind_param("si", $new_password_salted_hashed, $userData['id']);
                         $query->execute();
                         $query->close();
+
                         //Mise à jour de la session
-                        if (isset($_SESSION)) {
-                            $_SESSION['UserPassword'] = hash('sha512', $newPassword . $userData['salt']);
-                        }
+                        $_SESSION['UserPassword'] = hash('sha512', $newPassword . $userData['salt']);
 
                         $result = "SUCCESS#Votre mot de passe a été modifié avec succès.#/espace-utilisateur/compte";
 
                     } else {
-                        $result="ERROR_DIFFERENT_PASSWORD#Les deux mots de passes doivent correspondre";
+                        $result = "ERROR_INVALID_PASSWD2#Les deux mots de passe doivent correspondre.";
                     }
 
                 } else {
-                    $result = "ERROR_WEAK_PASSWORD#Votre mot de passe doit contenir au moins une lettre, un chiffre, et faire plus de 8 caractères";
+                    $result = "ERROR_INVALID_PASSWD#Votre mot de passe doit faire au moins 8 caractères, contenir au moins une lettre et un chiffre.";
                 }
 
             } else {

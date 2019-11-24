@@ -12,7 +12,7 @@ ErrorDocument 401 https://ki-oui.ythepaut.com/401
 
 #Actions de formulaire GET
 RewriteRule ^logout/?$ includes/classes/actions.php?action=logout [L]
-RewriteRule ^dl-data/([A-Za-z0-9-]+)/?$ includes/classes/actions.php?action=download-data&download-data_file=$1 [L]
+RewriteRule ^dl-data/([A-Za-z0-9-]+)/([A-Za-z0-9-]+)?$ includes/classes/actions.php?action=download-data&download-data_file=$1&download-data_extension=$2 [L]
 RewriteRule ^dl/([A-Za-z0-9-]+)/([A-Za-z0-9-]+)/?$ includes/classes/actions.php?action=download-file&filename=$1&filekey=$2 [L]
 RewriteRule ^share-file/([A-Za-z0-9-]+)/([A-Za-z0-9-]+)/?$ index.php?page=share-file&filename=$1&filekey=$2 [L]
 RewriteRule ^share-file/([A-Za-z0-9-]+)/?$ index.php?page=share-file&filename=$1&filekey [L]

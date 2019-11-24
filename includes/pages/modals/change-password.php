@@ -60,7 +60,11 @@
 
                         <div style="display: none;" id="hint_change-password"></div>
                         <br />
-                        <div class="alert alert-info"><i class="fas fa-info-circle info"></i> &nbsp;Cette opération peut prendre jusqu'à plusieurs minutes. Merci de ne pas fermer la fenetre pendant l'operation.</div>
+                        <?php
+                        $eta = round(getSize($_SESSION['Data']['id'], $connection)/(500000000));
+                        $eta = ($eta > 1) ? $eta . " minutes" : $eta . "minute";
+                        ?>
+                        <span style='font-size: 15px;'><i class="fas fa-info-circle info"></i> &nbsp;Temps éstimé de l'opération : <?php echo($eta); ?>. Merci de ne pas fermer la fenetre pendant l'operation.</span>
                         
                     </div>
 

@@ -37,7 +37,7 @@
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" name="login_remember" id="login_remember" disabled />
+                                        <input type="checkbox" class="custom-control-input" name="login_remember" id="login_remember" />
                                         <label class="custom-control-label" for="login_remember">Se souvenir de moi <i class="fas fa-info-circle" title="Fortement déconseillé sur un ordinateur qui n'est pas le vôtre."></i></label>
                                     </div>
                                 </div>

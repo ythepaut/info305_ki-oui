@@ -1,3 +1,7 @@
+$('form input[type="checkbox"]').on('click', function() {
+    if (this.checked) { this.setAttribute('checked', 'checked'); } else { this.removeAttribute('checked'); }
+});
+
 $('form.ajax').on('submit', function() {
     
     //Recuperation du formulaire et des données de soumission
@@ -11,9 +15,14 @@ $('form.ajax').on('submit', function() {
         
         var input = $(this),
             name = input.attr('name'),
-            value = input.val();
+            value = input.val(),
+            type = input.attr('type'),
+            checked = input.attr('checked');
         
-        data[name] = value;
+        if (type != "checkbox" || (type == "checkbox" && checked == "checked")) {
+            data[name] = value;
+        }
+        
 
     });
 
