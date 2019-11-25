@@ -155,22 +155,29 @@ function init() {
 }
 
 function sendFiles() {
-    var form = document.querySelector("#uploadForm");
+    document.querySelector("#boutonEnvoi").setAttribute("disabled", "true");
 
-    var size = 0;
+    document.querySelector("#envoyer").style.display = "none";
+    document.querySelector("#envoi").style.display = "block";
 
-    for (let file of all_files) {
-        size += file.size;
-    }
+    setTimeout(function() {
+        var form = document.querySelector("#uploadForm");
 
-    console.log(size);
+        var size = 0;
 
-    if (size > MAX_SIZE) {
-        $('#modalUploadFileError').modal();
-    }
-    else {
-        form.submit();
-    }
+        for (let file of all_files) {
+            size += file.size;
+        }
+
+        console.log(size);
+
+        if (size > MAX_SIZE) {
+            $('#modalUploadFileError').modal();
+        }
+        else {
+            form.submit();
+        }
+    }, 1000);
 }
 
 var all_files = [];
