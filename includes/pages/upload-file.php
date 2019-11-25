@@ -19,7 +19,13 @@
 
                 <input type="text" name="action" value="upload-file" hidden />
 
-                <button type="button" name="button" onclick="sendFiles();">Envoyer</button>
+                <button type="button" name="button" onclick="sendFiles();" id="boutonEnvoi">
+                    <span id="envoyer" style="display:block;">Envoyer</span>
+                    <span id="envoi" style="display:none;">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        Envoi...
+                    </span>
+                </button>
 
                 <script type="text/javascript" src="<?php echo(getSrc('./js/upload.js')); ?>"></script>
                 <script>init();</script>
