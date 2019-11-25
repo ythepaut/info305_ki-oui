@@ -149,10 +149,10 @@
 
                     <table class="table">
                         <thead class="thead">
-                            <th style="width:40%;">Nom du fichier &nbsp;<a href="/espace-utilisateur/sort-by-name"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "original_name/ASC") {echo("active"); } ?>" title="Trier par nom"></i></a></th>
-                            <th style="width:15%;">Taille du fichier &nbsp;<a href="/espace-utilisateur/sort-by-size"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "size/DESC") {echo("active"); } ?>" title="Trier par taille"></i></a></th>
-                            <th style="width:15%;">Date &nbsp;<a href="/espace-utilisateur/sort-by-date"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "id/DESC") {echo("active"); } ?>" title="Trier par date"></i></a></th>
-                            <th style="width:15%;">Téléchargements &nbsp;<a href="/espace-utilisateur/sort-by-dl"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "download_count/DESC") {echo("active"); } ?>" title="Trier nombre de téléchargements"></i></a></th>
+                            <th style="width:auto;">Nom du fichier &nbsp;<a href="/espace-utilisateur/sort-by-name"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "original_name/ASC") {echo("active"); } ?>" title="Trier par nom"></i></a></th>
+                            <th style="width:15%;" class="d-none d-lg-table-cell">Taille du fichier &nbsp;<a href="/espace-utilisateur/sort-by-size"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "size/DESC") {echo("active"); } ?>" title="Trier par taille"></i></a></th>
+                            <th style="width:15%;" class="d-none d-lg-table-cell">Date &nbsp;<a href="/espace-utilisateur/sort-by-date"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "id/DESC") {echo("active"); } ?>" title="Trier par date"></i></a></th>
+                            <th style="width:15%;" class="d-none d-lg-table-cell">Téléchargements &nbsp;<a href="/espace-utilisateur/sort-by-dl"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "download_count/DESC") {echo("active"); } ?>" title="Trier nombre de téléchargements"></i></a></th>
                             <th style="width:15%;">Actions</th>
                         </thead>
                     <?php } ?>
@@ -178,11 +178,11 @@
                             //Colonne Nom
                             $table .=  "<tr><td><span title='" . htmlspecialchars(decryptText($file["original_name"], $key, $file["salt"], null, false)) . "'>" . $originalName . "</span></td>\n";
                             //Colonne Taille
-                            $table .=  "<td>" . convertUnits($file["size"]) . "</td>\n";
+                            $table .=  "<td class='d-none d-lg-table-cell'>" . convertUnits($file["size"]) . "</td>\n";
                             //Colonne Date
-                            $table .=  "<td>" . date("d/m/Y", $file["upload_date"]) . "&nbsp;&nbsp;&nbsp;" . date("H:i:s", $file["upload_date"]) . "</td>\n";
+                            $table .=  "<td class='d-none d-lg-table-cell'>" . date("d/m/Y", $file["upload_date"]) . "&nbsp;&nbsp;&nbsp;" . date("H:i:s", $file["upload_date"]) . "</td>\n";
                             //Colonne Date
-                            $table .=  "<td>" . $file["download_count"] . "</td>\n";
+                            $table .=  "<td class='d-none d-lg-table-cell'>" . $file["download_count"] . "</td>\n";
                             //Colonne Action
                             $table .=  "<td>" . "<a href='#' data-toggle='modal' data-target='#modalShareLink' onclick='editModalShare(\"" . generateShareLink($_SESSION['UserPassword'], $file['id'], $connection) . "\")'><i class='fas fa-share-alt edit'></i></a>" . "&nbsp; &nbsp; &nbsp;" .
                                                 "<a href='#' data-toggle='modal' data-target='#modalDirectDownload' onclick='editModalDirectDownload(".'"'."$path".'"'.", ".'"'."$key".'"'.", ".'"'.$originalName.'"'.")'><i class='fas fa-download edit'></i></a>" . "&nbsp; &nbsp; &nbsp;" .

@@ -68,10 +68,16 @@ switch ($action) {
         die(contactForm($em, $_POST['contact-email'], $_POST['contact-subject'], $_POST['contact-message']));
         break;
     case "create-ticket":
-        die(createTicket($_POST['create-ticket_subject'], $_POST['create-ticket_message'], $connection));
+        die(createTicket($_POST['create-ticket_subject'], $_POST['create-ticket_message'], $connection, $em));
         break;
     case "respond-ticket":
-        die(respondTicket($_POST['respond-ticket_id'], $_POST['respond-ticket_message'], $connection));
+        die(respondTicket($_POST['respond-ticket_id'], $_POST['respond-ticket_message'], $connection, $em));
+        break;
+    case "close-ticket":
+        die(closeTicket($_GET['close-ticket_id'], $connection, $em));
+        break;
+    case "prior-ticket":
+        die(priorTicket($_GET['close-ticket_id'], $_GET['close-ticket_prior'], $connection));
         break;
     case "logout":
         session_destroy();
@@ -1102,7 +1108,7 @@ function changePassword($oldPassword, $newPassword, $newPasswordBis, $connection
  * Fonction qui démarre la procedure de suppression de compte
  * (Formulaire AJAX)
  *
- * @param string              $passwd                - Mot de passe de l'utilisateur
+ * @param string              $passwd               - Mot de passe de l'utilisateur
  * @param mysqlconnection     $connection           - Connexion BDD effectuée dans le fichier config-db.php
  * @param array               $em                   -   Identifiants email dans le fichier config-email.php
  *
@@ -1155,10 +1161,11 @@ function deleteAccountProcedure($passwd, $connection, $em) {
  * @param string              $subject              - Sujet du ticket
  * @param string              $message              - Description du ticket
  * @param mysqlconnection     $connection           - Connexion BDD effectuée dans le fichier config-db.php
+ * @param array               $em                   -   Identifiants email dans le fichier config-email.php
  *
  * @return string
 */
-function createTicket($subject, $message, $connection) {
+function createTicket($subject, $message, $connection, $em) {
 
     $result = "ERROR_UNKNOWN#Une erreur est survenue.";
 
@@ -1187,6 +1194,8 @@ function createTicket($subject, $message, $connection) {
             $query->execute();
             $query->close();
 
+            sendMail($em, $_SESSION['Data']['email'], "Demande support", "DEMANDE CRÉÉE", "Bonjour " . $_SESSION['Data']['username'] . ".<br />Votre demande de support « " . $subject . " » a bien été créée.<br />Nous vous invitons à consulter votre demande par le lien ci-dessous. Nous vous répondrons dans les plus brefs délais.", "https://ki-oui.ythepaut.com/espace-utilisateur/assistance", "Assistance");
+
             $result = "SUCCESS#Demande de support créée.#/espace-utilisateur/assistance";
 
         } else {
@@ -1208,10 +1217,11 @@ function createTicket($subject, $message, $connection) {
  * @param string              $id                   - ID du ticket
  * @param string              $message              - Message de reponse
  * @param mysqlconnection     $connection           - Connexion BDD effectuée dans le fichier config-db.php
+ * @param array               $em                   -   Identifiants email dans le fichier config-email.php
  *
  * @return string
 */
-function respondTicket($id, $message, $connection) {
+function respondTicket($id, $message, $connection, $em) {
 
     $result = "ERROR_UNKNOWN#Une erreur est survenue.";
 
@@ -1273,6 +1283,98 @@ function respondTicket($id, $message, $connection) {
     }
 
     return $result;
+}
+
+
+/**
+ * Fonction qui ferme un ticket support
+ * 
+ * @param integer             $id                   - Id du ticket a fermer
+ * @param mysqlconnection     $connection           - Connexion BDD effectuée dans le fichier config-db.php
+ * @param array               $em                   -   Identifiants email dans le fichier config-email.php
+ * 
+ * @return void
+ */
+function closeTicket($id, $connection, $em) {
+
+    $query = $connection->prepare("SELECT * FROM kioui_tickets WHERE id = ?");
+    $query->bind_param("i", $id);
+    $query->execute();
+    $result = $query->get_result();
+    $query->close();
+    $ticket = $result->fetch_assoc();
+
+    if (isValidSession($connection) && $ticket['user'] != "" && ($ticket['user'] == $_SESSION['Data']['id'] || $_SESSION['Data']['access_level'] == "ADMINISTRATOR")) {
+
+        if ($ticket['status'] == "OPEN" || $ticket['status'] == "RESPONDED") {
+
+            $newStatus = "";
+            if ($_SESSION['Data']['access_level'] == 'ADMINISTRATOR') {
+                $newStatus = "CLOSED_BY_SUPPORT";
+            } else {
+                $newStatus = "CLOSED_BY_USER";
+            }
+
+            $messageArray = array(
+                "senderRole" => "USER",
+                "senderName" => "",
+                "date" => time(),
+                "message" => $_SESSION['Data']['username'] . " a fermé la demande de support."
+            );
+
+            $oldConversationArray = json_decode($ticket['conversation'], true);
+
+            array_push($oldConversationArray, $messageArray);
+
+            $conversation = json_encode($oldConversationArray);
+
+            $query = $connection->prepare("UPDATE kioui_tickets SET status = ? , conversation = ? WHERE id = ?");
+            $query->bind_param("ssi", $newStatus, $conversation, $id);
+            $query->execute();
+            $query->close();
+
+        }
+
+    }
+
+    header("Location: /espace-utilisateur/assistance/" . $id . "/");
+
+}
+
+
+/**
+ * Fonction qui change la priorité du ticket
+ * 
+ * @param integer             $id                   - Id du ticket a fermer
+ * @param string              $priority             - Nouvelle priorité
+ * @param mysqlconnection     $connection           - Connexion BDD effectuée dans le fichier config-db.php
+ * 
+ * @return void
+ */
+function priorTicket($id, $priority, $connection) {
+
+    $query = $connection->prepare("SELECT * FROM kioui_tickets WHERE id = ?");
+    $query->bind_param("i", $id);
+    $query->execute();
+    $result = $query->get_result();
+    $query->close();
+    $ticket = $result->fetch_assoc();
+
+    if (isValidSession($connection) && $ticket['user'] != "" && $_SESSION['Data']['access_level'] == "ADMINISTRATOR") {
+
+        if ($priority == "LOW" || $priority == "MEDIUM" || $priority == "HIGH" || $priority == "HIGHEST") {
+
+            $query = $connection->prepare("UPDATE kioui_tickets SET priority = ? WHERE id = ?");
+            $query->bind_param("si", $priority, $id);
+            $query->execute();
+            $query->close();
+
+        }
+
+    }
+
+    header("Location: /espace-utilisateur/assistance/" . $id . "/");
+
 }
 
 

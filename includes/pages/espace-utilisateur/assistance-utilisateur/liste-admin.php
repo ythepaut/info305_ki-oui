@@ -1,6 +1,6 @@
 
                 <?php
-                $query = "SELECT * FROM kioui_tickets WHERE assigned = " . $_SESSION['Data']['id'] . " OR assigned = 0 ORDER BY `date` DESC";
+                $query = "SELECT * FROM kioui_tickets ORDER BY `date` DESC";
                 $results = mysqli_query($connection, $query);
                 $openedTicketCount = 0;
                 $table = "";
@@ -49,21 +49,22 @@
                             break;
                     }
 
-                    $assigned = ($ticket['assigned'] == 0) ? "<span class='badge badge-danger'>Non</span>" : "<span class='badge badge-success'>Oui</span>";
+                    $assigned = ($ticket['assigned'] == 0) ? "<span class='badge badge-warning'>En attente d'assignation</span>" : "<span class='badge badge-secondary'>Autre admin</span>";
+                    $assigned = ($ticket['assigned'] == $_SESSION['Data']['id']) ? "<span class='badge badge-primary'>Assigné à moi</span>" : $assigned;
 
                     $subject = (strlen($ticket["subject"]) > 80) ? substr($ticket["subject"], 0, 77) . "..." : $ticket["subject"];
                     //Colonne Sujet
                     $table .=  "<tr><td><a href='/espace-utilisateur/assistance/" . $ticket['id'] . "/' class='link' style='font-weight: bold; color: #212529;'><span title='" . htmlspecialchars($ticket["subject"]) . "'>" . htmlspecialchars($subject) . "</span></a></td>\n";
                     //Colonne Date
-                    $table .=  "<td>" . date("d/m/Y", $ticket["date"]) . "&nbsp;&nbsp;&nbsp;" . date("H:i:s", $ticket["date"]) . "</td>\n";
+                    $table .=  "<td class='d-none d-lg-table-cell'>" . date("d/m/Y", $ticket["date"]) . "&nbsp;&nbsp;&nbsp;" . date("H:i:s", $ticket["date"]) . "</td>\n";
                     //Colonne Priorité
-                    $table .=  "<td>" . $priority . "</td>\n";
+                    $table .=  "<td class='d-none d-lg-table-cell'>" . $priority . "</td>\n";
                     //Colonne Assigné ?
                     $table .=  "<td>" . $assigned . "</td>\n";
                     //Colonne Statut
                     $table .=  "<td>" . $status . "</td>\n";
                     //Colonne Action
-                    $table .=  "<td>" . "<a href='/espace-utilisateur/assistance/" . $ticket['id'] . "/' title='Visualiser'><i class='fas fa-eye edit'></i></a>" . "</td></tr>\n";
+                    $table .=  "<td class='d-none d-lg-table-cell'>" . "<a href='/espace-utilisateur/assistance/" . $ticket['id'] . "/' title='Visualiser'><i class='fas fa-eye edit'></i></a>" . "</td></tr>\n";
                 }
                 ?>
 
@@ -75,12 +76,12 @@
 
                     <table class="table">
                         <thead class="thead">
-                            <th style="width:35%;">Sujet</th>
-                            <th style="width:19%;">Date</th>
-                            <th style="width:10%;">Priorité</th>
-                            <th style="width:10%;">Assigné ?</th>
+                            <th style="width:auto;">Sujet</th>
+                            <th style="width:19%;" class='d-none d-lg-table-cell'>Date</th>
+                            <th style="width:10%;" class='d-none d-lg-table-cell'>Priorité</th>
+                            <th style="width:10%;">Assignation</th>
                             <th style="width:16%;">Statut</th>
-                            <th style="width:10%;">Actions</th>
+                            <th style="width:10%;" class='d-none d-lg-table-cell'>Actions</th>
                         </thead>
 
                         <?php echo($table); ?>

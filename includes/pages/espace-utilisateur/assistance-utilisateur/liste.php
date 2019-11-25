@@ -54,13 +54,13 @@
                     //Colonne Sujet
                     $table .=  "<tr><td><a href='/espace-utilisateur/assistance/" . $ticket['id'] . "/' class='link' style='font-weight: bold; color: #212529;'><span title='" . htmlspecialchars($ticket["subject"]) . "'>" . htmlspecialchars($subject) . "</span></a></td>\n";
                     //Colonne Date
-                    $table .=  "<td>" . date("d/m/Y", $ticket["date"]) . "&nbsp;&nbsp;&nbsp;" . date("H:i:s", $ticket["date"]) . "</td>\n";
+                    $table .=  "<td class='d-none d-lg-table-cell'>" . date("d/m/Y", $ticket["date"]) . "&nbsp;&nbsp;&nbsp;" . date("H:i:s", $ticket["date"]) . "</td>\n";
                     //Colonne Priorité
-                    $table .=  "<td>" . $priority . "</td>\n";
+                    $table .=  "<td class='d-none d-lg-table-cell'>" . $priority . "</td>\n";
                     //Colonne Statut
                     $table .=  "<td>" . $status . "</td>\n";
                     //Colonne Action
-                    $table .=  "<td>" . "<a href='/espace-utilisateur/assistance/" . $ticket['id'] . "/' title='Visualiser'><i class='fas fa-eye edit'></i></a>" . "</td></tr>\n";
+                    $table .=  "<td class='d-none d-lg-table-cell'>" . "<a href='/espace-utilisateur/assistance/" . $ticket['id'] . "/' title='Visualiser'><i class='fas fa-eye edit'></i></a>" . "</td></tr>\n";
                 }
                 ?>
 
@@ -72,11 +72,11 @@
 
                     <table class="table">
                         <thead class="thead">
-                            <th style="width:45%;">Sujet</th>
-                            <th style="width:19%;">Date</th>
-                            <th style="width:12%;">Priorité</th>
+                            <th style="width:auto;">Sujet</th>
+                            <th style="width:19%;" class='d-none d-lg-table-cell'>Date</th>
+                            <th style="width:12%;" class='d-none d-lg-table-cell'>Priorité</th>
                             <th style="width:12%;">Statut</th>
-                            <th style="width:12%;">Actions</th>
+                            <th style="width:12%;" class='d-none d-lg-table-cell'>Actions</th>
                         </thead>
 
                         <tr><td><a href="#" data-toggle="modal" data-target="#modalCreateTicket"><span class='badge badge-primary'>Créer une demande</span></a></td><td>-</td><td>-</td><td>-</td><td></td></tr>

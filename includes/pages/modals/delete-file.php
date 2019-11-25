@@ -20,16 +20,14 @@
 
                        <form action="<?php echo(getSrc('./includes/classes/actions.php')); ?>" method="POST" class="ajax" style="text-align: center;">
 
-                            <div class="form-group">
-                                <label for="delete-fileid">Êtes-vous sûr de vouloir supprimer ce fichier ?</label>
-                                <!-- visible seulement pour test-->
-                                <input type="hidden" class="form-control" id="delete-fileid" name="delete-fileid" value="<?php echo("{ID}"); ?>" readonly/>
-                            </div>
+                        <span>Êtes-vous sûr de vouloir supprimer ce fichier ?</span>
+                                
+                            <input type="hidden" class="form-control" id="delete-fileid" name="delete-fileid" value="{ID}" />
 
                             <br />
-
                             <input type="hidden" name="action" value="delete" />
                             <input type="submit" value="Supprimer" name="Supprimer" />
+
 
                             <button type="button" data-dismiss="modal">Annuler</button>
 
