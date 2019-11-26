@@ -13,7 +13,7 @@
                     
                 <h4 class="panel-title">VERIFICATION À DOUBLE FACTEUR</h4>
 
-                <?php if ($_SESSION['tfa'] == "totp") { ?>
+                <?php if ($_SESSION['tfa'] == "new_device" && $_SESSION['Data']['totp'] != "") { ?>
 
                     <form action="<?php echo(getSrc('./includes/classes/actions.php')); ?>" method="POST" class="ajax">
                     <div class="row">

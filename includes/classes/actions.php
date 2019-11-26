@@ -177,24 +177,24 @@ function login($email, $passwd, $remember = "off", $connection, $em) {
                     $query->execute();
                     $query->close();
 
-                    sendMail($em, $_SESSION['Data']['email'], "Suppression de votre compte", "ANNULATION DE LA PROCEDURE DE SUPPRESSION", "Bonjour " . $_SESSION['Data']['username'] . ".<br />Suite à votre connexion, la procédure de suppression de votre compte a été annulée.", "https://ki-oui.ythepaut.com/", "KI-OUI");
+                    sendMail($em, $userData['email'], "Suppression de votre compte", "ANNULATION DE LA PROCEDURE DE SUPPRESSION", "Bonjour,<br />Suite à votre connexion, la procédure de suppression de votre compte a été annulée.", "https://ki-oui.ythepaut.com/", "KI-OUI");
 
                 }
 
 
-                //Verification TOTP
-                $_SESSION['tfa'] = ($userData['totp'] != "") ? "totp" : "trusted";
+                //Double authentification :
 
                 //Verification appareil connu ?
                 $knownDevices = json_decode($userData['known_devices'], true);
                 $thisDevice = array("hostname" => gethostbyaddr($_SERVER['REMOTE_ADDR']), "ip" => $_SERVER['REMOTE_ADDR'], "useragent" => $_SERVER["HTTP_USER_AGENT"]);
                 $known = false;
                 foreach ($knownDevices as $device) {
-                    if ($device == $thisDevice) {
+                    similar_text($device['useragent'], $thisDevice['useragent'], $userAgentMatch);
+                    if ($device['ip'] == $thisDevice['ip'] && $userAgentMatch > 80) {
                         $known = true;
                     }
                 }
-                $_SESSION['tfa'] = ($_SESSION['tfa'] == "trusted" && !$known) ? "new_device" : $_SESSION['tfa'];
+                $_SESSION['tfa'] = (!$known) ? "new_device" : "trusted";
 
 
                 #Attribution des données de session
@@ -204,7 +204,7 @@ function login($email, $passwd, $remember = "off", $connection, $em) {
 
                 $result = "SUCCESS#Bienvenue " . $_SESSION['Data']['username'] . "#/espace-utilisateur/accueil";
 
-                if ($_SESSION['tfa'] == "new_device") {
+                if ($_SESSION['tfa'] == "new_device" && $_SESSION['Data']['totp'] == "") {//Verification par email
                     sendTFACode($em, $connection);
                 }
 
@@ -244,7 +244,7 @@ function sendTFACode($em, $connection) {
         for ($i = 0; $i < 6; $i++) {
             $randomString .= $characters[random_int(0, $charactersLength - 1)];
         }
-        $expire = time() + 300;
+        $expire = time() + 600;
 
 
         $query = $connection->prepare("UPDATE kioui_accounts SET tfa_code = ? , tfa_expire = ? WHERE id = ?");
@@ -565,7 +565,7 @@ function validateTFA($code, $connection) {
 
         $result = "SUCCESS#Validation effectuée.#/espace-utilisateur/accueil";
     } else {
-        $result = "ERROR_INVALID_TFACODE#Ce code est invalide ou expiré (>5min).";
+        $result = "ERROR_INVALID_TFACODE#Ce code est invalide ou expiré (>10 min).";
     }
 
     return $result;
@@ -861,29 +861,8 @@ function deleteFile($fileId, $connection) {
             $fileOwner = $fileData['owner'];
 
             if (isset($filePath) && $filePath != "" && $fileOwner == $_SESSION['Data']['id']) {
-                /*
-                // suppression dans le répertoire
-                if (unlink(UPLOAD_DIR.$filePath)) {
 
-                        // suppression dans la BDD
-                        $query = $connection->prepare("DELETE FROM kioui_files WHERE id = ? ");
-                        $query->bind_param("i", $fileId);
-                        $query->execute();
-                        $query->close();
-
-                        $result = "SUCCESS#Fichier supprimé avec succès.#/espace-utilisateur/accueil";
-
-                    } else {
-                        $result = "ERROR_NOT_DELETED#Suppression du fichier impossible.";
-                    }
-
-                } else {
-                    $result = "ERROR_DONT_EXIST#Fichier inexistant.";
-                }
-                else {$result = "ERROR_NOT_DELETED#Suppression du fichier impossible.";}
-                */
-
-                // suppression dans le répertoire
+                //Suppression dans le répertoire
                 $deleted = unlink(UPLOAD_DIR.$filePath);
 
                 $query = $connection->prepare("DELETE FROM kioui_files WHERE id = ? ");
@@ -894,7 +873,7 @@ function deleteFile($fileId, $connection) {
                 if ($deleted) {
                     $result = "SUCCESS#Fichier supprimé avec succès.#/espace-utilisateur/accueil";
                 } else {
-                    $result = "WARNING_FILE_DOESNT_EXIST#Le fichier n'existe pas sur le disque.#/espace-utilisateur/accueil";
+                    $result = "WARNING_FILE_DOESNT_EXIST#Le fichier n'existe pas sur le disque.";
                 }
             }
         }
@@ -1132,11 +1111,9 @@ function deleteAccountProcedure($passwd, $connection, $em) {
                 $query->execute();
                 $query->close();
 
-                sendMail($em, $_SESSION['Data']['email'], "Suppression de votre compte", "LANCEMENT DE LA PROCEDURE DE SUPPRESSION", "Bonjour " . $_SESSION['Data']['username'] . ".<br />Suite à votre demande, la procédure de suppression de votre compte a débuté. Votre compte et vos données seront supprimmés et irrécuperables dans 15 jours.<br />Pour annuler la procedure, reconnectez-vous avant le " . date("d/m/Y H:m", $expire) . ".<br /><br />Si vous n'êtes pas à l'origine de cette action, reconnectez-vous à votre espace, changez votre mot de passe et contactez le support.", "https://ki-oui.ythepaut.com/espace-utilisateur/compte", "Annuler la procedure");
+                sendMail($em, $_SESSION['Data']['email'], "Suppression de votre compte", "LANCEMENT DE LA PROCEDURE DE SUPPRESSION", "Bonjour,<br />Suite à votre demande, la procédure de suppression de votre compte a débuté. Votre compte et vos données seront supprimmés et irrécuperables dans 15 jours.<br />Pour annuler la procedure, reconnectez-vous avant le " . date("d/m/Y H:m", $expire) . ".<br /><br />Si vous n'êtes pas à l'origine de cette action, reconnectez-vous à votre espace, changez votre mot de passe et contactez le support.", "https://ki-oui.ythepaut.com/espace-utilisateur/compte", "Annuler la procedure");
 
-                session_destroy();
-
-                $result = "SUCCESS#Procedure de suppression lancée.#/";
+                $result = "SUCCESS#Procedure de suppression lancée.#/logout";
 
             } else {
                 $result = "ERROR_ACCESSLEVEL_TOOHIGH#Votre niveau d'accès ne vous permet pas de clôturer votre compte : Vous êtes Administrateur.";

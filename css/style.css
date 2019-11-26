@@ -136,7 +136,7 @@ main > section > .ligne0 #titrecentre {
     left: 50%;
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
-    width: max-content;
+    width: inherit;
 }
 
 main > section > .ligne0 > .col-lg-5 {
