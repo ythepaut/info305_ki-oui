@@ -58,6 +58,8 @@ function eraseCookie(name) {
  * Fonction qui créer un cookie conservant le thème
  */
 function editModalTheme(theme) {
+	console.log(theme);
+	eraseCookie('theme');
 	switch (theme) {
 		case 'kioui':
 			createCookie('theme', 'kioui', false);
@@ -69,6 +71,7 @@ function editModalTheme(theme) {
 			createCookie('theme', 'dark', false);
 			break;
 	}
+	console.log(document.cookie);
 	changeTheme();
 }
 
@@ -81,19 +84,20 @@ function changeTheme() {
 	var link = ".";
 
 	themeCookie = readCookie('theme');
+	console.log(themeCookie);
 
 	switch (themeCookie) {
 		case 'kioui':
-			link = "";
+			link = ".";
 		break;
 		case 'frez':
-			link = "../css/theme-frez.css";
+			link = "./css/theme-frez.css";
 		break;
 		case 'dark':
-			link = "../css/theme-dark.css";
+			link = "./css/theme-dark.css";
 		break;
 	}
 	
-	document.getElementById('themeBis').href = link;
+	document.getElementById('theme').href = link ;
 }
 

@@ -41,7 +41,7 @@
                         </div>
 
                         <div class="col-lg-2">
-                            <input type="radio" name="theme" value="kioui" checked onclick="editModalTheme('kioui');" />Ki-Oui
+                            <input type="radio" name="theme" value="kioui" onclick="editModalTheme('kioui');" />Ki-Oui
                         </div>
 
                         <div class="col-lg-2">

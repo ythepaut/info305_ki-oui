@@ -12,8 +12,8 @@
     	<link rel="stylesheet" type="text/css" href="<?php echo(getSrc('./css/bootstrap.css')); ?>" />
         <link rel="stylesheet" type="text/css" href="<?php echo(getSrc('./css/bootstrap-grid.css')); ?>" />
 
-        <link id="themeBase" rel="stylesheet" type="text/css" href="<?php echo(getSrc('./css/style.css')); ?>" />
-        <link id="themeBis" rel="stylesheet" type="text/css" href="<?php echo(getSrc('')); ?>" />
+        <link rel="stylesheet" type="text/css" href="<?php echo(getSrc('./css/style.css')); ?>" />
+        <link id="theme" rel="stylesheet" type="text/css" href="." />
 
         <!--ChartJs -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
