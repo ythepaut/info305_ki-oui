@@ -11,8 +11,11 @@ error_reporting(E_ALL);
 include_once("./includes/classes/config-db.php");
 include("./includes/classes/config-recaptcha.php");
 include_once("./includes/classes/config-email.php");
+
+#APIs
 include_once("./includes/classes/totp.php");
 $ga = new PHP_GoogleAuthenticator();
+include_once("./includes/classes/u2f.php");
 
 
 

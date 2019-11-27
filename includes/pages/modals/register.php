@@ -33,7 +33,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text label-icon" id="icon_register_passwd"><i class="fas fa-unlock"></i></span>
                             </div>
-                            <input type="password" name="register_passwd" class="form-control" placeholder="Mot de passe" aria-describedby="icon_register_passwd" required />
+                            <input type="password" id="passwdhint" name="register_passwd" class="form-control" placeholder="Mot de passe" aria-describedby="icon_register_passwd" tabindex="0" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="bottom" title="Sécurité des mots de passes" data-content="Mot de passe de 8 caractères ou plus, avec au moins une lettre et un chiffre requis." required />
                         </div>
 
                     </div>
@@ -48,18 +48,11 @@
                         </div>
 
                         <div style="text-align: left;">
-                            <span>J'ai lu, compris, accepté et appris par cœur :</span>
                             <ul style="list-style-type: none; margin: 5px 0px;">
                                 <li>
                                     <div class="custom-control custom-checkbox">
                                         <input type="checkbox" class="custom-control-input" name="register_cgu" id="register_cgu" required />
-                                        <label class="custom-control-label" for="register_cgu">les <a target="_blank" href="/cgu" class="link">Conditions Générales d'Utilisation <i style="position: relative; top:-.3em; font-size: 9px;" class="fas fa-external-link-alt"></i></a>.</label>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" name="register_polcon" id="register_polcon" required />
-                                        <label class="custom-control-label" for="register_polcon">la <a target="_blank" href="/cgu" class="link">Politique de confidentialité <i style="position: relative; top:-.3em; font-size: 9px;" class="fas fa-external-link-alt"></i></a>.</label>
+                                        <label class="custom-control-label" for="register_cgu">En cochant cette case, j'affirme avoir lu, compris, accepté et appris par cœur les <a target="_blank" href="/cgu" class="link">Conditions Générales d'Utilisation <i style="position: relative; top:-.3em; font-size: 9px;" class="fas fa-external-link-alt"></i></a> et la <a target="_blank" href="/cgu" class="link">Politique de confidentialité <i style="position: relative; top:-.3em; font-size: 9px;" class="fas fa-external-link-alt"></i></a>.</label>
                                     </div>
                                 </li>
                             </ul>
@@ -95,3 +88,9 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    $('#passwdhint').popover();
+})
+</script>

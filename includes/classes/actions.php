@@ -134,6 +134,7 @@ switch ($action) {
         throw new Exception("ERROR_MISSING_ACTION#Action invalide - " . 'action' . ":'$action'");
 }
 
+
 /**
  * Connexion de l'utilisateur : Methode e-mail + mot de passe
  * (Formulaire AJAX)

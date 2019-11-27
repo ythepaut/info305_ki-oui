@@ -134,6 +134,14 @@ $('form.ajax').on('submit', function() {
 });
 
 
+//Recaptcha
+window.setInterval(function(){
+    grecaptcha.execute('6LcikMEUAAAAAIzTpwihiSatPxk_MV8h3n6NI99l', {action: 'homepage'}).then(function(token) {
+        for (let tokeninput of document.querySelectorAll('input[class="recaptcha"]')) {
+            tokeninput.setAttribute('value', token);
+        }
+    });
+}, 60000);
 //Init page re-captcha
 grecaptcha.ready(function() {
     grecaptcha.execute('6LcikMEUAAAAAIzTpwihiSatPxk_MV8h3n6NI99l', {action: 'homepage'}).then(function(token) {

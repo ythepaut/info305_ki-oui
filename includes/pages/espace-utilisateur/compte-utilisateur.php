@@ -8,8 +8,6 @@
 
             <div class="col panel-outline">
                 <h4 class="panel-title">Mon compte</h4>
-
-                    
             
                 <table class="table">
                     <thead class="thead-light">
@@ -46,6 +44,11 @@
                             <th scope="row"> Double authentification par application</th>
                             <td><?php if ($_SESSION['Data']['totp'] == "") { ?>Désactivée &nbsp; <i class="fas fa-exclamation-triangle warning" title="Conseillé d'activer"></i> <?php } else { ?>Activée<?php } ?></td>
                             <td><a href="#" data-toggle="modal" data-target="#modalTOTP"><?php if ($_SESSION['Data']['totp'] != "") { echo("<i class='fas fa-toggle-on enabled' title='Désactiver la double authentification'></i>"); } else { echo("<i class='fas fa-toggle-off disabled' title='Activer la double authentification'></i>"); } ?></a></td>
+                        </tr>
+                        <tr>
+                            <th scope="row"> Double authentification par clé physique</th>
+                            <td><?php if ($_SESSION['Data']['u2f'] == "") { ?>Désactivée<?php } else { ?>Activée<?php } ?></td>
+                            <td><a href="#" data-toggle="modal" data-target="#modalU2F"><?php if ($_SESSION['Data']['u2f'] != "") { echo("<i class='fas fa-toggle-on enabled' title='Désactiver la double authentification par clé physique'></i>"); } else { echo("<i class='fas fa-toggle-off disabled' title='Activer la double authentification par clé physique'></i>"); } ?></a></td>
                         </tr>
                         <tr>
                             <th scope="row"> Clé de secours</th>
