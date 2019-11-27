@@ -58,7 +58,7 @@ function eraseCookie(name) {
  * Fonction qui créer un cookie conservant le thème
  */
 function editModalTheme(theme) {
-	
+
 	eraseCookie('theme');
 	switch (theme) {
 		case 'kioui':
@@ -86,16 +86,37 @@ function changeTheme() {
 
 	switch (themeCookie) {
 		case 'kioui':
-			link = ".";
+			link = "";
 		break;
 		case 'frez':
-			link = "./css/theme-frez.css";
+			link = "css/theme-frez.css";
 		break;
 		case 'dark':
-			link = "./css/theme-dark.css";
+			link = "css/theme-dark.css";
 		break;
 	}
 	
-	document.getElementById('theme').href = link ;
+	document.getElementById('theme').href = getSrcJs(link) ;
 }
 
+
+/**
+ * Fonction qui renvoie le chemin relatif à la page à partie de la source relative
+ * (copie de la fonction getSrc dans util.php)
+ * Exemple :
+ * relative_src = "/css/style.css"
+ * Si nous sommes dans l'espace utilisateur, on aura
+ * result_src = "../../css/style.css" 
+ */
+function getSrcJs(relative_src) {
+
+	let current_path = window.location.pathname+window.location.search;
+	let result_src = relative_src;
+
+	for (var i=0 ; i < current_path.length ; i++){
+		if (current_path.charAt(i)=='/'){
+			result_src = '../' + result_src;
+		}
+	}
+	return result_src;
+}
