@@ -13,7 +13,6 @@ a.link {
 
 
 /* Scrollbar */
-
 ::-webkit-scrollbar {
     width: 0px;
 }
@@ -29,15 +28,6 @@ a.link {
 ::-webkit-scrollbar-thumb:active {
     background: #128568;
 }
-
-.scroller {
-    width: 300px;
-    height: 100px;
-    overflow-y: scroll;
-    scrollbar-color: rebeccapurple green;
-    scrollbar-width: thin;
-}
-
 body {
     overflow-y: scroll;
 }
