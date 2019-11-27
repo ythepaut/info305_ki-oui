@@ -58,7 +58,7 @@ function eraseCookie(name) {
  * Fonction qui créer un cookie conservant le thème
  */
 function editModalTheme(theme) {
-	console.log(theme);
+	
 	eraseCookie('theme');
 	switch (theme) {
 		case 'kioui':
@@ -71,7 +71,6 @@ function editModalTheme(theme) {
 			createCookie('theme', 'dark', false);
 			break;
 	}
-	console.log(document.cookie);
 	changeTheme();
 }
 
@@ -84,7 +83,6 @@ function changeTheme() {
 	var link = ".";
 
 	themeCookie = readCookie('theme');
-	console.log(themeCookie);
 
 	switch (themeCookie) {
 		case 'kioui':
