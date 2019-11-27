@@ -152,11 +152,14 @@ function fileAdded(e) {
         size += file.size;
     }
 
+    var allowedSpace = document.querySelector("#usedSpace").getAttribute("value");
+
     if (size > MAX_SIZE) {
         $('#modalUploadFileError').modal();
     }
-
-    sendFiles();
+    else {
+        sendFiles();
+    }
 }
 
 /**
