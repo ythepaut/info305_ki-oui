@@ -23,7 +23,7 @@ switch ($action) {
         die(verifEmail($_GET['token'], $connection));
         break;
     case "change-email":
-        die(changeEmailConfirmation($_POST['change-email_newEmail'], $_POST['change-email_password'], $connection, $em));    
+        die(changeEmailConfirmation($_POST['change-email_newEmail'], $_POST['change-email_password'], $connection, $em));
         break;
     case "change-password":
         die(changePassword($_POST['change-password_oldPassword'], $_POST['change-password_newPassword'], $_POST['change-password_newPasswordBis'], $connection));
@@ -197,11 +197,12 @@ function login($email, $passwd, $remember = "off", $connection, $em) {
                 }
                 $_SESSION['tfa'] = (!$known) ? "new_device" : "trusted";
 
-
                 #Attribution des données de session
                 $_SESSION['Data'] = $userData;
                 $_SESSION['LoggedIn'] = true;
                 $_SESSION['UserPassword'] = hash('sha512', $passwd . $userData['salt']);
+
+                $_SESSION["usedSpace"] = getSize($_SESSION["Data"]["id"], $connection);
 
                 $result = "SUCCESS#Bienvenue " . $_SESSION['Data']['username'] . "#/espace-utilisateur/accueil";
 
@@ -798,9 +799,8 @@ function upload($connection) {
     }
 
     $maxSize = $_SESSION["Data"]["quota"];
-    $usedSpace = getSize($_SESSION["Data"]["id"], $connection);
 
-    if ($totalSize > $maxSize - $usedSpace) {
+    if ($totalSize > $maxSize - $_SESSION["usedSpace"]) {
         $res = false;
     }
     else {
@@ -811,6 +811,8 @@ function upload($connection) {
                 $originalName = $_FILES["files"]["name"][$i];
                 $content = file_get_contents($_FILES["files"]["tmp_name"][$i]);
                 $size = $_FILES["files"]["size"][$i];
+
+                $_SESSION["usedSpace"] += $size;
 
                 $newFileName = createCryptedZipFile($connection, $content, $size, $password, $originalName);
             }
@@ -1266,11 +1268,11 @@ function respondTicket($id, $message, $connection, $em) {
 
 /**
  * Fonction qui ferme un ticket support
- * 
+ *
  * @param integer             $id                   - Id du ticket a fermer
  * @param mysqlconnection     $connection           - Connexion BDD effectuée dans le fichier config-db.php
  * @param array               $em                   -   Identifiants email dans le fichier config-email.php
- * 
+ *
  * @return void
  */
 function closeTicket($id, $connection, $em) {
@@ -1322,11 +1324,11 @@ function closeTicket($id, $connection, $em) {
 
 /**
  * Fonction qui change la priorité du ticket
- * 
+ *
  * @param integer             $id                   - Id du ticket a fermer
  * @param string              $priority             - Nouvelle priorité
  * @param mysqlconnection     $connection           - Connexion BDD effectuée dans le fichier config-db.php
- * 
+ *
  * @return void
  */
 function priorTicket($id, $priority, $connection) {
@@ -1362,11 +1364,11 @@ function priorTicket($id, $priority, $connection) {
  * @param string              $password             - Mot de passe de l'utilisateur
  * @param mysqlconnection     $connection           - Connexion BDD effectuée dans le fichier config-db.php
  * @param array               $em                   - Identifiants email dans le fichier config-email.php
- * 
+ *
  */
 function changeEmailConfirmation($newEmail, $password, $connection, $em) {
     $result = "ERROR_UNKNOWN#Une erreur est survenue.";
-    
+
     if (isValidSession($connection)) {
 
         if (isset($newEmail, $password) && filter_var($newEmail, FILTER_VALIDATE_EMAIL) && $password != "") {

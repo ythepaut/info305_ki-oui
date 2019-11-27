@@ -112,9 +112,32 @@
                 </div>
 
                 <div class="col-lg inner panel-outline">
-                    <h4 class="panel-title">Ajouter des fichiers</h4>
+                    <form action="<?php echo(getSrc('./includes/classes/actions.php')); ?>" method="post" enctype="multipart/form-data" id="uploadForm">
+                        <h4 class="panel-title"> Ajouter des fichiers </h4>
 
-                    <a href="/upload-file" class="button"><i class="fas fa-file-import"></i> &nbsp; Ajouter un fichier</a>
+                        <label for="inputFile" id="inputLabel"><i class="fas fa-file-import"></i> Ajouter des fichiers </label>
+                        <div id="allInputs"></div>
+
+                        <input type="hidden" id="allowedSpace" value=<?php echo('"' . $_SESSION["Data"]["quota"] - $_SESSION["usedSpace"] . '"'); ?>  ></input>
+
+                        <table class="table" id="files_tab">
+                            <thead class="thead-light">
+                                <th scope="col">Nom</th>
+                                <th scope="col">Taille</th>
+                                <th scope="col">Progression</th>
+                            </thead>
+
+                            <input type="text" name="action" value="upload-file" hidden />
+
+                            <tr id="first_line_tab">
+                                <td scope="row" colspan="2"><i>Aucun fichier sélectionné</i></td>
+                            </tr>
+                        </table>
+
+
+                        <script type="text/javascript" src="<?php echo(getSrc('./js/upload.js')); ?>"></script>
+                        <script>init();</script>
+                    </form>
                 </div>
 
             </div>
@@ -122,7 +145,7 @@
                 <div class="col panel-outline">
 
                     <h4 class="panel-title">Mes fichiers &nbsp;<?php if (isset($_GET['sp']) && $_GET['sp'] == "grid") { ?> <a href="/espace-utilisateur/sort-by-date" style="position: absolute; right: 20px;"><i class="fas fa-table sort" title="Affichage tableau"></i></a> <?php } else { ?> <a href="/espace-utilisateur/grid" style="position: absolute; right: 20px;"><i class="fas fa-th sort" title="Affichage grille"></i></a> <?php } ?></h4>
-                    
+
 
                     <?php
                     //Tri
@@ -149,7 +172,12 @@
 
                     <table class="table">
                         <thead class="thead">
-                            <th style="width:auto;">Nom du fichier &nbsp;<a href="/espace-utilisateur/sort-by-name"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "original_name/ASC") {echo("active"); } ?>" title="Trier par nom"></i></a></th>
+                            <th style="width:auto;">Nom du fichier &nbsp;
+                            <?php if (isset($_GET['sp']) && $_GET['sp'] == "sort-by-name-desc") { ?>
+                            <a href="/espace-utilisateur/sort-by-name-asc"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "original_name/ASC") {echo("active"); } ?>" title="Trier par nom"></i></a>
+                            <?php } else { ?>
+                            <a href="/espace-utilisateur/sort-by-name-desc"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "original_name/ASC") {echo("active"); } ?>" title="Trier par nom"></i></a>
+                            <?php } ?></th>
                             <th style="width:15%;" class="d-none d-lg-table-cell">Taille du fichier &nbsp;<a href="/espace-utilisateur/sort-by-size"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "size/DESC") {echo("active"); } ?>" title="Trier par taille"></i></a></th>
                             <th style="width:15%;" class="d-none d-lg-table-cell">Date &nbsp;<a href="/espace-utilisateur/sort-by-date"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "id/DESC") {echo("active"); } ?>" title="Trier par date"></i></a></th>
                             <th style="width:15%;" class="d-none d-lg-table-cell">Téléchargements &nbsp;<a href="/espace-utilisateur/sort-by-dl"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "download_count/DESC") {echo("active"); } ?>" title="Trier nombre de téléchargements"></i></a></th>
@@ -161,6 +189,28 @@
 
                         $key = $_SESSION['UserPassword'];
                         $files = getFiles($_SESSION['Data']['id'], $connection, $_SESSION['table_files_sort']);
+
+                        if (isset($_GET["sp"])) {
+                            if ($_GET['sp'] == "sort-by-name-desc") {
+                                foreach ($files as $file) {
+                                    $file["original_name"] = decryptText($file["original_name"], $key, $file["salt"], null, false);
+                                }
+                                $filesArrayObject = new ArrayObject($files);
+                                $filesArrayObject->asort();
+                                $files = [];
+                                foreach ($filesArrayObject as $fileArrayObject) {
+                                    array_unshift($files, $fileArrayObject);
+                                }
+                            } else if ($_GET['sp'] == "sort-by-name-asc") {
+                                foreach ($files as $file) {
+                                    $file["original_name"] = decryptText($file["original_name"], $key, $file["salt"], null, false);
+                                }
+                                $filesArrayObject = new ArrayObject($files);
+                                $filesArrayObject->asort();
+                                $files = $filesArrayObject;
+                            }
+                        }
+
                         $table = "";
                         $grid = "<div class='row'>";
                         $count = 0;
@@ -235,9 +285,9 @@
                                      "<h3 title='" . htmlspecialchars(decryptText($file["original_name"], $key, $file["salt"], null, false)) . "'>" . $originalName . "</h3>\n" .
                                      "<img src='" . $fileImg . "' alt='Logo' /><br />\n" .
                                      "</a></div>";
-                            
-                        
-                        
+
+
+
                         }
 
                         if (isset($_GET['sp']) && $_GET['sp'] == "grid") {

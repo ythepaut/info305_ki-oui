@@ -110,12 +110,24 @@ function updateTab(files) {
 
         var name_cell = row.insertCell(0);
         var size_cell = row.insertCell(1);
+        var progress_cell = row.insertCell(2);
 
         name_cell.innerHTML = file.name;
 
         var size_str = transformSize(file.size);
 
         size_cell.innerHTML = size_str;
+
+        var progress_bar = document.createElement("div");
+        progress_bar.setAttribute("class", "progress-bar progress-bar-striped active");
+        progress_bar.setAttribute("role", "progressbar");
+        progress_bar.setAttribute("aria-valuenow", "0");
+        progress_bar.setAttribute("aria-valuemin", "0");
+        progress_bar.setAttribute("aria-valuemax", "100");
+        progress_bar.setAttribute("style", "width:100%");
+        progress_bar.innerHTML = "TODO %";
+
+        progress_cell.appendChild(progress_bar);
     }
 }
 
@@ -140,8 +152,13 @@ function fileAdded(e) {
         size += file.size;
     }
 
+    var allowedSpace = document.querySelector("#usedSpace").getAttribute("value");
+
     if (size > MAX_SIZE) {
         $('#modalUploadFileError').modal();
+    }
+    else {
+        sendFiles();
     }
 }
 
@@ -155,11 +172,6 @@ function init() {
 }
 
 function sendFiles() {
-    document.querySelector("#boutonEnvoi").setAttribute("disabled", "true");
-
-    document.querySelector("#envoyer").style.display = "none";
-    document.querySelector("#envoi").style.display = "block";
-
     setTimeout(function() {
         var form = document.querySelector("#uploadForm");
 
