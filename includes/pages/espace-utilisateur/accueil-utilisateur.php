@@ -170,7 +170,12 @@
 
                     <table class="table">
                         <thead class="thead">
-                            <th style="width:auto;">Nom du fichier &nbsp;<a href="/espace-utilisateur/sort-by-name"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "original_name/ASC") {echo("active"); } ?>" title="Trier par nom"></i></a></th>
+                            <th style="width:auto;">Nom du fichier &nbsp;
+                            <?php if (isset($_GET['sp']) && $_GET['sp'] == "sort-by-name-desc") { ?>
+                            <a href="/espace-utilisateur/sort-by-name-asc"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "original_name/ASC") {echo("active"); } ?>" title="Trier par nom"></i></a>
+                            <?php } else { ?> 
+                            <a href="/espace-utilisateur/sort-by-name-desc"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "original_name/ASC") {echo("active"); } ?>" title="Trier par nom"></i></a> 
+                            <?php } ?></th>
                             <th style="width:15%;" class="d-none d-lg-table-cell">Taille du fichier &nbsp;<a href="/espace-utilisateur/sort-by-size"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "size/DESC") {echo("active"); } ?>" title="Trier par taille"></i></a></th>
                             <th style="width:15%;" class="d-none d-lg-table-cell">Date &nbsp;<a href="/espace-utilisateur/sort-by-date"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "id/DESC") {echo("active"); } ?>" title="Trier par date"></i></a></th>
                             <th style="width:15%;" class="d-none d-lg-table-cell">Téléchargements &nbsp;<a href="/espace-utilisateur/sort-by-dl"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "download_count/DESC") {echo("active"); } ?>" title="Trier nombre de téléchargements"></i></a></th>
@@ -182,6 +187,28 @@
 
                         $key = $_SESSION['UserPassword'];
                         $files = getFiles($_SESSION['Data']['id'], $connection, $_SESSION['table_files_sort']);
+
+                        if (isset($_GET["sp"])) {
+                            if ($_GET['sp'] == "sort-by-name-desc") {
+                                foreach ($files as $file) {
+                                    $file["original_name"] = decryptText($file["original_name"], $key, $file["salt"], null, false);
+                                }
+                                $filesArrayObject = new ArrayObject($files);
+                                $filesArrayObject->asort();
+                                $files = [];
+                                foreach ($filesArrayObject as $fileArrayObject) {
+                                    array_unshift($files, $fileArrayObject);
+                                }
+                            } else if ($_GET['sp'] == "sort-by-name-asc") {
+                                foreach ($files as $file) {
+                                    $file["original_name"] = decryptText($file["original_name"], $key, $file["salt"], null, false);
+                                }
+                                $filesArrayObject = new ArrayObject($files);
+                                $filesArrayObject->asort();
+                                $files = $filesArrayObject;
+                            }
+                        }
+
                         $table = "";
                         $grid = "<div class='row'>";
                         $count = 0;
