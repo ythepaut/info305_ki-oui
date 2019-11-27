@@ -313,7 +313,6 @@ function getFiles($idUser, $connection, $sort = 'id/DESC') {
     return $filesUser;
 }
 
-
 /**
  * Fonction qui renvoie la conversion d'une taille de fichier en octets en une chaine de charactères avec les unitées
  *
