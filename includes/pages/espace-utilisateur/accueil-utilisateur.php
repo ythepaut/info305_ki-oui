@@ -112,9 +112,30 @@
                 </div>
 
                 <div class="col-lg inner panel-outline">
-                    <h4 class="panel-title">Ajouter des fichiers</h4>
+                    <form action="<?php echo(getSrc('./includes/classes/actions.php')); ?>" method="post" enctype="multipart/form-data" id="uploadForm">
+                        <h4 class="panel-title"> Ajouter des fichiers </h4>
 
-                    <a href="/upload-file" class="button"><i class="fas fa-file-import"></i> &nbsp; Ajouter un fichier</a>
+                        <label for="inputFile" id="inputLabel"><i class="fas fa-file-import"></i> Ajouter des fichiers </label>
+                        <div id="allInputs"></div>
+
+                        <table class="table" id="files_tab">
+                            <thead class="thead-light">
+                                <th scope="col">Nom</th>
+                                <th scope="col">Taille</th>
+                                <th scope="col">Progression</th>
+                            </thead>
+
+                            <input type="text" name="action" value="upload-file" hidden />
+
+                            <tr id="first_line_tab">
+                                <td scope="row" colspan="2"><i>Aucun fichier sélectionné</i></td>
+                            </tr>
+                        </table>
+
+
+                        <script type="text/javascript" src="<?php echo(getSrc('./js/upload.js')); ?>"></script>
+                        <script>init();</script>
+                    </form>
                 </div>
 
             </div>
@@ -122,7 +143,7 @@
                 <div class="col panel-outline">
 
                     <h4 class="panel-title">Mes fichiers &nbsp;<?php if (isset($_GET['sp']) && $_GET['sp'] == "grid") { ?> <a href="/espace-utilisateur/sort-by-date" style="position: absolute; right: 20px;"><i class="fas fa-table sort" title="Affichage tableau"></i></a> <?php } else { ?> <a href="/espace-utilisateur/grid" style="position: absolute; right: 20px;"><i class="fas fa-th sort" title="Affichage grille"></i></a> <?php } ?></h4>
-                    
+
 
                     <?php
                     //Tri
@@ -235,9 +256,9 @@
                                      "<h3 title='" . htmlspecialchars(decryptText($file["original_name"], $key, $file["salt"], null, false)) . "'>" . $originalName . "</h3>\n" .
                                      "<img src='" . $fileImg . "' alt='Logo' /><br />\n" .
                                      "</a></div>";
-                            
-                        
-                        
+
+
+
                         }
 
                         if (isset($_GET['sp']) && $_GET['sp'] == "grid") {
