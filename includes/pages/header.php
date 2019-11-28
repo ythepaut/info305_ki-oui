@@ -13,6 +13,7 @@
         <link rel="stylesheet" type="text/css" href="<?php echo(getSrc('./css/bootstrap-grid.css')); ?>" />
 
         <link rel="stylesheet" type="text/css" href="<?php echo(getSrc('./css/style.css')); ?>" />
+        <link id="theme" rel="stylesheet" type="text/css" href="." />
 
         <!--ChartJs -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
@@ -36,7 +37,7 @@
                         echo('<a href="#" data-toggle="modal" data-target="#modalLogin"><span><i class="fas fa-tachometer-alt"></i> &nbsp; Espace utilisateur</span></a>');
                     }
                     ?>
-                    <a href="#"><span><i class="fas fa-globe-americas"></i> &nbsp; EN</span></a>
+                    <a href="#" data-toggle="modal" data-target="#modalFrontSettings" title="Paramètres du site"><span><i class="fas fa-cog"></i></span></a>
                 </form>
             </div>
     	</nav>
@@ -55,7 +56,7 @@
                 include("./includes/pages/modals/register.php");
                 include("./includes/pages/modals/forgot-password.php");
             }
-
+            include("./includes/pages/modals/front-settings.php");
             include("./includes/pages/modals/upload-file-error.php");
         ?>
 
