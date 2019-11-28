@@ -7,6 +7,7 @@ include_once(getcwd() . "/config-email.php");
 include_once(getcwd() . "/config-recaptcha.php");
 include_once(getcwd() . "/utils.php");
 include_once(getcwd() . "/totp.php");
+include_once(getcwd() . "/u2f.php");
 require_once(getcwd() . '/PHPMailer/PHPMailerAutoload.php');
 
 $action = (isset($_POST['action'])) ? $_POST['action'] : "";
@@ -54,6 +55,9 @@ switch ($action) {
         break;
     case "validate-tfa":
         die(validateTFA($_POST['validate-tfa_code'], $connection));
+        break;
+    case "validate-u2f":
+        die(validateU2F($_POST['validate-u2f_reg'], $_POST['validate-u2f_req'],$_POST['validate-u2f_rgs'], $connection));
         break;
     case "resend-tfa":
         die(sendTFACode($em, $connection));
@@ -202,6 +206,15 @@ function login($email, $passwd, $remember = "off", $connection, $em) {
                     }
                 }
                 $_SESSION['tfa'] = (!$known) ? "new_device" : "trusted";
+                if ($_SESSION['tfa'] == "new_device") {
+                    if ($userData['u2f'] != "") {
+                        $_SESSION['tfa_method'] = "u2f";
+                    } elseif ($userData['totp'] != "") {
+                        $_SESSION['tfa_method'] = "totp";
+                    } else {
+                        $_SESSION['tfa_method'] = "email";
+                    }
+                }
 
                 #Attribution des données de session
                 $_SESSION['Data'] = $userData;
@@ -520,8 +533,15 @@ function enableU2F($reg, $req, $connection) {
         //U2F désactivé ?
         if ($_SESSION['Data']['u2f'] == "") {
 
-            $u2fArray = array("reg" => $reg, "req" => $req);
+            $scheme = isset($_SERVER['HTTPS']) ? "https://" : "http://";
+            $u2f = new u2flib_server\U2F($scheme . $_SERVER['HTTP_HOST']);
+
+            $data = $u2f->doRegister(json_decode($req), json_decode($reg));
+
+            $u2fArray = json_encode($data);
             $u2fJSON = json_encode($u2fArray);
+            $u2fJSON = substr($u2fJSON, 1, strlen($u2fJSON) - 2);
+            $u2fJSON = str_replace("\\", "", $u2fJSON);
 
             //Verification du code de confirmation
             $query = $connection->prepare("UPDATE kioui_accounts SET u2f = ? WHERE id = ?");
@@ -647,6 +667,41 @@ function validateTFA($code, $connection) {
     }
 
     return $result;
+
+}
+
+/**
+ * Verification de la double authentification par clé physique.
+ *
+ * @param string            $reg                -   u2f req
+ * @param string            $req                -   u2f reg
+ * @param string            $rgs                -   u2f rgs
+ * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return string
+ */
+function validateU2F($reg, $req, $rgs, $connection) {
+
+    refreshSession($connection);
+
+    if (json_decode($req, true)[0]['keyHandle'] == json_decode($rgs, true)['keyHandle'] && json_decode($rgs, true)['keyHandle'] == json_decode($reg, true)['keyHandle']) {
+        $_SESSION['tfa'] = "trusted";
+
+        $userDevices = json_decode($_SESSION['Data']['known_devices']);
+
+        $device = array("hostname" => gethostbyaddr($_SERVER['REMOTE_ADDR']), "ip" => $_SERVER['REMOTE_ADDR'], "useragent" => $_SERVER["HTTP_USER_AGENT"]);
+        array_push($userDevices, $device);
+
+        $newDevices = json_encode($userDevices);
+
+        $query = $connection->prepare("UPDATE kioui_accounts SET known_devices = ? , tfa_code = 0 , tfa_expire = 0 WHERE id = ?");
+        $query->bind_param("si", $newDevices, $_SESSION['Data']['id']);
+        $query->execute();
+        $query->close();
+
+    }
+
+    header("Location: /espace-utilisateur/accueil");
 
 }
 

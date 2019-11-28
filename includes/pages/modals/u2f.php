@@ -27,7 +27,7 @@
                                 <br />
                                 <div style="text-align: center;">
                                     <img alt="Inserer clé U2F" src="<?php echo(getSrc('./ressources/img/u2f.png')); ?>" />
-                                <div>
+                                </div>
                                 <br />
 
                                 <?php
