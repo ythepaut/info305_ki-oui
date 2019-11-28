@@ -111,6 +111,8 @@
 
 </div>
 
+<script src="<?php echo(getSrc('./js/u2f-api.js')); ?>"></script>
+
 <?php
 $backupKey = randomString(16); 
 include("./includes/pages/modals/backup-key.php");
@@ -118,6 +120,7 @@ $_SESSION['totp'] = (!isset($_SESSION['totp'])) ? $ga->createSecret() : $_SESSIO
 $_SESSION['totp'] = ($_SESSION['Data']['totp'] == "" && !isset($_SESSION['totp'])) ? $ga->createSecret() : $_SESSION['totp'];
 $_SESSION['totp'] = ($_SESSION['Data']['totp'] != "") ? $_SESSION['Data']['totp'] : $_SESSION['totp'];
 include("./includes/pages/modals/totp.php");
+include("./includes/pages/modals/u2f.php");
 include("./includes/pages/modals/download-data.php");
 include("./includes/pages/modals/change-password.php");
 include("./includes/pages/modals/change-username.php");

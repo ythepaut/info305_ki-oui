@@ -77,6 +77,12 @@ $('form.ajax').on('submit', function() {
                 } else {
                     alertDiv.setAttribute('class', 'alert alert-warning');
                     alertDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i>  &nbsp; ' + responseArray[1];
+
+                    //Suppression champs mot de passe si erreur
+                    let pwdfield = document.querySelector('input[type="password"]')
+                    if (pwdfield != null) {
+                        pwdfield.value = "";
+                    }
                 }
 
                 //Affichage du div message
@@ -93,10 +99,6 @@ $('form.ajax').on('submit', function() {
                     }
                 }
                 
-                let pwdfield = document.querySelector('input[type="password"]')
-                if (pwdfield != null) {
-                    pwdfield.value = "";
-                }
 
                 for (let inputDisabled of document.querySelectorAll("input[disabled='disabled']")) {
                     inputDisabled.removeAttribute('disabled');

@@ -43,6 +43,12 @@ switch ($action) {
     case "disable-totp":
         die(disableTOTP($_POST['enable-totp_code'], $connection));
         break;
+    case "enable-u2f":
+        die(enableU2F($_POST['enable-u2f_reg'], $_POST['enable-u2f_req'], $connection));
+        break;
+    case "disable-u2f":
+        die(disableU2F($connection));
+        break;
     case "validate-totp":
         die(validateTOTP($_POST['validate-totp_code'], $connection));
         break;
@@ -487,6 +493,76 @@ function disableTOTP($code, $connection) {
 
         } else {
             $result = "ERROR_TOTP_DISABLED#Vous avez déjà la double authentification par application désactivé.";
+        }
+
+    } else {
+        $result = "ERROR_INVALID_SESSION#Votre session est invalide. Déconnectez vous puis reconnectez vous. Si le problème persiste contactez le support.";
+    }
+
+    return $result;
+
+}
+
+
+/**
+ * Activation de la double authentification par clé physique.
+ *
+ * @param string            $reg                -   reg u2f
+ * @param string            $req                -   req u2f
+ * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return void
+ */
+function enableU2F($reg, $req, $connection) {
+
+    if (isValidSession($connection)) {
+
+        //U2F désactivé ?
+        if ($_SESSION['Data']['u2f'] == "") {
+
+            $u2fArray = array("reg" => $reg, "req" => $req);
+            $u2fJSON = json_encode($u2fArray);
+
+            //Verification du code de confirmation
+            $query = $connection->prepare("UPDATE kioui_accounts SET u2f = ? WHERE id = ?");
+            $query->bind_param("si", $u2fJSON, $_SESSION['Data']['id']);
+            $query->execute();
+            $query->close();            
+
+        }
+    }
+
+    header("Location: /espace-utilisateur/compte");
+
+}
+
+
+/**
+ * Désactivation de la double authentification par clé physique.
+ * (Formulaire AJAX)
+ *
+ * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return string
+ */
+function disableU2F($connection) {
+    $result = "ERROR_UNKNOWN#Une erreur est survenue.";
+
+    if (isValidSession($connection)) {
+
+        //U2F activé ?
+        if ($_SESSION['Data']['u2f'] != "") {
+
+            $newu2f = "";
+            $query = $connection->prepare("UPDATE kioui_accounts SET u2f = ? WHERE id = ?");
+            $query->bind_param("si", $newu2f, $_SESSION['Data']['id']);
+            $query->execute();
+            $query->close();
+
+            $result = "SUCCESS#Double authentification par clé physique désactivée avec succès.#/espace-utilisateur/compte";
+
+        } else {
+            $result = "ERROR_U2F_DISABLED#Vous avez déjà la double authentification par clé physique désactivé.";
         }
 
     } else {
