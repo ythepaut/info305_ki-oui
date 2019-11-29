@@ -16,7 +16,7 @@
         <br />
         <h5>1. Objet</h5>
         <br />
-        <p><p>&nbsp;&nbsp;&nbsp;&nbsp;Les présentes « conditions générales d'utilisation » ont pour objet l'encadrement juridique de l’utilisation de l’outil de partage de fichiers « KI-OUI » disponible à l’adresse https://ki-oui.ythepaut.com/ ci-après désigné « <b>Service</b> ».<br /><br />
+        <p><p>&nbsp;&nbsp;&nbsp;&nbsp;Les présentes « conditions générales d'utilisation » ont pour objet l'encadrement juridique de l’utilisation de l’outil de partage de fichiers « KI-OUI » disponible à l’adresse https://ki-oui.com/ et https://ki-oui.ythepaut.com/ ci-après désigné « <b>Service</b> ».<br /><br />
         Ce contrat est conclu entre :<br />
         Le gérant du <b>Service</b>, ci-après désigné « l’<b>Éditeur</b> »,<br />
         Toute personne physique ou morale souhaitant accéder au site et à ses <b>Services</b>, ci-après appelé « l’<b>Utilisateur</b> ».</p><br />
@@ -99,11 +99,11 @@
         <h3>MENTIONS LÉGALES</h3><br />
         <br />
 
-        <b>Éditeur</b> du site Internet « ki-oui.ythepaut.com » :<br />
+        <b>Éditeur</b> du site Internet « ki-oui.com » et « ki-oui.ythepaut.com » :<br />
         <p>&nbsp;&nbsp;&nbsp;&nbsp;Equipe KI-OUI : THEODET Romain, CARMAGNAC Christophe, CHARDONNET Lucas et THEPAUT Yohann.<br />
         <br />
         Hebergeur :<br />
-        <p>&nbsp;&nbsp;&nbsp;&nbsp;Les sites Internet « ythepaut.com » et « ythepaut.fr » sont hébergés par la société OVH.<br />
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;Les sites Internet « ythepaut.com », « ythepaut.fr » et « ki-oui.com » sont hébergés par la société OVHcloud.<br />
         <p>&nbsp;&nbsp;&nbsp;&nbsp;OVH<br />
         <p>&nbsp;&nbsp;&nbsp;&nbsp;2 rue Kellermann<br />
         <p>&nbsp;&nbsp;&nbsp;&nbsp;59100 Roubaix<br />
@@ -127,7 +127,7 @@
         <h5>Section 1 : Introduction générale et définitions de termes</h5>
         <br />
         <br />
-        <p>&nbsp;&nbsp;&nbsp;&nbsp;La présente politique de confidentialité a pour objet de réglementer l'utilisation du site Web https://ki-oui.ythepaut.com/, ci-après désigné <b>Service</b>, propriété de M. THEODET Romain, M. CARMAGNAC Christophe, M. CHARDONNET Lucas et M. THEPAUT Yohann, ci-après désigné « l’<b>Éditeur</b> ».</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;La présente politique de confidentialité a pour objet de réglementer l'utilisation du site Web https://ki-oui.com/ (et https://ki-oui.ythepaut.com/), ci-après désigné <b>Service</b>, propriété de M. THEODET Romain, M. CARMAGNAC Christophe, M. CHARDONNET Lucas et M. THEPAUT Yohann, ci-après désigné « l’<b>Éditeur</b> ».</p>
         <p>&nbsp;&nbsp;&nbsp;&nbsp;Le <b>Service</b> est une plateforme électronique dédiée au partage des fichiers qui s'efforce de fournir à ses <b>Utilisateurs</b> une solution complète et conviviale pour la gestion et le partage du contenu numérique en ligne.</p>
         <p>&nbsp;&nbsp;&nbsp;&nbsp;L’<b>Éditeur</b> du <b>Service</b> exerce son activité conformément aux lois françaises en vigueur et au règlement général sur la protection des données (RGPD : n° 2016-679)</p>
         <br />

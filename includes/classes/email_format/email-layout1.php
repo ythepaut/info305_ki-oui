@@ -197,7 +197,7 @@
         <tbody><tr>
           <td align="center" class="fix-space-td-img">
             <div>
-                        <img style="display: block;" width="131" height="131" src="https://ki-oui.ythepaut.com/ressources/img/favicon.png">
+                        <img style="display: block;" width="131" height="131" src="https://ki-oui.com/ressources/img/favicon.png">
             </div>
           </td>
         </tr>

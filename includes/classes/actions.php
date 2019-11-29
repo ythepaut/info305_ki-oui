@@ -188,7 +188,7 @@ function login($email, $passwd, $remember = "off", $connection, $em) {
                     $query->execute();
                     $query->close();
 
-                    sendMail($em, $userData['email'], "Suppression de votre compte", "ANNULATION DE LA PROCEDURE DE SUPPRESSION", "Bonjour,<br />Suite à votre connexion, la procédure de suppression de votre compte a été annulée.", "https://ki-oui.ythepaut.com/", "KI-OUI");
+                    sendMail($em, $userData['email'], "Suppression de votre compte", "ANNULATION DE LA PROCEDURE DE SUPPRESSION", "Bonjour,<br />Suite à votre connexion, la procédure de suppression de votre compte a été annulée.", "https://ki-oui.com/", "KI-OUI");
 
                 }
 
@@ -273,7 +273,7 @@ function sendTFACode($em, $connection) {
         $query->execute();
         $query->close();
 
-        sendMail($em, $_SESSION['Data']['email'], "Votre code de verification KI-OUI", $randomString, "Nous avons détecté une nouvelle connexion d'un appareil inconnu. Saisissez le code ci-dessus pour completer votre connexion.<br /><br />Si vous n'êtes pas à l'origine de cette requete, changez votre mot de passe et contactez le support.", "https://ki-oui.ythepaut.com/", "KI-OUI");
+        sendMail($em, $_SESSION['Data']['email'], "Votre code de verification KI-OUI", $randomString, "Nous avons détecté une nouvelle connexion d'un appareil inconnu. Saisissez le code ci-dessus pour completer votre connexion.<br /><br />Si vous n'êtes pas à l'origine de cette requete, changez votre mot de passe et contactez le support.", "https://ki-oui.com/", "KI-OUI");
 
         $result = "SUCCESS#Un autre e-mail contenant votre code a été envoyé.#null";
     }
@@ -354,7 +354,7 @@ function register($username, $email, $passwd, $passwd2, $cgu, $recaptchatoken, $
                                     $query->execute();
                                     $query->close();
 
-                                    sendMail($em, $email, "Bienvenue sur KI-OUI. Verifiez votre e-mail.", "Bienvenue !", "Merci de vous être inscrit " . $username . ".<br />Veuillez confirmer votre adresse e-mail pour pouvoir commencer à utiliser nos services en cliquant sur le lien ci-dessous.<br /><br />Si vous n'êtes pas à l'origine de cette action, ignorez cet e-mail.", "https://ki-oui.ythepaut.com/verif-email/" . $emailToken, "Vérifier mon e-mail");
+                                    sendMail($em, $email, "Bienvenue sur KI-OUI. Verifiez votre e-mail.", "Bienvenue !", "Merci de vous être inscrit " . $username . ".<br />Veuillez confirmer votre adresse e-mail pour pouvoir commencer à utiliser nos services en cliquant sur le lien ci-dessous.<br /><br />Si vous n'êtes pas à l'origine de cette action, ignorez cet e-mail.", "https://ki-oui.com/verif-email/" . $emailToken, "Vérifier mon e-mail");
 
                                     $result = "SUCCESS#Compte créé. Veuillez confirmer votre e-mail avant de vous connecter.#null";
 
@@ -834,7 +834,7 @@ function contactForm($em, $email, $subject, $message) {
 
         sendMailwosmtp($em['address'], "Nouveau message du formulaire de contact", "De : " . $email . "\nSujet : " . $subject . "\nMessage :\n" . $message);
 
-        sendMail($em, $email, "Accusé de réception", "Accusé de réception", "Bonjour, votre message a bien été transmis, et nous répondrons dans les plus brefs délais.", "https://ki-oui.ythepaut.com/", "KI-OUI");
+        sendMail($em, $email, "Accusé de réception", "Accusé de réception", "Bonjour, votre message a bien été transmis, et nous répondrons dans les plus brefs délais.", "https://ki-oui.com/", "KI-OUI");
 
         $result = "SUCCESS#Votre message a été envoyé, vous allez recevoir une confirmation de réception par e-mail.#null";
 
@@ -1245,7 +1245,7 @@ function deleteAccountProcedure($passwd, $connection, $em) {
                 $query->execute();
                 $query->close();
 
-                sendMail($em, $_SESSION['Data']['email'], "Suppression de votre compte", "LANCEMENT DE LA PROCEDURE DE SUPPRESSION", "Bonjour,<br />Suite à votre demande, la procédure de suppression de votre compte a débuté. Votre compte et vos données seront supprimmés et irrécuperables dans 15 jours.<br />Pour annuler la procedure, reconnectez-vous avant le " . date("d/m/Y H:m", $expire) . ".<br /><br />Si vous n'êtes pas à l'origine de cette action, reconnectez-vous à votre espace, changez votre mot de passe et contactez le support.", "https://ki-oui.ythepaut.com/espace-utilisateur/compte", "Annuler la procedure");
+                sendMail($em, $_SESSION['Data']['email'], "Suppression de votre compte", "LANCEMENT DE LA PROCEDURE DE SUPPRESSION", "Bonjour,<br />Suite à votre demande, la procédure de suppression de votre compte a débuté. Votre compte et vos données seront supprimmés et irrécuperables dans 15 jours.<br />Pour annuler la procedure, reconnectez-vous avant le " . date("d/m/Y H:m", $expire) . ".<br /><br />Si vous n'êtes pas à l'origine de cette action, reconnectez-vous à votre espace, changez votre mot de passe et contactez le support.", "https://ki-oui.com/espace-utilisateur/compte", "Annuler la procedure");
 
                 $result = "SUCCESS#Procedure de suppression lancée.#/logout";
 
@@ -1305,7 +1305,7 @@ function createTicket($subject, $message, $connection, $em) {
             $query->execute();
             $query->close();
 
-            sendMail($em, $_SESSION['Data']['email'], "Demande support", "DEMANDE CRÉÉE", "Bonjour " . $_SESSION['Data']['username'] . ".<br />Votre demande de support « " . $subject . " » a bien été créée.<br />Nous vous invitons à consulter votre demande par le lien ci-dessous. Nous vous répondrons dans les plus brefs délais.", "https://ki-oui.ythepaut.com/espace-utilisateur/assistance", "Assistance");
+            sendMail($em, $_SESSION['Data']['email'], "Demande support", "DEMANDE CRÉÉE", "Bonjour " . $_SESSION['Data']['username'] . ".<br />Votre demande de support « " . $subject . " » a bien été créée.<br />Nous vous invitons à consulter votre demande par le lien ci-dessous. Nous vous répondrons dans les plus brefs délais.", "https://ki-oui.com/espace-utilisateur/assistance", "Assistance");
 
             $result = "SUCCESS#Demande de support créée.#/espace-utilisateur/assistance";
 
@@ -1526,7 +1526,7 @@ function changeEmailConfirmation($newEmail, $password, $connection, $em) {
                 if (password_verify(hash('sha512', hash('sha512', $password . $_SESSION['Data']['salt'])), $_SESSION['Data']['password'])) {
 
                     $emailToken = randomString(64);
-                    $link = "https://ki-oui.ythepaut.com/verif-email/" . $emailToken ;
+                    $link = "https://ki-oui.com/verif-email/" . $emailToken ;
 
                     $query = $connection->prepare("UPDATE kioui_accounts SET email_toconfirm = ? , email_token = ? WHERE id = ?");
                     $query->bind_param("ssi", $newEmail, $emailToken, $_SESSION['Data']['id']);

@@ -433,13 +433,13 @@ function generateDlLink($password, $fileId, $connection, $base = "dl") {
         //génération du lien
         $fileName = $file['path'];
         $filePassword = $_SESSION['UserPassword'];
-        $result= "https://ki-oui.ythepaut.com/" . $base . "/" . $fileName . "/" . $filePassword;
+        $result= "https://ki-oui.com/" . $base . "/" . $fileName . "/" . $filePassword;
     } else {
         $result = "ERROR_MISSING_VARIABLES#Veuillez entrer toutes les variables.";
     }
     return $result;
 }
-// Format du lien de téléchargement : https://ki-oui.ythepaut.com/dl/{NOM_FICHIER}/{CLE_DECRYPTAGE}
+// Format du lien de téléchargement : https://ki-oui.com/dl/{NOM_FICHIER}/{CLE_DECRYPTAGE}
 
 /**
  * Télécharge un fichier
