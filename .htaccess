@@ -18,10 +18,14 @@ RewriteRule ^share-file/([A-Za-z0-9-]+)/([A-Za-z0-9-]+)/?$ index.php?page=share-
 RewriteRule ^share-file/([A-Za-z0-9-]+)/?$ index.php?page=share-file&filename=$1&filekey [L]
 RewriteRule ^verif-email/([A-Za-z0-9_.]+)/?$ includes/classes/actions.php?action=verif-email&token=$1 [L]
 
+#API
+RewriteRule ^api/(.*)$ includes/classes/api.php?$1 [QSA,L]
+
 #Redirections de page
 RewriteRule ^([a-z0-9-]+)/?$ index.php?page=$1 [L]
 RewriteRule ^espace-utilisateur/([a-z0-9-]+)/?$ index.php?page=espace-utilisateur&sp=$1 [L]
 RewriteRule ^espace-utilisateur/assistance/([0-9-]+)/?$ index.php?page=espace-utilisateur&sp=assistance&ticket=$1 [L]
+
 
 #Desactivation de la visualisation du systeme de fichier
 Options -Indexes
