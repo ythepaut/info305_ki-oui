@@ -25,7 +25,7 @@
 
     	<nav class="navbar sticky-top navbar-dark">
             <div class="col-lg-4">
-                <a href="/" class="title navbar-brand"><i class="fas fa-kiwi-bird"></i> &nbsp; KI-OUI.FR</a>
+                <a href="/" class="title navbar-brand"><i class="fas fa-kiwi-bird"></i> &nbsp; KI-OUI.COM</a>
             </div>
             <div class="col-lg-6">
                 <form class="form-inline">

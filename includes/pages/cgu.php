@@ -124,7 +124,7 @@
         <h3>POLITIQUE DE CONFIDENTIALITÉ</h3><br />
         <br />
 
-        <h5>Section 1 : Introduction générale et définitions de termes</h5>
+        <h5>1. Introduction générale et définitions de termes</h5>
         <br />
         <br />
         <p>&nbsp;&nbsp;&nbsp;&nbsp;La présente politique de confidentialité a pour objet de réglementer l'utilisation du site Web https://ki-oui.com/ (et https://ki-oui.ythepaut.com/), ci-après désigné <b>Service</b>, propriété de M. THEODET Romain, M. CARMAGNAC Christophe, M. CHARDONNET Lucas et M. THEPAUT Yohann, ci-après désigné « l’<b>Éditeur</b> ».</p>
@@ -141,24 +141,24 @@
         <p>&nbsp;&nbsp;&nbsp;&nbsp;Les termes « données à caractère personnel », « personne concernée », « sous-traitant » et « données sensibles » ont le sens défini par le Règlement Général sur la Protection des Données (RGPD : n° 2016-679)</p>
         <br />
         <br />
-        <h5>Section 2 : Les Informations collectées</h5>
+        <h5>2. Les Informations collectées</h5>
         <br />
         <p>&nbsp;&nbsp;&nbsp;&nbsp;Via le site Web du <b>Service</b>, nous collectons et traitons des Informations identifiables qui peuvent être utilisées pour vous identifier, telles que votre pseudonyme, votre adresse électronique et votre adresse IP. En règle générale, nous traiterons les données personnelles exclusivement comme décrit dans cette politique de confidentialité. Cependant, nous nous réservons le droit d'effectuer des traitements supplémentaires dans la mesure permise ou requise par la loi ou en complément de toute enquête judiciaire ou pénale sollicitée par la réglementation française et celle de l’Union Européenne comme décrit dans le RGPD : n° 2016-679.</p>
         <br />
         <br />
-        <h5>Section 3 : Traitement des Informations personnelles</h5>
+        <h5>3. Traitement des Informations personnelles</h5>
         <br />
         <p>&nbsp;&nbsp;&nbsp;&nbsp;Les <b>Fonctionnalités</b> offertes par notre <b>Service</b> peuvent nécessiter ou non un certain type d'enregistrement. Certaines <b>Fonctionnalités</b> vous demanderont de nous fournir vos données personnelles. Dans ces situations, si vous choisissez de ne pas nous fournir les données personnelles demandées, vous pourriez ne pas avoir accès à certaines sections du site Web et nous pourrions ne pas être en mesure de répondre à vos requêtes. Toutes les données personnelles collectées via ce site Web seront incluses dans une base de données appartenant à l’<b>Éditeur</b>, afin de vous fournir et/ou vous facturer les produits ou <b>Fonctionnalités</b> que vous avez demandés. Dans tous les cas, l'utilisation de vos données à d'autres fins sera communiquée avant de procéder à leur traitement.</p>
         <br />
         <br />
-        <h5>Section 4 : Finalités d’utilisation des Informations collectées</h5>
+        <h5>4. Finalités d’utilisation des Informations collectées</h5>
         <br />
         <p>&nbsp;&nbsp;&nbsp;&nbsp;Le <b>Service</b> utilise les Informations collectées pour améliorer nos <b>Prestations</b> et <b>Fonctionnalités</b>. </p>
         <p>&nbsp;&nbsp;&nbsp;&nbsp;Nous sommes fortement engagés à respecter la confidentialité de vos Informations en utilisant les systèmes les plus avancés et les mettant à jour en permanence pour nous assurer qu'il n'y a pas d'accès non autorisé à vos Informations.</p>
         <p>&nbsp;&nbsp;&nbsp;&nbsp;L’<b>Éditeur</b> ne communique aucune Information personnelle ou non personnelle à aucun tiers. </p>
         <br />
         <br />
-        <h5>Section 5 : Droits de protection des données des <b>Utilisateurs</b></h5>
+        <h5>5. Droits de protection des données des <b>Utilisateurs</b></h5>
         <br />
         <p>&nbsp;&nbsp;&nbsp;&nbsp;L'<b>Utilisateur</b> s’engage et reconnaît que les données personnelles fournies au <b>Service</b> sont véridiques et exactes, étant responsable de la communication de tout changement les concernant.</p>
         <p>&nbsp;&nbsp;&nbsp;&nbsp;Les <b>Utilisateurs</b> peuvent exercer leurs droits d'accès, de rectification, d’annulation et d’opposition :</p>
@@ -170,7 +170,7 @@
         &nbsp;&nbsp;&nbsp;•&nbsp;Droit de retrait du consentement : si vous avez accordé votre consentement à une fin spécifique, vous avez le droit de le retirer à tout moment, sans affecter la légalité du traitement fondé sur le consentement avant son retrait.</p>
         <br />
         <br />
-        <h5>Section 6 : Contrôle de vos Informations personnelles</h5>
+        <h5>6. Contrôle de vos Informations personnelles</h5>
         <br />
         <p>&nbsp;&nbsp;&nbsp;&nbsp;Nous nous engageons pour la sécurité des données de nos <b>Utilisateurs</b>. Lorsque nous vous demandons de renseigner les champs d'Informations personnelles avec lesquels vous pouvez être identifié, nous le faisons en veillant à ce qu'ils ne soient utilisés que conformément aux conditions de ce document. Cependant, cette politique de confidentialité peut changer au fil du temps ou être mise à jour. Pour cette raison nous vous recommandons de passer en revue cette page en permanence afin de vérifier que vous acceptez les éventuelles modifications.</p>
         <br />
@@ -182,7 +182,44 @@
         Politique des cookies
     </button>
     <div class="collapse" id="collapsePolitiqueCookies">
-        <p>Note site web n'utilise pas de cookies.</p>
+
+        <br />
+        <h3>POLITIQUE DES COOKIES</h3><br />
+        <br />
+
+        <p>Conformément aux exigences RGPD et à la réglementation française régissant l'utilisation de cookies dans le cadre de la fourniture de services électroniques, nous vous informons des cookies utilisés sur le Service et l’ensemble des raisons de leur utilisation. Nous vous informons également qu'en naviguant sur le site Web, vous consentez à leur utilisation.</p>
+        <br />
+        <br />
+        <h5>1. Définition et contexte</h5>
+        <br />
+        <p>Un cookie est un fichier téléchargé sur votre ordinateur lors de l'accès à certaines pages Web. Les cookies permettent à une page Web notamment de stocker et de récupérer des informations sur les habitudes de navigation d’un utilisateur ou de son équipement et, en fonction des informations qu’ils contiennent et de la manière dont ils utilisent leur équipement. Les cookies sont uniquement associés à un utilisateur anonyme et à son ordinateur ou appareil. Ils ne fournissent pas de références permettant de connaître leurs données personnelles.</p><br />
+        <p><b>Cookies concernés par la réglementation et cookies exclus</b><br />
+        Selon la directive de l'UE, les cookies qui nécessitent un consentement explicite de l'utilisateur sont des cookies d'analyse, de publicité et d'affiliation, à l'exception de ceux de nature technique et de ceux nécessaires au fonctionnement du site Web ou à la fourniture de services.</p>
+        <br />
+        <br />
+        <h5>2. Type et finalité d'utilisation des cookies</h5>
+        <br />
+        <p><b>Types de cookies</b><br />
+        a) Selon l'entité qui les gère, il existe des cookies propres au Service (ceux qui sont envoyés à l'équipement de l'utilisateur à partir d'un serveur ou d'un domaine géré par l'éditeur lui-même et à partir duquel le service demandé par l'utilisateur est fourni) et des cookies tiers (ceux qui sont envoyés à l'équipement terminal de l'utilisateur à partir d'un ordinateur ou d'un domaine qui n'est pas géré par l'éditeur, mais par une autre entité qui traite les données obtenues à l'aide de cookies).<br /><br />
+        b) En fonction de la durée de leur activité, il existe des sessions (conçues pour collecter et stocker des données lorsque l'utilisateur accède à une page Web et qui expirent à la fermeture du navigateur de l'utilisateur) et des données persistantes (dans lesquelles les données sont stockées dans le terminal et peuvent être consultées et traitées au cours de la session).<br /><br />
+        c) Le service KI-OUI utilise les cookies suivants :<br />
+        &nbsp;&nbsp;&nbsp;•&nbsp;Cookies techniques : ils permettent à l’utilisateur de naviguer sur le site Web et d’utiliser les différentes options ou services existants, comme l’identification de la session, l’accès à certaines parties restreintes, l’authentification de l’utilisateur, achat d'un service ou le partage du contenu via les réseaux sociaux.<br />
+        &nbsp;&nbsp;&nbsp;•&nbsp;Cookies de personnalisation : ils permettent à l'utilisateur d'accéder au service avec des fonctionnalités prédéfinies, telles que la langue, le type de navigateur, le theme, etc.<br />
+        Le Service n'utilise ni cookies publicitaires, ni cookies d'analyse, ni cookies sociaux.</p>
+        <br />
+        <p><b>Finalité d'utilisation des cookies</b><br />
+        Les cookies utilisés par le Service sont, dans tous les cas, temporaires, dans le seul but de rendre la navigation plus efficace. En aucun cas, ces cookies ne fournissent des données personnelles et ne sont pas utilisés pour les collecter.</p>
+        <br />
+        <br />
+        <h5>3. Cookies et fonctionnement du site web</h5>
+        <br />
+        <p>Veuillez noter que si vous ne souhaitez pas recevoir de cookies, l'Editeur ne peut plus vous garantir le bon fonctionnement du site Web. Certaines fonctionnalités du site peuvent être perdues et vous risquez de ne plus pouvoir acceder à certaines pages du site Web.<br />
+        Chaque navigateur utilise une méthode différente pour adapter la configuration. Si nécessaire, consultez la fonction d'aide du navigateur pour définir les paramètres appropriés.</p>
+        <br />
+        <br />
+        <h5>4.  Révocation</h5>
+        <br />
+        <p>Si l'utilisateur souhaite révoquer le consentement donné, il doit éliminer les cookies installés et, le cas échéant, modifier ses préférences en matière d'acceptation des cookies via les options de son navigateur. Et pour empêcher leur installation ultérieure, l’utilisateur doit activer les options de navigation privée fournie dans son navigateur.</p>
         <br />
         <br />
     </div>
@@ -191,7 +228,7 @@
         Conditions Générales de Vente
     </button>
     <div class="collapse" id="collapseCGV">
-        <p>Note site web n'effectue pas de transactions.</p>
+        <p>Notre site web n'effectue pas de transactions.</p>
         <br />
         <br />
     </div>
