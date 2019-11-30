@@ -118,7 +118,7 @@
                         <label for="inputFile" id="inputLabel"><i class="fas fa-file-import"></i> Ajouter des fichiers </label>
                         <div id="allInputs"></div>
 
-                        <input type="hidden" id="allowedSpace" value=<?php echo('"' . $_SESSION["Data"]["quota"] - $_SESSION["usedSpace"] . '"'); ?>  ></input>
+                        <input type="number" hidden id="allowedSpace" value=<?php echo('"' . ($_SESSION["Data"]["quota"] - $_SESSION["usedSpace"]) . '"'); ?>  ></input>
 
                         <table class="table" id="files_tab">
                             <thead class="thead-light">
