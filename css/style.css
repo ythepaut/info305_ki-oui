@@ -523,6 +523,72 @@ li.nav-item {
     width: 33.33%;
 }
 
+/* Cartes administration */
+
+
+
+.card {
+    border: 0px solid transparent !important;
+    border-radius: 4px !important;
+    -webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.05) !important;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.05) !important;
+}
+
+.dash-text {
+    margin-right: 15px !important;
+    font-size: 16px !important;
+    letter-spacing: 0px !important;
+    font-weight: 300 !important;
+}
+.dash-heading {
+    margin-right: 15px !important;
+    margin-top: 10px !important;
+    margin-bottom: 5px !important;
+    font-size: 34px !important;
+    letter-spacing: -1px !important;
+    font-weight: 300 !important;
+}
+
+.card-heading {
+    height: 100px !important;
+}
+
+.panel-outline-admin {
+    margin: 20px 15px;
+    background-color: #fff;
+    border: 0px solid transparent !important;
+    border-radius: 4px !important;
+    -webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.05) !important;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.05) !important;
+}
+
+.card.admin-events {
+    margin-bottom: 20px;
+    border-left: solid 3px #5e7bee !important;
+}
+
+.card.admin-events-fullblue {
+    margin-bottom: 20px;
+    background-color: #5e7bee;
+    color: #f3f3f3;
+}
+.card.admin-events-fullblue .card-footer .text-muted {
+    color: #aebedf !important;
+}
+
+.card.admin-events-red {
+    margin-bottom: 20px;
+    border-left: solid 3px #ee5253 !important;
+}
+
+.card.admin-events-fullred {
+    margin-bottom: 20px;
+    background-color: #ee5253;
+    color: #f3f3f3;
+}
+.card.admin-events-fullred .card-footer .text-muted {
+    color: #ffced2 !important;
+}
 
 /* Footer */
 

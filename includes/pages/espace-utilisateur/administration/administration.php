@@ -5,7 +5,7 @@
         <section class="col-lg panel-background">
         <div class="row">
 
-            <div class="col panel-outline" style="padding: 0px;">
+            <div class="col" style="padding: 0px; margin: 20px 15px;">
                 <!--Tab nav-->
                 <ul class="nav nav-tabs" role="tablist">
                     <li class="nav-item">
@@ -24,13 +24,13 @@
 
                     <div class="tab-content" id="myTabContent">
                         <div class="tab-pane fade show active" id="stac" role="tabpanel" aria-labelledby="stac-tab">
-                            Minim eiusmod ut culpa consectetur laborum cillum tempor magna non dolore voluptate aute nostrud. Deserunt sunt dolore aliquip in voluptate reprehenderit adipisicing irure quis ut nisi proident id. Aliqua eu velit dolor eiusmod et enim. Esse cillum do laboris aliqua nostrud et do aute dolore fugiat minim sunt aliqua. Anim proident quis id minim elit elit nisi cillum sunt eu.
+                            <?php include("./includes/pages/espace-utilisateur/administration/statistiques.php"); ?>
                         </div>
                         <div class="tab-pane fade" id="gesut" role="tabpanel" aria-labelledby="gesut-tab">
-                            Aute pariatur consectetur aliquip nisi incididunt ex dolor sunt nisi eu adipisicing Lorem et sit. Laborum eu incididunt amet officia voluptate proident ullamco cillum minim est fugiat. Deserunt aute commodo culpa exercitation voluptate ex et sunt et ea laborum.
+                            <?php include("./includes/pages/espace-utilisateur/administration/utilisateurs.php"); ?>
                         </div>
                         <div class="tab-pane fade" id="gesfi" role="tabpanel" aria-labelledby="gesfi-tab">
-                            In ad eiusmod consectetur in culpa labore incididunt qui laboris irure duis cillum quis. Mollit in cupidatat deserunt aliqua. Ut Lorem velit ea ea consectetur et sunt laboris nostrud et laborum commodo ullamco. Reprehenderit veniam mollit nisi dolore proident Lorem anim excepteur voluptate deserunt eu fugiat. Et culpa dolor dolor ipsum dolor eu occaecat voluptate qui aute aute amet sunt. Qui laborum sit non tempor reprehenderit do incididunt aliquip consectetur excepteur.
+                            <?php include("./includes/pages/espace-utilisateur/administration/fichiers.php"); ?>
                         </div>
                     </div>
                     

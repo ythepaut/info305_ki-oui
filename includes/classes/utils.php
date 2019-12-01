@@ -606,4 +606,51 @@ function time_elapsed_string($datetime, $full = false) {
     return $string ? 'Il y a ' . implode(', ', $string) : 'A l\'instant';
 }
 
+
+/**
+ * Fonction qui retourne l'url d'une image en fct d'une extension de fichier
+ * 
+ * @param string             $extension             - Extension du fichier
+ * 
+ * @return string
+ */
+function extensionImage($extension) {
+
+    $result = "https://img.icons8.com/dusk/256/000000/file--v2.png";
+    
+    switch ($extension) {
+        case "png":
+        case "jpg":
+        case "jpeg":
+        case "gif":
+            $result = "https://img.icons8.com/dusk/256/000000/picture.png";
+            break;
+        case "pdf":
+            $result = "https://img.icons8.com/dusk/256/000000/pdf.png";
+            break;
+        case "wav":
+        case "mp3":
+        case "flac":
+            $result = "https://img.icons8.com/dusk/256/000000/musical.png";
+            break;
+        case "mp4":
+        case "wmv":
+            $result = "https://img.icons8.com/dusk/256/000000/video-file.png";
+            break;
+        case "zip":
+        case "gz":
+        case "rar":
+        case "7zip":
+            $result = "https://img.icons8.com/dusk/256/000000/archive-folder.png";
+            break;
+        case "txt":
+            $result = "https://img.icons8.com/dusk/256/000000/txt.png";
+            break;
+
+    }
+
+    return $result;
+}
+
+
 ?>

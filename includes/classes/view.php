@@ -29,7 +29,7 @@ switch ($page) {
                     break;
                 case "administration":
                     if ($_SESSION['Data']['access_level'] == "ADMINISTRATOR") {
-                        include("./includes/pages/espace-utilisateur/administration.php");
+                        include("./includes/pages/espace-utilisateur/administration/administration.php");
                     } else {
                         include("./includes/pages/espace-utilisateur/accueil-utilisateur.php");
                     }

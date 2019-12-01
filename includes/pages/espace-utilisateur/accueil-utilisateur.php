@@ -172,6 +172,7 @@
 
                     <table class="table">
                         <thead class="thead">
+                            <th style="width:1%;"><i class="far fa-file"></i></th>
                             <th style="width:auto;">Nom du fichier &nbsp;
                             <?php if (isset($_GET['sp']) && $_GET['sp'] == "sort-by-name-desc") { ?>
                             <a href="/espace-utilisateur/sort-by-name-asc"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "original_name/ASC") {echo("active"); } ?>" title="Trier par nom"></i></a>
@@ -226,7 +227,8 @@
                             $originalName = (strlen($originalName) > 70) ? substr($originalName, 0, 67) . "..." : $originalName;
 
                             //Colonne Nom
-                            $table .=  "<tr><td><span title='" . htmlspecialchars(decryptText($file["original_name"], $key, $file["salt"], null, false)) . "'>" . $originalName . "</span></td>\n";
+                            $table .=  "<tr><td>" . "<img style='width: 18px;' alt='Fichier' src='" . extensionImage(explode(".", decryptText($file["original_name"], $key, $file["salt"], null, false))[count(explode(".", decryptText($file["original_name"], $key, $file["salt"], null, false))) - 1]) . "' />" . "</td>\n";
+                            $table .=  "<td><span title='" . htmlspecialchars(decryptText($file["original_name"], $key, $file["salt"], null, false)) . "'>" . $originalName . "</span></td>\n";
                             //Colonne Taille
                             $table .=  "<td class='d-none d-lg-table-cell'>" . convertUnits($file["size"]) . "</td>\n";
                             //Colonne Date
@@ -247,37 +249,8 @@
                             }
 
                             $extension = explode(".", decryptText($file["original_name"], $key, $file["salt"], null, false))[count(explode(".", decryptText($file["original_name"], $key, $file["salt"], null, false))) - 1];
-                            $fileImg = "https://img.icons8.com/dusk/256/000000/file--v2.png";
-                            switch ($extension) {
-                                case "png":
-                                case "jpg":
-                                case "jpeg":
-                                case "gif":
-                                    $fileImg = "https://img.icons8.com/dusk/256/000000/picture.png";
-                                    break;
-                                case "pdf":
-                                    $fileImg = "https://img.icons8.com/dusk/256/000000/pdf.png";
-                                    break;
-                                case "wav":
-                                case "mp3":
-                                case "flac":
-                                    $fileImg = "https://img.icons8.com/dusk/256/000000/musical.png";
-                                    break;
-                                case "mp4":
-                                case "wmv":
-                                    $fileImg = "https://img.icons8.com/dusk/256/000000/video-file.png";
-                                    break;
-                                case "zip":
-                                case "gz":
-                                case "rar":
-                                case "7zip":
-                                    $fileImg = "https://img.icons8.com/dusk/256/000000/archive-folder.png";
-                                    break;
-                                case "txt":
-                                    $fileImg = "https://img.icons8.com/dusk/256/000000/txt.png";
-                                    break;
-
-                            }
+                            $fileImg = extensionImage($extension);
+                            
 
 
                             $originalName = (strlen($originalName) > 19) ? substr($originalName, 0, 16) . "..." : $originalName;
