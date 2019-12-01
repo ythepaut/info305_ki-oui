@@ -440,6 +440,34 @@ input[type="file"]+label:disabled {
 	cursor: not-allowed;
 }
 
+.dropzone {
+}
+
+.dropzone.dragover {
+    border: 4px dotted #1dd1a1;
+}
+
+/*
+.dropzone.dragover {
+    height: 100px;
+    width: 200px;
+    background: linear-gradient(90deg, #1dd1a1 50%, transparent 50%), linear-gradient(90deg, #1dd1a1 50%, transparent 50%), linear-gradient(0deg, #1dd1a1 50%, transparent 50%), linear-gradient(0deg, #1dd1a1 50%, transparent 50%);
+    background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+    background-size: 15px 4px, 15px 4px, 4px 15px, 4px 15px;
+    background-position: 0px 0px, 200px 100px, 0px 100px, 200px 0px;
+    padding: 10px;
+    animation: dragover-dance 3s infinite linear;
+}
+
+@keyframes dragover-dance {
+  0% {
+    background-position: 0px 0px, 300px 116px, 0px 150px, 216px 0px;
+  }
+  100% {
+    background-position: 300px 0px, 0px 116px, 0px 0px, 216px 150px;
+  }
+}
+*/
 /* Modals */
 
 h4.modal-title {

@@ -17,44 +17,6 @@ function updateLabelTitle() {
 }
 
 /**
- * Configure l'input suivante
- */
-function setNewInput() {
-    var old_input = document.querySelector('#inputFile');
-
-    if (old_input !== null) {
-        old_input.setAttribute("id", "inputFile_old");
-        old_input.setAttribute("hidden", "1");
-        old_input.removeEventListener("change", fileAdded);
-        // On cache l'input précédent, on marque son id et on retire la fonction à exécuter lors de
-        // l'ajout de fichier afin de laisser cet input tel quel
-    }
-
-    var current_input = document.createElement("input");
-    current_input.setAttribute("type", "file");
-    current_input.setAttribute("name", "files[]");
-    current_input.setAttribute("id", "inputFile");
-    current_input.setAttribute("multiple", "1");
-    current_input.addEventListener("change", fileAdded);
-    // On crée une nouvelle séléction de fichiers
-
-    var div_files_select = document.querySelector("#allInputs");
-    div_files_select.appendChild(current_input);
-    // On ajoute cette sélection au div contenant les autres sélections
-}
-
-/**
- * Supprime l'input courante si elle est invalide
- */
-function resetInput() {
-    var current_input = document.querySelector('#inputFile');
-
-    if (current_input !== null) {
-        current_input.setAttribute("disabled", "1");
-    }
-}
-
-/**
  * Permet de rentre une taille en octet plus lisible, avec une unité
  *
  * @param  {int}    size        Taille à transformer (ex : 12345)
@@ -119,7 +81,7 @@ function updateTab(files) {
         size_cell.innerHTML = size_str;
 
         var progress_bar = document.createElement("div");
-        progress_bar.setAttribute("class", "progress-bar progress-bar-striped active");
+        progress_bar.setAttribute("class", "progress-bar progress-bar-striped progress-bar-animated");
         progress_bar.setAttribute("role", "progressbar");
         progress_bar.setAttribute("aria-valuenow", "0");
         progress_bar.setAttribute("aria-valuemin", "0");
@@ -137,12 +99,22 @@ function updateTab(files) {
  * @param  {event}  e           Événement d'ajout
  */
 function fileAdded(e) {
-    for (var file of this.files) {
+    console.log("fileAdded");
+
+    addFiles(this.files);
+}
+
+function addFiles(files) {
+    for (var file of files) {
         all_files.push(file);
     }
 
-    updateTab(this.files);
-    setNewInput();
+    console.log("-----");
+    console.log(files);
+    console.log(all_files);
+    console.log("-----");
+
+    updateTab(files);
     updateLabelTitle();
     updateFirstLineTab();
 
@@ -152,48 +124,182 @@ function fileAdded(e) {
         size += file.size;
     }
 
-    var allowedSpace = document.querySelector("#usedSpace").getAttribute("value");
-
-    if (size > MAX_SIZE) {
-        $('#modalUploadFileError').modal();
-    }
-    else {
+    if (size < allowedSpace) {
+        allowedSpace -= size;
         sendFiles();
     }
-}
-
-/**
- * Initialisation de l'ajout de fichiers
- */
-function init() {
-    setNewInput();
-    updateLabelTitle();
-    updateFirstLineTab();
+    else {
+        $('#modalUploadFileError').modal();
+    }
 }
 
 function sendFiles() {
     setTimeout(function() {
-        var form = document.querySelector("#uploadForm");
+        var location = document.querySelector("#uploadForm").getAttribute("action");
 
-        var size = 0;
-
-        for (let file of all_files) {
-            size += file.size;
+        for (var i=0; i<all_files.length; i++) {
+            let item = all_files[i];
+            formData.append('files[]', item);
         }
 
-        console.log(size);
+        formData.append("action", "upload-file");
 
-        if (size > MAX_SIZE) {
-            $('#modalUploadFileError').modal();
-        }
-        else {
-            form.submit();
-        }
+        console.log("envoyé 1 ? sendFiles");
+        sendXHRequest(formData, location);
+        console.log("envoyé 2 ? sendFiles");
+
+        all_files = [];
     }, 1000);
 }
+
+function traverseFileTree(item, path) {
+    console.log("???");
+    //!
+    return false;
+
+
+    path = path || "";
+    if (item.isFile) {
+        item.file(function(file) {
+            console.log(file);                  // show info
+            formData.append('file', file);    // file exist, but don't append
+        });
+
+    } else if (item.isDirectory) {
+        var dirReader = item.createReader();
+        dirReader.readEntries(function(entries) {
+            for (var i=0; i<entries.length; i++) {
+                traverseFileTree(entries[i], path + item.name + "/");
+            }
+        });
+    }
+    else {
+        console.log(item);
+    }
+}
+
 
 var all_files = [];
 // Tous les fichiers
 
-var MAX_SIZE = 200 * Math.pow(10, 6);
-// Qu'on ne peut pas mettre en const car le script est importé 2 fois lol
+var formData = new FormData();
+
+var dropzone = document.querySelector(".dropzone");
+
+if (dropzone !== null) {
+    dropzone.ondrop = function(e) {
+        this.classList.remove("dragover")
+        e.preventDefault();
+        addFiles(e.dataTransfer.files);
+    };
+
+    dropzone.ondragover = function() {
+        this.classList.add("dragover")
+        return false;
+    };
+
+    dropzone.ondragleave = function() {
+        this.classList.remove("dragover")
+        return false;
+    };
+}
+
+var allowedSpace = null;
+
+var allowedSpace_document = document.querySelector("#allowedSpace");
+
+if (allowedSpace_document !== null) {
+    allowedSpace = parseInt(allowedSpace_document.getAttribute("value"));
+
+    updateLabelTitle();
+    updateFirstLineTab();
+}
+
+input_file = document.querySelector("#inputFile");
+
+if (input_file !== null) {
+    input_file.addEventListener("change", fileAdded);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Once the FormData instance is ready and we know
+// where to send the data, the code is the same
+// for both variants of this technique
+function sendXHRequest(formData, uri) {
+  // Get an XMLHttpRequest instance
+  var xhr = new XMLHttpRequest();
+  // Set up events
+  xhr.upload.addEventListener('loadstart', onloadstartHandler, false);
+  xhr.upload.addEventListener('progress', onprogressHandler, false);
+  xhr.upload.addEventListener('load', onloadHandler, false);
+  xhr.addEventListener('readystatechange', onreadystatechangeHandler, false);
+  // Set up request
+  xhr.open('POST', uri, true);
+  // Fire!
+  xhr.send(formData);
+}
+// Handle the start of the transmission
+function onloadstartHandler(evt) {
+    console.log("start");
+  var div = document.getElementById('upload-status');
+  div.innerHTML = 'Upload started.';
+}
+// Handle the end of the transmission
+function onloadHandler(evt) {
+    console.log("uploaded");
+  var div = document.getElementById('upload-status');
+  div.innerHTML += '<' + 'br>File uploaded. Waiting for response.';
+}
+// Handle the progress
+function onprogressHandler(evt) {
+    var percent = evt.loaded/evt.total*100;
+    console.log(percent + " %");
+  var div = document.getElementById('progress');
+  div.innerHTML = 'Progress: ' + percent + '%';
+}
+// Handle the response from the server
+function onreadystatechangeHandler(evt) {
+    console.log("attente");
+  var status, text, readyState;
+  try {
+    readyState = evt.target.readyState;
+    text = evt.target.responseText;
+    status = evt.target.status;
+  }
+  catch(e) {
+    return;
+  }
+  if (readyState == 4 && status == '200' && evt.target.responseText) {
+      console.log("ok");
+    var status = document.getElementById('upload-status');
+    status.innerHTML += '<' + 'br>Success!';
+    var result = document.getElementById('result');
+    // result.innerHTML = '<p>The server saw it as:</p><pre>' + evt.target.responseText + '</pre>';
+  }
+  else {
+      console.log("ERROR");
+      console.log(readyState);
+      console.log(status);
+      console.log(evt.target.responseText);
+  }
+}

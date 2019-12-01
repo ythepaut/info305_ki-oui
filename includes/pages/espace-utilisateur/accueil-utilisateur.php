@@ -111,14 +111,19 @@
                     </script>
                 </div>
 
-                <div class="col-lg inner panel-outline">
+                <div class="col-lg inner panel-outline dropzone">
                     <form action="<?php echo(getSrc('./includes/classes/actions.php')); ?>" method="post" enctype="multipart/form-data" id="uploadForm">
                         <h4 class="panel-title"> Ajouter des fichiers </h4>
 
-                        <label for="inputFile" id="inputLabel"><i class="fas fa-file-import"></i> Ajouter des fichiers </label>
-                        <div id="allInputs"></div>
+                        <!-- Placeholders for messages set by event handlers -->
+                        <p id="upload-status">oui ?</p>
+                        <p id="progress">non ?</p>
+                        <pre id="result">maybe ?</pre>
 
-                        <input type="number" hidden id="allowedSpace" value=<?php echo('"' . ($_SESSION["Data"]["quota"] - $_SESSION["usedSpace"]) . '"'); ?>  ></input>
+                        <input type="file" name="files[]" id="inputFile" multiple />
+                        <label for="inputFile" id="inputLabel"><i class="fas fa-file-import"></i> Ajouter des fichiers </label>
+
+                        <input type="number" id="allowedSpace" value=<?php echo('"' . ($_SESSION["Data"]["quota"] - $_SESSION["usedSpace"]) . '"'); ?> style="display: none;"></input>
 
                         <table class="table" id="files_tab">
                             <thead class="thead-light">
@@ -135,9 +140,9 @@
                         </table>
 
 
-                        <script type="text/javascript" src="<?php echo(getSrc('./js/upload.js')); ?>"></script>
-                        <script>init();</script>
-                    </form>
+                        <!-- script type="text/javascript" src="<?php echo(getSrc('./js/upload.js')); ?>"></script -->
+                        <!-- script>init();</script -->
+
                 </div>
 
             </div>
@@ -250,7 +255,7 @@
 
                             $extension = explode(".", decryptText($file["original_name"], $key, $file["salt"], null, false))[count(explode(".", decryptText($file["original_name"], $key, $file["salt"], null, false))) - 1];
                             $fileImg = extensionImage($extension);
-                            
+
 
 
                             $originalName = (strlen($originalName) > 19) ? substr($originalName, 0, 16) . "..." : $originalName;

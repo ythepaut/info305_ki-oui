@@ -547,7 +547,7 @@ function enableU2F($reg, $req, $connection) {
             $query = $connection->prepare("UPDATE kioui_accounts SET u2f = ? WHERE id = ?");
             $query->bind_param("si", $u2fJSON, $_SESSION['Data']['id']);
             $query->execute();
-            $query->close();            
+            $query->close();
 
         }
     }
@@ -913,17 +913,19 @@ function changeUsername($newUsername, $password, $connection){
  * @return  boolean         $res                -   Si l'opération s'est bien passée ou non
  */
 function upload($connection) {
-    $res = false;
-
     if (!isset($_FILES["files"]) || !isset($_SESSION["Data"]) || !isset($_SESSION["LoggedIn"])) {
+        var_dump($_FILES);
+        var_dump($_SESSION);
         return false;
     }
+
+    $res = false;
 
     $nbFiles = count($_FILES["files"]["name"]);
 
     $totalSize = 0;
 
-    for ($i=0; $i<$nbFiles-1; $i++) {
+    for ($i=0; $i<$nbFiles; $i++) {
         if ($_FILES["files"]["error"][$i] == UPLOAD_ERR_OK && is_uploaded_file($_FILES["files"]["tmp_name"][$i])) {
             $totalSize += $_FILES["files"]["size"][$i];
         }
@@ -933,11 +935,14 @@ function upload($connection) {
 
     if ($totalSize > $maxSize - $_SESSION["usedSpace"]) {
         $res = false;
+        var_dump($totalSize);
+        var_dump($maxSize);
+        var_dump($_SESSION["usedSpace"]);
     }
     else {
         $password = $_SESSION["UserPassword"];
 
-        for ($i=0; $i<$nbFiles-1; $i++) {
+        for ($i=0; $i<$nbFiles; $i++) {
             if ($_FILES["files"]["error"][$i] == UPLOAD_ERR_OK && is_uploaded_file($_FILES["files"]["tmp_name"][$i])) {
                 $originalName = $_FILES["files"]["name"][$i];
                 $content = file_get_contents($_FILES["files"]["tmp_name"][$i]);
