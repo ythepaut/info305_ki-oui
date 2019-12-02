@@ -43,7 +43,7 @@
                             <i class="fas fa-upload" style="margin:20px;font-size:60px;"></i>
                         </div>
                         <div class="col-lg-9 text-right">
-                            <p class="dash-heading"><?php echo("?"); ?></p>
+                            <p class="dash-heading"><?php echo(getStats("uploadCount", $connection)); ?></p>
                             <p class="dash-text">Fichiers envoyés</p>
                         </div>
                     </div>
@@ -60,7 +60,7 @@
                             <i class="fas fa-download" style="margin:20px;font-size:60px;"></i>
                         </div>
                         <div class="col-lg-9 text-right">
-                            <p class="dash-heading"><?php echo("?"); ?></p>
+                            <p class="dash-heading"><?php echo(getStats("downloadCount", $connection)); ?></p>
                             <p class="dash-text">Fichiers téléchargés</p>
                         </div>
                     </div>
@@ -77,111 +77,59 @@
     <!--Actions récentes-->
     <div class="col-lg" style="margin: 20px 15px; padding: 0px;">
 
+        <?php
 
-        <div class="card admin-events">
+        $eventArray = json_decode(getStats("recentEvents", $connection), true);
+        
+        foreach ($eventArray as $event) {
+            $icon = "";
+            $title = "";
+            $desc = "";
+            switch ($event['type']) {
+                case "ACCOUNT_CREATION":
+                    $icon = "fas fa-user-plus";
+                    $class = "card admin-events-fullblue";
+                    $title = "NOUVEL UTILISATEUR";
+                    $desc = "<span class='card-text'><b>" . $event['user'] . "</b></span>";
+                    break;
+                case "ACCOUNT_DELETION":
+                    $icon = "fas fa-user-minus";
+                    $class = "card admin-events-fullred";
+                    $title = "COMPTE CLÔTURÉ";
+                    $desc = "<span class='card-text'><b>" . $event['user'] . "</b></span>";
+                    break;
+                case "FILE_UPLOAD":
+                    $icon = "fas fa-folder-plus";
+                    $class = "card admin-events";
+                    $title = "NOUVEAU FICHIER";
+                    $desc = "<span class='card-text'>De <b>" . $event['user'] . "</b></span> &nbsp;&nbsp; <span class='badge badge-secondary text-right'>" . $event['badge'] . "</span>";
+                    break;
+                case "FILE_DELETE":
+                    $icon = "fas fa-folder-minus";
+                    $class = "card admin-events-red";
+                    $title = "FICHIER SUPPRIMÉ";
+                    $desc = "<span class='card-text'>Par <b>" . $event['user'] . "</b></span> &nbsp;&nbsp; <span class='badge badge-secondary text-right'>" . $event['badge'] . "</span>";
+                    break;
+            }
+            ?>
 
-            <div class="card-body" style="padding: 0.75rem;">
-                <h5 class="card-title" style="font-weight: bold; font-size:18px;"><i class="fas fa-folder-plus"></i>&nbsp; &nbsp;NOUVEAU FICHIER</h5>
-                <span class="card-text">De <b>Jean michel</b></span> &nbsp;&nbsp; <span class='badge badge-secondary text-right'>+ 5 Mo</span>
+            <div class="<?php echo($class); ?>">
+
+                <div class="card-body" style="padding: 0.75rem;">
+                    <h5 class="card-title" style="font-weight: bold; font-size:18px;"><i class="<?php echo($icon); ?>"></i>&nbsp; &nbsp;<?php echo($title); ?></h5>
+                    <?php echo($desc); ?>
+                </div>
+
+                <div class="card-footer" style="padding: 0.30rem 1.25rem;">
+                    <small class="text-muted"><?php echo(time_elapsed_string("@" . $event['timestamp'])); ?></small>
+                </div>
+
             </div>
 
-            <div class="card-footer" style="padding: 0.30rem 1.25rem;">
-                <small class="text-muted">Il y a 2 minutes</small>
-            </div>
-
-        </div>
-
-        <div class="card admin-events">
-
-            <div class="card-body" style="padding: 0.75rem;">
-                <h5 class="card-title" style="font-weight: bold; font-size:18px;"><i class="fas fa-folder-plus"></i>&nbsp; &nbsp;NOUVEAU FICHIER</h5>
-                <span class="card-text">De <b>Cristina Cordula</b></span> &nbsp;&nbsp; <span class='badge badge-secondary text-right'>+ 27 Mo</span>
-            </div>
-
-            <div class="card-footer" style="padding: 0.30rem 1.25rem;">
-                <small class="text-muted">Il y a 8 minutes</small>
-            </div>
-
-        </div>
-
-        <div class="card admin-events-fullblue">
-
-            <div class="card-body" style="padding: 0.75rem;">
-                <h5 class="card-title" style="font-weight: bold; font-size:18px;"><i class="fas fa-user-plus"></i>&nbsp; &nbsp;NOUVEL UTILISATEUR</h5>
-                <span class="card-text"><b>Bob le bricoleur</b></span>
-            </div>
-
-            <div class="card-footer" style="padding: 0.30rem 1.25rem;">
-                <small class="text-muted">Il y a 2 heures</small>
-            </div>
-
-        </div>
-
-        <div class="card admin-events">
-
-            <div class="card-body" style="padding: 0.75rem;">
-                <h5 class="card-title" style="font-weight: bold; font-size:18px;"><i class="fas fa-folder-plus"></i>&nbsp; &nbsp;NOUVEAU FICHIER</h5>
-                <span class="card-text">De <b>Poney</b></span> &nbsp;&nbsp; <span class='badge badge-secondary text-right'>+ 7 Mo</span>
-            </div>
-
-            <div class="card-footer" style="padding: 0.30rem 1.25rem;">
-                <small class="text-muted">Il y a 3 heures</small>
-            </div>
-
-        </div>
-
-        <div class="card admin-events-red">
-
-            <div class="card-body" style="padding: 0.75rem;">
-                <h5 class="card-title" style="font-weight: bold; font-size:18px;"><i class="fas fa-folder-minus"></i>&nbsp; &nbsp;FICHIER SUPPRIMÉ</h5>
-                <span class="card-text">Par <b>Poney</b></span> &nbsp;&nbsp; <span class='badge badge-secondary text-right'>- 78 Mo</span>
-            </div>
-
-            <div class="card-footer" style="padding: 0.30rem 1.25rem;">
-                <small class="text-muted">Il y a 3 heures</small>
-            </div>
-
-        </div>
-
-        <div class="card admin-events-fullred">
-
-            <div class="card-body" style="padding: 0.75rem;">
-                <h5 class="card-title" style="font-weight: bold; font-size:18px;"><i class="fas fa-user-minus"></i>&nbsp; &nbsp;COMPTE CLÔTURÉ</h5>
-                <span class="card-text"><b>Francois Fillon</b></span>
-            </div>
-
-            <div class="card-footer" style="padding: 0.30rem 1.25rem;">
-                <small class="text-muted">Il y a 9 heures</small>
-            </div>
-
-        </div>
-
-        <div class="card admin-events">
-
-            <div class="card-body" style="padding: 0.75rem;">
-                <h5 class="card-title" style="font-weight: bold; font-size:18px;"><i class="fas fa-folder-plus"></i>&nbsp; &nbsp;NOUVEAU FICHIER</h5>
-                <span class="card-text">De <b>Jean michel</b></span> &nbsp;&nbsp; <span class='badge badge-secondary text-right'>+ 751 Ko</span>
-            </div>
-
-            <div class="card-footer" style="padding: 0.30rem 1.25rem;">
-                <small class="text-muted">Il y a 1 jour</small>
-            </div>
-
-        </div>
-
-        <div class="card admin-events-red">
-
-            <div class="card-body" style="padding: 0.75rem;">
-                <h5 class="card-title" style="font-weight: bold; font-size:18px;"><i class="fas fa-folder-minus"></i>&nbsp; &nbsp;FICHIER SUPPRIMÉ</h5>
-                <span class="card-text">Par <b>Cristina Cordula</b></span> &nbsp;&nbsp; <span class='badge badge-secondary text-right'>- 63 Ko</span>
-            </div>
-
-            <div class="card-footer" style="padding: 0.30rem 1.25rem;">
-                <small class="text-muted">Il y a 1 jour</small>
-            </div>
-
-        </div>
-
+            <?php
+        }
+        
+        ?>
 
 
     </div>
@@ -195,14 +143,48 @@
             <div class="col chart-container" style="padding: 30px;">
                 <canvas id="chart-js-stats1" class="chartjs"></canvas>
             </div>
+
             <script>
+
+                <?php
+                $logArray = json_decode(getStats("newUserLog", $connection), true);
+                $labels = "[";
+                $dataNewUsers = "[";
+                foreach ($logArray as $label => $value) {
+                    $labels .= "\"" . $label . "\"" . ",";
+                    $dataNewUsers .= $value . ",";
+                }
+                $labels = substr($labels, 0, strlen($labels)-1) . "]";
+                $dataNewUsers = substr($dataNewUsers, 0, strlen($dataNewUsers)-1) . "]";
+
+                $logArray = json_decode(getStats("reconnectUserLog", $connection), true);
+                $dataReconUsers = "[";
+                foreach ($logArray as $value) {
+                    $dataReconUsers .= $value . ",";
+                }
+                $dataReconUsers = substr($dataReconUsers, 0, strlen($dataReconUsers)-1) . "]";
+
+                $logArray = json_decode(getStats("uploadLog", $connection), true);
+                $dataUpload = "[";
+                foreach ($logArray as $value) {
+                    $dataUpload .= $value . ",";
+                }
+                $dataUpload = substr($dataUpload, 0, strlen($dataUpload)-1) . "]";
+
+                $logArray = json_decode(getStats("downloadLog", $connection), true);
+                $dataDownload = "[";
+                foreach ($logArray as $value) {
+                    $dataDownload .= $value . ",";
+                }
+                $dataDownload = substr($dataDownload, 0, strlen($dataDownload)-1) . "]";
+                ?>
                 
                 const chart1 = document.querySelector("#chart-js-stats1");
                 
                 let lineChart = new Chart(chart1, {
                     type: 'line',
                     data: {
-                        labels: ["January", "February", "March", "April", "May", "June", "July"],
+                        labels: <?php echo($labels); ?>,
                         datasets: [
                             {
                                 label: "Nouveaux utilisateurs",
@@ -224,7 +206,7 @@
                                 pointHoverBorderWidth: 2,
                                 pointRadius: 5,
                                 pointHitRadius: 20,
-                                data: [1, 2, 0, 5, 3, 5, 6],
+                                data: <?php echo($dataNewUsers); ?>,
                                 spanGaps: false,
                             },
                             {
@@ -247,7 +229,7 @@
                                 pointHoverBorderWidth: 2,
                                 pointRadius: 5,
                                 pointHitRadius: 20,
-                                data: [4, 8, 6, 12, 2, 5, 9],
+                                data: <?php echo($dataReconUsers); ?>,
                                 spanGaps: false,
                             },
                             {
@@ -270,7 +252,7 @@
                                 pointHoverBorderWidth: 2,
                                 pointRadius: 5,
                                 pointHitRadius: 20,
-                                data: [10, 12, 8, 4, 21, 12, 15],
+                                data: <?php echo($dataUpload); ?>,
                                 spanGaps: false,
                             },
                             {
@@ -293,7 +275,7 @@
                                 pointHoverBorderWidth: 2,
                                 pointRadius: 5,
                                 pointHitRadius: 20,
-                                data: [54, 37, 47, 42, 51, 40, 38],
+                                data: <?php echo($dataDownload); ?>,
                                 spanGaps: false,
                             }
                         ]

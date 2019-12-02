@@ -372,7 +372,7 @@ function convertUnits($size) {
  */
 function getNbUsers($connection) {
     $result = mysqli_query($connection, "SELECT * FROM kioui_accounts");
-    return mysqli_num_rows ( $result );
+    return mysqli_num_rows($result);
 }
 
 
@@ -386,7 +386,25 @@ function getNbUsers($connection) {
 function getNbFiles($connection) {
 
     $result = mysqli_query($connection, "SELECT * FROM kioui_files");
-    return mysqli_num_rows ($result);
+    return mysqli_num_rows($result);
+}
+
+
+/**
+ * Fonction qui renvoie une colonne des stats de ki-oui
+ *
+ * @param string             $stat              -   Statistique à acquerir
+ * @param mysqlconnection    $connection        -   Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return integer
+ */
+function getStats($stat, $connection) {
+    $query = $connection->prepare("SELECT * FROM kioui_stats WHERE id = 0");
+    $query->execute();
+    $result = $query->get_result();
+    $query->close();
+    $stats = $result->fetch_assoc();
+    return $stats[$stat];
 }
 
 
