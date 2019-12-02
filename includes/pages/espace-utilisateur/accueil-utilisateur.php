@@ -114,37 +114,29 @@
                 <div class="col-lg inner panel-outline dropzone">
                     <form action="<?php echo(getSrc('./includes/classes/actions.php')); ?>" method="post" enctype="multipart/form-data" id="uploadForm">
                         <h4 class="panel-title"> Ajouter des fichiers </h4>
+                        <!-- pre id="result"> Résultat PHP </pre -->
 
-                        <!-- Placeholders for messages set by event handlers -->
-                        <p id="upload-status">oui ?</p>
-                        <p id="progress">non ?</p>
-                        <pre id="result">maybe ?</pre>
-
-                        <input type="file" name="files[]" id="inputFile" multiple />
+                        <input type="file" name="files[]" id="inputFile" multiple onchange="addFiles(this.files);" />
                         <label for="inputFile" id="inputLabel"><i class="fas fa-file-import"></i> Ajouter des fichiers </label>
 
-                        <input type="number" id="allowedSpace" value=<?php echo('"' . ($_SESSION["Data"]["quota"] - $_SESSION["usedSpace"]) . '"'); ?> style="display: none;"></input>
+                        <input type="number" id="allowedSpace" value=<?php echo('"' . ($_SESSION["Data"]["quota"] - getSize($_SESSION["Data"]["id"], $connection)) . '"'); ?> style="display: none;"></input>
 
-                        <table class="table" id="files_tab">
-                            <thead class="thead-light">
-                                <th scope="col">Nom</th>
-                                <th scope="col">Taille</th>
-                                <th scope="col">Progression</th>
-                            </thead>
+                        <div class="files_tab_scroll">
+                            <table class="table" id="files_tab">
+                                <thead class="thead-light">
+                                    <th scope="col">Nom</th>
+                                    <th scope="col">Taille</th>
+                                    <th scope="col">Progression</th>
+                                </thead>
 
-                            <input type="text" name="action" value="upload-file" hidden />
+                                <input type="text" name="action" value="upload-file" hidden />
 
-                            <tr id="first_line_tab">
-                                <td scope="row" colspan="2"><i>Aucun fichier sélectionné</i></td>
-                            </tr>
-                        </table>
-
-
-                        <!-- script type="text/javascript" src="<?php echo(getSrc('./js/upload.js')); ?>"></script -->
-                        <!-- script>init();</script -->
-
+                                <tr id="first_line_tab">
+                                    <td scope="row" colspan="2"><i>Aucun fichier sélectionné</i></td>
+                                </tr>
+                            </table>
+                        </div>
                 </div>
-
             </div>
             <div class="row">
                 <div class="col panel-outline">

@@ -221,8 +221,6 @@ function login($email, $passwd, $remember = "off", $connection, $em) {
                 $_SESSION['LoggedIn'] = true;
                 $_SESSION['UserPassword'] = hash('sha512', $passwd . $userData['salt']);
 
-                $_SESSION["usedSpace"] = getSize($_SESSION["Data"]["id"], $connection);
-
                 $result = "SUCCESS#Bienvenue " . $_SESSION['Data']['username'] . "#/espace-utilisateur/accueil";
 
                 if ($_SESSION['tfa'] == "new_device" && $_SESSION['Data']['totp'] == "") {//Verification par email
@@ -933,11 +931,13 @@ function upload($connection) {
 
     $maxSize = $_SESSION["Data"]["quota"];
 
-    if ($totalSize > $maxSize - $_SESSION["usedSpace"]) {
+    $usedSpace = getSize($_SESSION["Data"]["id"], $connection);
+
+    if ($totalSize > $maxSize - $usedSpace) {
         $res = false;
         var_dump($totalSize);
         var_dump($maxSize);
-        var_dump($_SESSION["usedSpace"]);
+        var_dump($usedSpace);
     }
     else {
         $password = $_SESSION["UserPassword"];
@@ -947,8 +947,6 @@ function upload($connection) {
                 $originalName = $_FILES["files"]["name"][$i];
                 $content = file_get_contents($_FILES["files"]["tmp_name"][$i]);
                 $size = $_FILES["files"]["size"][$i];
-
-                $_SESSION["usedSpace"] += $size;
 
                 $newFileName = createCryptedZipFile($connection, $content, $size, $password, $originalName);
             }

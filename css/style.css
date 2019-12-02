@@ -440,7 +440,34 @@ input[type="file"]+label:disabled {
 	cursor: not-allowed;
 }
 
+@keyframes finishedFilesAnimation {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    display: none;
+    opacity: 0;
+  }
+}
+
+
+.finishedFiles {
+    animation-name: finishedFilesAnimation;
+    animation-duration: 500ms;
+    animation-fill-mode: forwards;
+}
+
+.files_tab_scroll {
+    overflow-y: scroll;
+    height: 10em;
+}
+
 .dropzone {
+    overflow-y: scroll;
+    height: 16em;
 }
 
 .dropzone.dragover {
@@ -468,6 +495,7 @@ input[type="file"]+label:disabled {
   }
 }
 */
+
 /* Modals */
 
 h4.modal-title {

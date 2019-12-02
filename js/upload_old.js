@@ -17,44 +17,6 @@ function updateLabelTitle() {
 }
 
 /**
- * Configure l'input suivante
- */
-function setNewInput() {
-    var old_input = document.querySelector('#inputFile');
-
-    if (old_input !== null) {
-        old_input.setAttribute("id", "inputFile_old");
-        old_input.setAttribute("hidden", "1");
-        old_input.removeEventListener("change", fileAdded);
-        // On cache l'input précédent, on marque son id et on retire la fonction à exécuter lors de
-        // l'ajout de fichier afin de laisser cet input tel quel
-    }
-
-    var current_input = document.createElement("input");
-    current_input.setAttribute("type", "file");
-    current_input.setAttribute("name", "files[]");
-    current_input.setAttribute("id", "inputFile");
-    current_input.setAttribute("multiple", "1");
-    current_input.addEventListener("change", fileAdded);
-    // On crée une nouvelle séléction de fichiers
-
-    var div_files_select = document.querySelector("#allInputs");
-    div_files_select.appendChild(current_input);
-    // On ajoute cette sélection au div contenant les autres sélections
-}
-
-/**
- * Supprime l'input courante si elle est invalide
- */
-function resetInput() {
-    var current_input = document.querySelector('#inputFile');
-
-    if (current_input !== null) {
-        current_input.setAttribute("disabled", "1");
-    }
-}
-
-/**
  * Permet de rentre une taille en octet plus lisible, avec une unité
  *
  * @param  {int}    size        Taille à transformer (ex : 12345)
@@ -137,18 +99,24 @@ function updateTab(files) {
  * @param  {event}  e           Événement d'ajout
  */
 function fileAdded(e) {
-    for (var file of this.files) {
+    console.log("fileAdded");
+
+    addFiles(this.files);
+}
+
+function addFiles(files) {
+    for (var file of files) {
         all_files.push(file);
     }
 
-    updateTab(this.files);
-    setNewInput();
+    console.log("-----");
+    console.log(files);
+    console.log(all_files);
+    console.log("-----");
+
+    updateTab(files);
     updateLabelTitle();
     updateFirstLineTab();
-
-    if (allowedSpace === null) {
-        init();
-    }
 
     var size = 0;
 
@@ -165,52 +133,173 @@ function fileAdded(e) {
     }
 }
 
-/**
- * Initialisation de l'ajout de fichiers
- */
-function init() {
-    var allowedSpace_document = document.querySelector("#allowedSpace");
-
-    if (allowedSpace_document === null) {
-        console.log("allowedSpace null");
-    }
-    else {
-        allowedSpace = parseInt(allowedSpace_document.getAttribute("value"));
-    }
-
-    formData = new FormData();
-
-    dropzone = document.getElementById("dropzone");
-
-    dropzone.ondrop = function(e) {
-        this.className = 'dropzone';
-        this.innerHTML = 'Drop files';
-        e.preventDefault();
-
-        for (let i=0; i<e.dataTransfer.files.length; i++) {
-            let file = e.dataTransfer.files[i];
-
-            all_files.push(file);
-        }
-    };
-
-    setNewInput();
-    updateLabelTitle();
-    updateFirstLineTab();
-}
-
 function sendFiles() {
     setTimeout(function() {
-        var form = document.querySelector("#uploadForm");
+        var location = document.querySelector("#uploadForm").getAttribute("action");
 
-        form.submit();
+        for (var i=0; i<all_files.length; i++) {
+            let item = all_files[i];
+            formData.append('files[]', item);
+        }
+
+        formData.append("action", "upload-file");
+
+        console.log("envoyé 1 ? sendFiles");
+        sendXHRequest(formData, location);
+        console.log("envoyé 2 ? sendFiles");
+
+        all_files = [];
     }, 1000);
 }
+
+function traverseFileTree(item, path) {
+    console.log("???");
+    //!
+    return false;
+
+
+    path = path || "";
+    if (item.isFile) {
+        item.file(function(file) {
+            console.log(file);                  // show info
+            formData.append('file', file);    // file exist, but don't append
+        });
+
+    } else if (item.isDirectory) {
+        var dirReader = item.createReader();
+        dirReader.readEntries(function(entries) {
+            for (var i=0; i<entries.length; i++) {
+                traverseFileTree(entries[i], path + item.name + "/");
+            }
+        });
+    }
+    else {
+        console.log(item);
+    }
+}
+
 
 var all_files = [];
 // Tous les fichiers
 
+var formData = new FormData();
+
+var dropzone = document.querySelector(".dropzone");
+
+if (dropzone !== null) {
+    dropzone.ondrop = function(e) {
+        this.classList.remove("dragover")
+        e.preventDefault();
+        addFiles(e.dataTransfer.files);
+    };
+
+    dropzone.ondragover = function() {
+        this.classList.add("dragover")
+        return false;
+    };
+
+    dropzone.ondragleave = function() {
+        this.classList.remove("dragover")
+        return false;
+    };
+}
+
 var allowedSpace = null;
 
-var formData = null;
-var dropzone = null;
+var allowedSpace_document = document.querySelector("#allowedSpace");
+
+if (allowedSpace_document !== null) {
+    allowedSpace = parseInt(allowedSpace_document.getAttribute("value"));
+
+    updateLabelTitle();
+    updateFirstLineTab();
+}
+
+input_file = document.querySelector("#inputFile");
+
+if (input_file !== null) {
+    input_file.addEventListener("change", fileAdded);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Once the FormData instance is ready and we know
+// where to send the data, the code is the same
+// for both variants of this technique
+function sendXHRequest(formData, uri) {
+  // Get an XMLHttpRequest instance
+  var xhr = new XMLHttpRequest();
+  // Set up events
+  xhr.upload.addEventListener('loadstart', onloadstartHandler, false);
+  xhr.upload.addEventListener('progress', onprogressHandler, false);
+  xhr.upload.addEventListener('load', onloadHandler, false);
+  xhr.addEventListener('readystatechange', onreadystatechangeHandler, false);
+  // Set up request
+  xhr.open('POST', uri, true);
+  // Fire!
+  xhr.send(formData);
+}
+// Handle the start of the transmission
+function onloadstartHandler(evt) {
+    console.log("start");
+  var div = document.getElementById('upload-status');
+  div.innerHTML = 'Upload started.';
+}
+// Handle the end of the transmission
+function onloadHandler(evt) {
+    console.log("uploaded");
+  var div = document.getElementById('upload-status');
+  div.innerHTML += '<' + 'br>File uploaded. Waiting for response.';
+}
+// Handle the progress
+function onprogressHandler(evt) {
+    var percent = evt.loaded/evt.total*100;
+    console.log(percent + " %");
+  var div = document.getElementById('progress');
+  div.innerHTML = 'Progress: ' + percent + '%';
+}
+// Handle the response from the server
+function onreadystatechangeHandler(evt) {
+    console.log("attente");
+  var status, text, readyState;
+  try {
+    readyState = evt.target.readyState;
+    text = evt.target.responseText;
+    status = evt.target.status;
+  }
+  catch(e) {
+    return;
+  }
+  if (readyState == 4 && status == '200' && evt.target.responseText) {
+      console.log("ok");
+    var status = document.getElementById('upload-status');
+    status.innerHTML += '<' + 'br>Success!';
+    var result = document.getElementById('result');
+    // result.innerHTML = '<p>The server saw it as:</p><pre>' + evt.target.responseText + '</pre>';
+  }
+  else {
+      console.log("ERROR");
+      console.log(readyState);
+      console.log(status);
+      console.log(evt.target.responseText);
+  }
+}
