@@ -38,6 +38,9 @@ switch ($action) {
     case "backup-key":
         die(backupKey($_POST['backup-key_key'], $connection));
         break;
+    case "change-access-level":
+        die(changeAccessLevel($_POST['change-access-level_newstatus'],$_POST['change-access-level_iduser'],$connection));
+        break;
     case "enable-totp":
         die(enableTOTP($_POST['enable-totp_key'], $_POST['enable-totp_code'], $connection));
         break;
@@ -1597,6 +1600,28 @@ function verifEmail($token, $connection) {
 
     header("Location: /espace-utilisateur");
 
+}
+/**
+ * Fonction qui actualise le niveau d'accès d'un utilisateur
+ * @param string            $newAccessLevel     - Nouveau niveua d'accès pour l'utilisateur
+ * @param integer           $userId             - Identifiant de l'utilisateur
+ * @param mysqlconnection   $connection         - Connexion BDD effectuée dans le fichier config-db.php
+ * 
+ * @return string
+ */
+function changeAccessLevel ($newAccessLevel, $userId, $connection) {
+    $result = "ERROR_UNKNOWN#Une erreur est survenue.";
+
+    if (isValidSession($connection)) {
+        $query = $connection->prepare("UPDATE kioui_accounts SET access_level = ? WHERE id = ?");
+        $query->bind_param("si", $newAccessLevel, $userId);
+        $query->execute();
+        $query->close();
+        $result = "SUCCESS#Le niveau d'accès à bien été actualiser#/espace-utilisateur/administration";
+    } else {
+        $result = "ERROR_INVALID_SESSION#Votre session est invalide. Déconnectez vous puis reconnectez vous. Si le problème persiste contactez le support.";
+    }
+    return $result;
 }
 
 ?>

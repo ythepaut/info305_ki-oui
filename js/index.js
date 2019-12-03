@@ -21,7 +21,12 @@ function editModalDirectDownload(path, key, originalName) {
     document.querySelector("#originalName-directdownload").innerHTML = originalName;
 }
 
-
+/** 
+ * Fonction qui édite le modal de modification de niveau d'accès
+*/
+function editModalAccessLevel(id){
+	document.querySelector("#change-access-level_iduser").setAttribute("value", id);
+}
 //=============================================================================
 
 // Foncitons pour les cookies <3
