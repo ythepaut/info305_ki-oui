@@ -27,6 +27,13 @@ function editModalDirectDownload(path, key, originalName) {
 function editModalAccessLevel(id){
 	document.querySelector("#change-access-level_iduser").setAttribute("value", id);
 }
+
+/** 
+ * Fonction qui édite le modal de modification du quota
+*/
+function editModalQuota(id){
+	document.querySelector("#change-quota_iduser").setAttribute("value", id);
+}
 //=============================================================================
 
 // Foncitons pour les cookies <3
