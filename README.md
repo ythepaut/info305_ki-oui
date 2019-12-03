@@ -1,7 +1,8 @@
 # KI-OUI
 
 KI-OUI est un outil de partage de fichier ultra-simple et complet.
-https://ki-oui.ythepaut.com/
+https://www.ki-oui.com/
+
 
 # A propos
 
