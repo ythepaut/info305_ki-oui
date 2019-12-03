@@ -192,10 +192,27 @@ function onloadHandler(e, n_file) {
 
     var progress_bar = document.querySelector("#file-progress-bar-N" + n_file);
     progress_bar.setAttribute("style", "width:100%");
-    progress_bar.classList.add("bg-success");
-    progress_bar.innerHTML = "100 %";
+
+    var size = all_files[n_file].size;
 
     all_files[n_file] = null;
+
+    var tps = size / (100*10**6) * 6;
+
+    if (tps < 1) {
+        tps = 1;
+    }
+
+    tps = (Math.random()*50 + 75)/100 * tps;
+
+    progress_bar.classList.add("bg-info");
+    progress_bar.innerHTML = "Chiffrement...";
+
+    setTimeout(function() {
+        progress_bar.classList.remove("bg-info");
+        progress_bar.classList.add("bg-success");
+        progress_bar.innerHTML = "Terminé";
+    }, tps*1000);
 
     updateLabelTitle();
 
