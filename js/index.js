@@ -14,6 +14,51 @@ function editModalDelete(fileid) {
 	deleteButton.setAttribute("value", fileid);
 }
 
+function editModalDeleteMultipleFiles() {
+    let deletedCheckbox_tab_all = document.querySelectorAll("#checkbox-delete-files");
+
+    var deletedCheckbox_tab = [];
+
+    deletedCheckbox_tab_all.forEach(function(elem) {
+        if (elem.checked) {
+            deletedCheckbox_tab.push(elem);
+        }
+    });
+
+    let spanHowManyFilesSelected = document.querySelector("#howManyFilesSelected");
+
+    if (deletedCheckbox_tab.length === 0) {
+        spanHowManyFilesSelected.innerHTML = "Aucun fichier sélectionné";
+    }
+    else {
+        if (deletedCheckbox_tab.length === 1) {
+            spanHowManyFilesSelected.innerHTML = "Êtes-vous sûr de vouloir supprimer ce fichier ?";
+        }
+        else {
+            spanHowManyFilesSelected.innerHTML = "Êtes-vous sûr de vouloir supprimer ces " + deletedCheckbox_tab.length + " fichiers ?";
+        }
+
+        var tab_fileSelectedForDeletion = document.querySelector("#fileSelectedForDeletion");
+        var div_idToDelete = document.querySelector("#idToDelete");
+
+        deletedCheckbox_tab.forEach(function(elem) {
+            var file_info_td = document.createElement("td");
+            file_info_td.setAttribute("class", "d-none d-lg-table-cell");
+            file_info_td.innerHTML = elem.getAttribute("name");
+
+            tab_fileSelectedForDeletion.appendChild(file_info_td);
+
+            var file_id_input = document.createElement("input");
+            file_id_input.setAttribute("type", "hidden");
+            file_id_input.setAttribute("class", "form-control");
+            file_id_input.setAttribute("name", "delete-fileid[]");
+            file_id_input.setAttribute("value", elem.getAttribute("value"));
+
+            div_idToDelete.appendChild(file_id_input);
+        });
+    }
+}
+
 function editModalDirectDownload(path, key, originalName) {
     document.querySelector("#path-directdownload").setAttribute("value", path);
     document.querySelector("#key-directdownload").setAttribute("value", key);
@@ -21,14 +66,14 @@ function editModalDirectDownload(path, key, originalName) {
     document.querySelector("#originalName-directdownload").innerHTML = originalName;
 }
 
-/** 
+/**
  * Fonction qui édite le modal de modification de niveau d'accès
 */
 function editModalAccessLevel(id){
 	document.querySelector("#change-access-level_iduser").setAttribute("value", id);
 }
 
-/** 
+/**
  * Fonction qui édite le modal de modification du quota
 */
 function editModalQuota(id){
@@ -107,7 +152,7 @@ function changeTheme() {
 			link = "css/theme-dark.css";
 		break;
 	}
-	
+
 	document.getElementById('theme').href = getSrcJs(link) ;
 }
 
@@ -118,7 +163,7 @@ function changeTheme() {
  * Exemple :
  * relative_src = "/css/style.css"
  * Si nous sommes dans l'espace utilisateur, on aura
- * result_src = "../../css/style.css" 
+ * result_src = "../../css/style.css"
  */
 function getSrcJs(relative_src) {
 

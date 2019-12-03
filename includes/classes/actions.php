@@ -146,6 +146,14 @@ switch ($action) {
         die(deleteFile($_POST['delete-fileid'], $connection));
         break;
 
+    case "delete-multiple-files":
+        for ($i=0; $i<count($_POST['delete-fileid']); $i++) {
+            $res = deleteFile($_POST['delete-fileid'][$i], $connection);
+        }
+
+        die($res);
+        break;
+
     default:
         throw new Exception("ERROR_MISSING_ACTION#Action invalide - " . 'action' . ":'$action'");
 }
@@ -1609,7 +1617,7 @@ function verifEmail($token, $connection) {
  * @param string            $newAccessLevel     - Nouveau niveua d'accès pour l'utilisateur
  * @param integer           $userId             - Identifiant de l'utilisateur
  * @param mysqlconnection   $connection         - Connexion BDD effectuée dans le fichier config-db.php
- * 
+ *
  * @return string
  */
 function changeAccessLevel ($newAccessLevel, $userId, $connection) {
@@ -1633,7 +1641,7 @@ function changeAccessLevel ($newAccessLevel, $userId, $connection) {
  * @param integer           $newQuota           - le nouveau quota en 'brut' (Ex: 45)
  * @param integer           $userId             - Identifiant de l'utilisateur
  * @param mysqlconnection   $connection         - Connexion BDD effectuée dans le fichier config-db.php
- * 
+ *
  * @return string
  */
 function changeQuota($unit, $newQuota, $userId, $connection) {
@@ -1664,13 +1672,13 @@ function changeQuota($unit, $newQuota, $userId, $connection) {
             }
             else if ($unit == "Mo") {
                 $puissance = 10**6;
-            } 
+            }
             else if ($unit == "Ko") {
                 $puissance = 10**3;
             } else if ($unit == "o") {
                 $puissance = 1;
             }
-            //on arrondi 
+            //on arrondi
             $octetsQuota = round($newQuota*$puissance);
             //on actualise la bdd
             $query = $connection->prepare("UPDATE kioui_accounts SET quota = ? WHERE id = ?");
