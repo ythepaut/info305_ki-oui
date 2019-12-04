@@ -38,6 +38,12 @@ switch ($action) {
     case "backup-key":
         die(backupKey($_POST['backup-key_key'], $connection));
         break;
+    case "change-access-level":
+        die(changeAccessLevel($_POST['change-access-level_newstatus'],$_POST['change-access-level_iduser'],$connection));
+        break;
+    case "change-quota":
+        die(changeQuota($_POST["change-quota_units"], $_POST["change-quota_value"], $_POST["change-quota_iduser"], $connection));
+        break;
     case "enable-totp":
         die(enableTOTP($_POST['enable-totp_key'], $_POST['enable-totp_code'], $connection));
         break;
@@ -140,6 +146,14 @@ switch ($action) {
         die(deleteFile($_POST['delete-fileid'], $connection));
         break;
 
+    case "delete-multiple-files":
+        for ($i=0; $i<count($_POST['delete-fileid']); $i++) {
+            $res = deleteFile($_POST['delete-fileid'][$i], $connection);
+        }
+
+        die($res);
+        break;
+
     default:
         throw new Exception("ERROR_MISSING_ACTION#Action invalide - " . 'action' . ":'$action'");
 }
@@ -220,7 +234,6 @@ function login($email, $passwd, $remember = "off", $connection, $em) {
                 $_SESSION['Data'] = $userData;
                 $_SESSION['LoggedIn'] = true;
                 $_SESSION['UserPassword'] = hash('sha512', $passwd . $userData['salt']);
-                $_SESSION["usedSpace"] = getSize($_SESSION["Data"]["id"], $connection);
 
                 $result = "SUCCESS#Bienvenue " . $_SESSION['Data']['username'] . "#/espace-utilisateur/accueil";
 
@@ -934,11 +947,13 @@ function upload($connection) {
 
     $maxSize = $_SESSION["Data"]["quota"];
 
-    if ($totalSize > $maxSize - $_SESSION["usedSpace"]) {
+    $usedSpace = getSize($_SESSION["Data"]["id"], $connection);
+
+    if ($totalSize > $maxSize - $usedSpace) {
         $res = false;
         var_dump($totalSize);
         var_dump($maxSize);
-        var_dump($_SESSION["usedSpace"]);
+        var_dump($usedSpace);
     }
     else {
         $password = $_SESSION["UserPassword"];
@@ -948,8 +963,6 @@ function upload($connection) {
                 $originalName = $_FILES["files"]["name"][$i];
                 $content = file_get_contents($_FILES["files"]["tmp_name"][$i]);
                 $size = $_FILES["files"]["size"][$i];
-
-                $_SESSION["usedSpace"] += $size;
 
                 $newFileName = createCryptedZipFile($connection, $content, $size, $password, $originalName);
             }
@@ -1606,6 +1619,88 @@ function verifEmail($token, $connection) {
 
     header("Location: /espace-utilisateur");
 
+}
+/**
+ * Fonction qui actualise le niveau d'accès d'un utilisateur
+ * @param string            $newAccessLevel     - Nouveau niveua d'accès pour l'utilisateur
+ * @param integer           $userId             - Identifiant de l'utilisateur
+ * @param mysqlconnection   $connection         - Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return string
+ */
+function changeAccessLevel ($newAccessLevel, $userId, $connection) {
+    $result = "ERROR_UNKNOWN#Une erreur est survenue.";
+
+    if (isValidSession($connection)) {
+        $query = $connection->prepare("UPDATE kioui_accounts SET access_level = ? WHERE id = ?");
+        $query->bind_param("si", $newAccessLevel, $userId);
+        $query->execute();
+        $query->close();
+        $result = "SUCCESS#Le niveau d'accès à bien été actualiser#/espace-utilisateur/administration";
+    } else {
+        $result = "ERROR_INVALID_SESSION#Votre session est invalide. Déconnectez vous puis reconnectez vous. Si le problème persiste contactez le support.";
+    }
+    return $result;
+}
+
+/**
+ * Fonction qui actualise le quota d'un utilisateur
+ * @param string            $unit               - unitée du quota
+ * @param integer           $newQuota           - le nouveau quota en 'brut' (Ex: 45)
+ * @param integer           $userId             - Identifiant de l'utilisateur
+ * @param mysqlconnection   $connection         - Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return string
+ */
+function changeQuota($unit, $newQuota, $userId, $connection) {
+    $result = "ERROR_UNKNOWN#Une erreur est survenue.";
+
+    if (isValidSession($connection)) {
+        if (isset($newQuota) && $newQuota != "") {
+            //conversion de l'unitée en chiffres
+            $puissance = 0;
+
+            if ($unit == "Yo") {
+                $puissance = 10**24;
+            }
+            else if ($unit == "Zo") {
+                $puissance = 10**21;
+            }
+            else if ($unit == "Eo") {
+                $puissance = 10**18;
+            }
+            else if ($unit == "Po") {
+                $puissance = 10**15;
+            }
+            else if ($unit == "To") {
+                $puissance = 10**12;
+            }
+            else if ($unit == "Go") {
+                $puissance = 10**9;
+            }
+            else if ($unit == "Mo") {
+                $puissance = 10**6;
+            }
+            else if ($unit == "Ko") {
+                $puissance = 10**3;
+            } else if ($unit == "o") {
+                $puissance = 1;
+            }
+            //on arrondi
+            $octetsQuota = round($newQuota*$puissance);
+            //on actualise la bdd
+            $query = $connection->prepare("UPDATE kioui_accounts SET quota = ? WHERE id = ?");
+            $query->bind_param("si", $octetsQuota, $userId);
+            $query->execute();
+            $query->close();
+            $result = "SUCCESS#Le quota à bien été actualiser#/espace-utilisateur/administration";
+        } else {
+            $result = "ERROR_MISSING_FIELDS#Veuillez remplir tous les champs.";
+        }
+    } else {
+        $result = "ERROR_INVALID_SESSION#Votre session est invalide. Déconnectez vous puis reconnectez vous. Si le problème persiste contactez le support.";
+    }
+    return $result;
 }
 
 ?>
