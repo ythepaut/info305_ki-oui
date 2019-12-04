@@ -20,9 +20,10 @@
 
                        <form action="<?php echo(getSrc('./includes/classes/actions.php')); ?>" method="POST" class="ajax" style="text-align: center;">
 
-                        <span>Êtes-vous sûr de vouloir changer le niveau d'accès de cet utilisateur ?</span>
+                        <span>Veuillez saisir le nouveau niveau d'accès de l'utilisateur.</span>
                                 
                             <input type="hidden" class="form-control" id="change-access-level_iduser" name="change-access-level_iduser" value="{ID}" />
+                            <br />
                             <br />
 
                             <select id="change-access-level_newstatus" name="change-access-level_newstatus">
@@ -32,8 +33,9 @@
                             </select>
 
                             <br />
+                            <br />
                             <input type="hidden" name="action" value="change-access-level" />
-                            <input type="submit" value="Actualisation" name="Actualisation" />
+                            <input type="submit" value="Modifier" name="Modifier" />
 
 
                             <button type="button" data-dismiss="modal">Annuler</button>

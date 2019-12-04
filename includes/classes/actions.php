@@ -1620,31 +1620,52 @@ function verifEmail($token, $connection) {
     header("Location: /espace-utilisateur");
 
 }
+
+
 /**
- * Fonction qui actualise le niveau d'accès d'un utilisateur
+ * Fonction qui modifie le niveau d'accès d'un utilisateur
+ * (Formulaire AJAX)
+ * 
  * @param string            $newAccessLevel     - Nouveau niveua d'accès pour l'utilisateur
  * @param integer           $userId             - Identifiant de l'utilisateur
  * @param mysqlconnection   $connection         - Connexion BDD effectuée dans le fichier config-db.php
  *
  * @return string
  */
-function changeAccessLevel ($newAccessLevel, $userId, $connection) {
+function changeAccessLevel($newAccessLevel, $userId, $connection) {
     $result = "ERROR_UNKNOWN#Une erreur est survenue.";
 
-    if (isValidSession($connection)) {
-        $query = $connection->prepare("UPDATE kioui_accounts SET access_level = ? WHERE id = ?");
-        $query->bind_param("si", $newAccessLevel, $userId);
-        $query->execute();
-        $query->close();
-        $result = "SUCCESS#Le niveau d'accès à bien été actualiser#/espace-utilisateur/administration";
-    } else {
-        $result = "ERROR_INVALID_SESSION#Votre session est invalide. Déconnectez vous puis reconnectez vous. Si le problème persiste contactez le support.";
+    if ($newAccessLevel == "ADMINISTRATOR" || $newAccessLevel == "USER" || $newAccessLevel == "GUEST") {
+
+        if (isValidSession($connection)) {
+
+            if ($_SESSION['Data']['access_level'] == "ADMINISTRATOR") {
+
+                $query = $connection->prepare("UPDATE kioui_accounts SET access_level = ? WHERE id = ?");
+                $query->bind_param("si", $newAccessLevel, $userId);
+                $query->execute();
+                $query->close();
+                
+                $result = "SUCCESS#Le niveau d'accès a bien été modifié.#/espace-utilisateur/administration";
+
+            } else {
+                $result = "ERROR_INSUFFICIENT_PERMISSIONS#Votre niveau d'accès ne vous permet pas d'éffectuer cette action.";
+            }
+
+        } else {
+            $result = "ERROR_INVALID_SESSION#Votre session est invalide. Déconnectez vous puis reconnectez vous. Si le problème persiste contactez le support.";
+        }
+
     }
+
     return $result;
 }
 
+
 /**
- * Fonction qui actualise le quota d'un utilisateur
+ * Fonction qui modifie le quota d'un utilisateur
+ * (Formulaire AJAX)
+ * 
  * @param string            $unit               - unitée du quota
  * @param integer           $newQuota           - le nouveau quota en 'brut' (Ex: 45)
  * @param integer           $userId             - Identifiant de l'utilisateur
@@ -1653,53 +1674,54 @@ function changeAccessLevel ($newAccessLevel, $userId, $connection) {
  * @return string
  */
 function changeQuota($unit, $newQuota, $userId, $connection) {
+
     $result = "ERROR_UNKNOWN#Une erreur est survenue.";
 
     if (isValidSession($connection)) {
-        if (isset($newQuota) && $newQuota != "") {
-            //conversion de l'unitée en chiffres
-            $puissance = 0;
 
-            if ($unit == "Yo") {
-                $puissance = 10**24;
+        if ($_SESSION['Data']['access_level'] == "ADMINISTRATOR") {
+
+            if (isset($newQuota) && $newQuota != "") {
+
+                //Conversion de l'unitée en chiffres
+                $puissance = 0;
+
+                if ($unit == "To") {
+                    $puissance = 10**12;
+                }
+                else if ($unit == "Go") {
+                    $puissance = 10**9;
+                }
+                else if ($unit == "Mo") {
+                    $puissance = 10**6;
+                }
+                else if ($unit == "Ko") {
+                    $puissance = 10**3;
+                } else if ($unit == "o") {
+                    $puissance = 1;
+                }
+                
+                $octetsQuota = round($newQuota*$puissance);
+                
+                $query = $connection->prepare("UPDATE kioui_accounts SET quota = ? WHERE id = ?");
+                $query->bind_param("si", $octetsQuota, $userId);
+                $query->execute();
+                $query->close();
+
+                $result = "SUCCESS#Le quota a bien été modifié.#/espace-utilisateur/administration";
+
+            } else {
+                $result = "ERROR_MISSING_FIELDS#Veuillez remplir tous les champs.";
             }
-            else if ($unit == "Zo") {
-                $puissance = 10**21;
-            }
-            else if ($unit == "Eo") {
-                $puissance = 10**18;
-            }
-            else if ($unit == "Po") {
-                $puissance = 10**15;
-            }
-            else if ($unit == "To") {
-                $puissance = 10**12;
-            }
-            else if ($unit == "Go") {
-                $puissance = 10**9;
-            }
-            else if ($unit == "Mo") {
-                $puissance = 10**6;
-            }
-            else if ($unit == "Ko") {
-                $puissance = 10**3;
-            } else if ($unit == "o") {
-                $puissance = 1;
-            }
-            //on arrondi
-            $octetsQuota = round($newQuota*$puissance);
-            //on actualise la bdd
-            $query = $connection->prepare("UPDATE kioui_accounts SET quota = ? WHERE id = ?");
-            $query->bind_param("si", $octetsQuota, $userId);
-            $query->execute();
-            $query->close();
-            $result = "SUCCESS#Le quota à bien été actualiser#/espace-utilisateur/administration";
+
         } else {
-            $result = "ERROR_MISSING_FIELDS#Veuillez remplir tous les champs.";
+            $result = "ERROR_INSUFFICIENT_PERMISSIONS#Votre niveau d'accès ne vous permet pas d'éffectuer cette action.";
         }
+
     } else {
         $result = "ERROR_INVALID_SESSION#Votre session est invalide. Déconnectez vous puis reconnectez vous. Si le problème persiste contactez le support.";
     }
+
     return $result;
 }
 

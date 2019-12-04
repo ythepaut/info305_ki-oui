@@ -20,33 +20,31 @@
 
                        <form action="<?php echo(getSrc('./includes/classes/actions.php')); ?>" method="POST" class="ajax" style="text-align: center;">
 
-                        <span>Êtes-vous sûr de vouloir changer le quota de cet utilisateur ?</span>
+                        <span>Veuillez saisir le nouveau quota de l'utilisateur</span>
                                 
                             <input type="hidden" class="form-control" id="change-quota_iduser" name="change-quota_iduser" value="{ID}" />
+                            <br />
                             <br />
 
                             <div class="input-group mb-3">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text label-icon" id="icon_change-quota_value"><i class="fas fa-file"></i></span>
+                                    <span class="input-group-text label-icon" id="icon_change-quota_value"><i class="fas fa-tachometer-alt"></i></span>
                                 </div>
                                 <input type="number" min=0 name="change-quota_value" class="form-control" placeholder="Nouveau quota" aria-describedby="icon_change-quota_value" required />
                             </div>
                             Unitée
                             <select id="change-quota_units" name="change-quota_units">
-                                <option value="o">octets</option>
-                                <option value="Ko">kilooctets</option>
-                                <option selected value="Mo">mégaoctets </option>
-                                <option value="Go">gigaoctets </option>
-                                <option value="To">téraoctets </option>
-                                <option value="Po">pétaoctets </option>
-                                <option value="Eo">exaaoctets </option>
-                                <option value="Zo">zettaoctets </option>
-                                <option value="Yo">yottaoctets </option>
+                                <option value="o">Octets</option>
+                                <option value="Ko">Kilooctet</option>
+                                <option selected value="Mo">Mégaoctet</option>
+                                <option value="Go">Gigaoctet </option>
+                                <option value="To">Téraoctet </option>
                             </select>
 
                             <br />
+                            <br />
                             <input type="hidden" name="action" value="change-quota" />
-                            <input type="submit" value="Actualisation" name="Actualisation" />
+                            <input type="submit" value="Modifier" name="Modifier" />
 
 
                             <button type="button" data-dismiss="modal">Annuler</button>
