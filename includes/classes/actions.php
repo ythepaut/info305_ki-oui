@@ -235,6 +235,8 @@ function login($email, $passwd, $remember = "off", $connection, $em) {
                 $_SESSION['LoggedIn'] = true;
                 $_SESSION['UserPassword'] = hash('sha512', $passwd . $userData['salt']);
 
+                incrementStatLog("RECONNECT", $connection);
+
                 $result = "SUCCESS#Bienvenue " . $_SESSION['Data']['username'] . "#/espace-utilisateur/accueil";
 
                 if ($_SESSION['tfa'] == "new_device" && $_SESSION['Data']['totp'] == "") {//Verification par email
@@ -367,6 +369,7 @@ function register($username, $email, $passwd, $passwd2, $cgu, $recaptchatoken, $
                                     $query->close();
 
                                     addEvent("ACCOUNT_CREATION", $username, 0, $connection);
+                                    incrementStatLog("REGISTER", $connection);
 
                                     sendMail($em, $email, "Bienvenue sur KI-OUI. Verifiez votre e-mail.", "Bienvenue !", "Merci de vous être inscrit " . $username . ".<br />Veuillez confirmer votre adresse e-mail pour pouvoir commencer à utiliser nos services en cliquant sur le lien ci-dessous.<br /><br />Si vous n'êtes pas à l'origine de cette action, ignorez cet e-mail.", "https://ki-oui.com/verif-email/" . $emailToken, "Vérifier mon e-mail");
 
@@ -971,6 +974,7 @@ function upload($connection) {
         $res = true;
 
         addEvent("FILE_UPLOAD", $_SESSION['Data']['username'], $size, $connection); //Ajout evenement aux statistiques panneau admin
+        incrementStatLog("UPLOAD", $connection);
     }
 
     return $res;
@@ -985,6 +989,8 @@ function downloadAction($connection, $fileName, $fileKey) {
     }
 
     downloadFile($content, $name = $originalName, $from_string = true);
+
+    incrementStatLog("DOWNLOAD", $connection);
 
     return "ok";
 }

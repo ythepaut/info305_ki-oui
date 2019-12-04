@@ -706,4 +706,77 @@ function addEvent($type, $user, $size, $connection) {
 }
 
 
+/**
+ * Fonction qui modifie l'activité dans les stats admin
+ * 
+ * @param string              $logtype                - Evenement à log (connexion, inscription, upload ou download)
+ * @param mysqlconnection     $connection             - Connexion BDD effectuée dans le fichier config-db.php
+ * 
+ * @return void
+ */
+function incrementStatLog($logtype, $connection) {
+
+    if ($logtype == "REGISTER" || $logtype == "RECONNECT" || $logtype == "UPLOAD" || $logtype == "DOWNLOAD") {
+
+        $column = "";
+        switch ($logtype) {
+            case "REGISTER":
+                $column = "newUserLog";
+                break;
+            case "RECONNECT":
+                $column = "reconnectUserLog";
+                break;
+            case "UPLOAD":
+                $column = "uploadLog";
+                break;
+            case "DOWNLOAD":
+                $column = "downloadLog";
+                break;
+        }
+
+        $logs = json_decode(getStats($column, $connection), true);
+
+        $date = date("d/m");
+
+        if (array_key_exists($date, $logs)) {
+            //Incrementation
+            $logs[$date] += 1;
+            
+            $logsJSON = json_encode($logs);
+
+            $query = $connection->prepare("UPDATE kioui_stats SET " . $column . " = ? WHERE id = 0");
+            $query->bind_param("s", $logsJSON);
+            $query->execute();
+            $query->close();
+        } else {
+            //Ajout jour
+            $logsReg = json_decode(getStats('newUserLog', $connection), true);
+            $logsReg[$date] = 0;
+            $logsRec = json_decode(getStats('reconnectUserLog', $connection), true);
+            $logsRec[$date] = 0;
+            $logsUp = json_decode(getStats('uploadLog', $connection), true);
+            $logsUp[$date] = 0;
+            $logsDown = json_decode(getStats('downloadLog', $connection), true);
+            $logsDown[$date] = 0;
+
+            $logs[$date] = 1;
+            
+            $logsJSON = json_encode($logs);
+
+            $query = $connection->prepare("UPDATE kioui_stats SET newUserLog = ? , reconnectUserLog = ? , uploadLog = ? , downloadLog = ? WHERE id = 0");
+            $query->bind_param("ssss", json_encode($logsReg), json_encode($logsRec), json_encode($logsUp), json_encode($logsDown));
+            $query->execute();
+            $query->close();
+
+            $query = $connection->prepare("UPDATE kioui_stats SET " . $column . " = ? WHERE id = 0");
+            $query->bind_param("s", $logsJSON);
+            $query->execute();
+            $query->close();
+
+        }
+
+    }
+
+}
+
 ?>

@@ -1,3 +1,8 @@
+<style>
+::-webkit-scrollbar {
+    width: 7px !important;
+}
+</style>
 <div class="container-fluid">
     <div class="row">
         <?php include("./includes/pages/espace-utilisateur/nav-utilisateur.php"); ?>
@@ -111,7 +116,7 @@
                     </script>
                 </div>
 
-                <div class="col-lg inner panel-outline dropzone">
+                <div class="col-lg inner panel-outline dropzone" style="overflow: hidden !important;">
                     <form action="<?php echo(getSrc('./includes/classes/actions.php')); ?>" method="post" enctype="multipart/form-data" id="uploadForm">
                         <h4 class="panel-title"> Ajouter des fichiers </h4>
                         <!-- pre id="result"> Résultat PHP </pre -->
