@@ -26,20 +26,25 @@
                             <br />
                             <br />
 
-                            <div class="input-group mb-3">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text label-icon" id="icon_change-quota_value"><i class="fas fa-tachometer-alt"></i></span>
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text label-icon" id="icon_change-quota_value"><i class="fas fa-tachometer-alt"></i></span>
+                                        </div>
+                                        <input type="number" min=0 name="change-quota_value" class="form-control" placeholder="Nouveau quota" aria-describedby="icon_change-quota_value" required />
+                                    </div>
                                 </div>
-                                <input type="number" min=0 name="change-quota_value" class="form-control" placeholder="Nouveau quota" aria-describedby="icon_change-quota_value" required />
+                                <div class="col-lg-4">
+                                    <select class="form-control" id="change-quota_units" name="change-quota_units">
+                                        <option value="o">Octets</option>
+                                        <option value="Ko">Kilooctet</option>
+                                        <option selected value="Mo">Mégaoctet</option>
+                                        <option value="Go">Gigaoctet </option>
+                                        <option value="To">Téraoctet </option>
+                                    </select>
+                                </div>
                             </div>
-                            Unitée
-                            <select id="change-quota_units" name="change-quota_units">
-                                <option value="o">Octets</option>
-                                <option value="Ko">Kilooctet</option>
-                                <option selected value="Mo">Mégaoctet</option>
-                                <option value="Go">Gigaoctet </option>
-                                <option value="To">Téraoctet </option>
-                            </select>
 
                             <br />
                             <br />

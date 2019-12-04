@@ -15,7 +15,7 @@ function editModalDelete(fileid) {
 }
 
 function editModalDeleteMultipleFiles() {
-    let deletedCheckbox_tab_all = document.querySelectorAll("#checkbox-delete-files");
+    let deletedCheckbox_tab_all = document.querySelectorAll(".checkbox-delete-files");
 
     var deletedCheckbox_tab = [];
 

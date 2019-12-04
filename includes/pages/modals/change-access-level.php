@@ -26,7 +26,7 @@
                             <br />
                             <br />
 
-                            <select id="change-access-level_newstatus" name="change-access-level_newstatus">
+                            <select class="form-control" id="change-access-level_newstatus" name="change-access-level_newstatus">
                                 <option value="GUEST">Invité</option>
                                 <option selected value="USER">Utilisateur</option>
                                 <option value="ADMINISTRATOR">Administrateur</option>
