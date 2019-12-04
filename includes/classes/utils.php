@@ -671,4 +671,39 @@ function extensionImage($extension) {
 }
 
 
+/**
+ * Fonction qui crée un evenement pour l'affichage des statistiques administrateur
+ * 
+ * @param string              $type                   - Type d'evenement
+ * @param string              $user                   - Nom d'utilisateur associé à l'evenement
+ * @param string              $size  (OPT)            - Taille de fichier supprimé/ajouté si evenement associé à un ajout/suppression de fichier
+ * @param mysqlconnection     $connection             - Connexion BDD effectuée dans le fichier config-db.php
+ * 
+ * @return void
+ */
+function addEvent($type, $user, $size, $connection) {
+
+    if ($type == "ACCOUNT_CREATION" || $type == "ACCOUNT_DELETION" || $type == "FILE_UPLOAD" || $type == "FILE_DELETE") {
+
+        $eventsArray = json_decode(getStats('recentEvents', $connection), true);
+
+        while (count($eventsArray) >= 8) {
+            array_pop($eventsArray);
+        }
+
+        $newEvent = array("type" => $type, "user" => $user, "timestamp" => time(), "badge" => convertUnits($size));
+        array_unshift($eventsArray, $newEvent);
+
+        $eventsJSON = json_encode($eventsArray);
+
+        $query = $connection->prepare("UPDATE kioui_stats SET recentEvents = ? WHERE id = 0");
+        $query->bind_param("s", $eventsJSON);
+        $query->execute();
+        $query->close();
+
+    }
+
+}
+
+
 ?>

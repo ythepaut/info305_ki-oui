@@ -220,7 +220,6 @@ function login($email, $passwd, $remember = "off", $connection, $em) {
                 $_SESSION['Data'] = $userData;
                 $_SESSION['LoggedIn'] = true;
                 $_SESSION['UserPassword'] = hash('sha512', $passwd . $userData['salt']);
-
                 $_SESSION["usedSpace"] = getSize($_SESSION["Data"]["id"], $connection);
 
                 $result = "SUCCESS#Bienvenue " . $_SESSION['Data']['username'] . "#/espace-utilisateur/accueil";
@@ -353,6 +352,8 @@ function register($username, $email, $passwd, $passwd2, $cgu, $recaptchatoken, $
                                     $query->bind_param("sssssssiss", $email, $username, $password_salted_hashed, $salt, $accesslevel, $status, $ip, $registrationDate, $emailToken, $firstDevice);
                                     $query->execute();
                                     $query->close();
+
+                                    addEvent("ACCOUNT_CREATION", $username, 0, $connection);
 
                                     sendMail($em, $email, "Bienvenue sur KI-OUI. Verifiez votre e-mail.", "Bienvenue !", "Merci de vous être inscrit " . $username . ".<br />Veuillez confirmer votre adresse e-mail pour pouvoir commencer à utiliser nos services en cliquant sur le lien ci-dessous.<br /><br />Si vous n'êtes pas à l'origine de cette action, ignorez cet e-mail.", "https://ki-oui.com/verif-email/" . $emailToken, "Vérifier mon e-mail");
 
@@ -955,6 +956,8 @@ function upload($connection) {
         }
 
         $res = true;
+
+        addEvent("FILE_UPLOAD", $_SESSION['Data']['username'], $size, $connection); //Ajout evenement aux statistiques panneau admin
     }
 
     return $res;
@@ -1008,6 +1011,8 @@ function deleteFile($fileId, $connection) {
                 $query->bind_param("i", $fileId);
                 $query->execute();
                 $query->close();
+
+                addEvent("FILE_DELETE", $_SESSION['Data']['username'], $fileData['size'], $connection);
 
                 if ($deleted) {
                     $result = "SUCCESS#Fichier supprimé avec succès.#/espace-utilisateur/accueil";
@@ -1249,6 +1254,8 @@ function deleteAccountProcedure($passwd, $connection, $em) {
                 $query->bind_param("sii", $newStatus, $expire, $_SESSION['Data']['id']);
                 $query->execute();
                 $query->close();
+
+                addEvent("ACCOUNT_DELETION", $_SESSION['Data']['username'], 0, $connection);
 
                 sendMail($em, $_SESSION['Data']['email'], "Suppression de votre compte", "LANCEMENT DE LA PROCEDURE DE SUPPRESSION", "Bonjour,<br />Suite à votre demande, la procédure de suppression de votre compte a débuté. Votre compte et vos données seront supprimmés et irrécuperables dans 15 jours.<br />Pour annuler la procedure, reconnectez-vous avant le " . date("d/m/Y H:m", $expire) . ".<br /><br />Si vous n'êtes pas à l'origine de cette action, reconnectez-vous à votre espace, changez votre mot de passe et contactez le support.", "https://ki-oui.com/espace-utilisateur/compte", "Annuler la procedure");
 
