@@ -231,7 +231,7 @@ function onloadHandler(e, n_file) {
             }
         }
 
-        // location.reload();
+        location.reload();
     }, 1000);
 }
 
