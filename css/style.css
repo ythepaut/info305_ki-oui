@@ -467,7 +467,6 @@ input[type="file"]+label:disabled {
 
 .dropzone {
     overflow-y: scroll;
-    height: 16em;
 }
 
 .dropzone.dragover {

@@ -85,11 +85,6 @@
                         </tr>
                     </thead>
                         <tr>
-                            <th scope="row"> Visualiser mes données conservées par KI-OUI</th>
-                            <td></td>
-                            <td><i class="fas fa-eye edit" title="Visualiser"></i></td>
-                        </tr>
-                        <tr>
                             <th scope="row"> Télecharger une copie des mes données conservées par KI-OUI</th>
                             <td></td>
                             <td><a href="#" data-toggle="modal" data-target="#modalDlData"><i class="fas fa-download edit" title="Télecharger"></i></a></td>

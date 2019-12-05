@@ -14,6 +14,9 @@ function editModalDelete(fileid) {
 	deleteButton.setAttribute("value", fileid);
 }
 
+/**
+ * Je ferai le commentaire <3 -Roro
+ */
 function editModalDeleteMultipleFiles() {
     let deletedCheckbox_tab_all = document.querySelectorAll(".checkbox-delete-files");
 

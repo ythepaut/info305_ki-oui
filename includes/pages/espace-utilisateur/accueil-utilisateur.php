@@ -14,9 +14,18 @@
 
                     <h4 class="panel-title">Espace utilisé</h4>
 
-                    <div class="chart-container">
-                        <canvas id="chart-js-1" class="chartjs quota"></canvas>
-                    </div>
+
+
+                        <div class="col-lg-12">
+                            <div class="chart-container">
+                                <canvas id="chart-js-1" class="chartjs quota"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12" style="text-align: center;">
+                        <?php echo(convertUnits(getSize($_SESSION['Data']['id'], $connection))); ?> / <?php echo(convertUnits($_SESSION['Data']['quota'])); ?>
+                        </div>
+
 
                     <script>
                         /*
@@ -82,7 +91,7 @@
                             circumference: 1 * Math.PI,
                             cutoutPercentage: 70,
                             legend: {
-                                display: true,
+                                display: false,
                                 position: 'right',
                                 fullWidth: false,
                                 onClick: null

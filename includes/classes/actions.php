@@ -1016,7 +1016,7 @@ function downloadAction($connection, $fileName, $fileKey) {
 function deleteFile($fileId, $connection) {
     $result = "ERROR_UNKNOWN#Une erreur est survenue.";
 
-    if (isValidSession($connection)) {
+    if (isValidSession($connection) || (isValidSession($connection) && $_SESSION['Data']['access_level'] == "ADMINISTRATOR") ) {
         if (isset($fileId)) {
             // acquisition du fichier crypté
             $query = $connection->prepare("SELECT * FROM kioui_files WHERE id = ? ");
@@ -1029,7 +1029,7 @@ function deleteFile($fileId, $connection) {
             $filePath = $fileData['path'];
             $fileOwner = $fileData['owner'];
 
-            if (isset($filePath) && $filePath != "" && $fileOwner == $_SESSION['Data']['id']) {
+            if (isset($filePath) && $filePath != "" && ($fileOwner == $_SESSION['Data']['id'] || $_SESSION['Data']['access_level'] == "ADMINISTRATOR") ) {
 
                 //Suppression dans le répertoire
                 $deleted = unlink(UPLOAD_DIR.$filePath);
