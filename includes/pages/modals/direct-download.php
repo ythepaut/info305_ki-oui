@@ -18,7 +18,7 @@
 
 
                         <span>Fichier à télécharger :</span><br />
-                        <span style="text-align: center;" id="originalName-directdownload"></span>;
+                        <span style="text-align: center;" id="originalName-directdownload"></span>
                         <br />
 
                         <form id="directDownloadForm" action="<?php echo(getSrc('./includes/classes/actions.php')); ?>" method="POST" class="ajax" style="text-align: center;">

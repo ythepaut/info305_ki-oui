@@ -27,35 +27,53 @@ function editModalDeleteMultipleFiles() {
 
     let spanHowManyFilesSelected = document.querySelector("#howManyFilesSelected");
 
-    if (deletedCheckbox_tab.length === 0) {
+    var taille = deletedCheckbox_tab.length;
+
+    if (taille === 0) {
         spanHowManyFilesSelected.innerHTML = "Aucun fichier sélectionné";
     }
     else {
-        if (deletedCheckbox_tab.length === 1) {
+        if (taille === 1) {
             spanHowManyFilesSelected.innerHTML = "Êtes-vous sûr de vouloir supprimer ce fichier ?";
         }
         else {
-            spanHowManyFilesSelected.innerHTML = "Êtes-vous sûr de vouloir supprimer ces " + deletedCheckbox_tab.length + " fichiers ?";
+            spanHowManyFilesSelected.innerHTML = "Êtes-vous sûr de vouloir supprimer ces " + taille + " fichiers ?";
         }
 
         var tab_fileSelectedForDeletion = document.querySelector("#fileSelectedForDeletion");
+
+        tab_fileSelectedForDeletion.innerHTML = "";
+
         var div_idToDelete = document.querySelector("#idToDelete");
 
-        deletedCheckbox_tab.forEach(function(elem) {
+        for (var i=0; i<taille; i++) {
+            let elem = deletedCheckbox_tab[i];
+            console.log(elem);
+
+            var file_info_tr = document.createElement("tr");
+
             var file_info_td = document.createElement("td");
-            file_info_td.setAttribute("class", "d-none d-lg-table-cell");
+            file_info_td.setAttribute("class", "d-lg-table-cell");
             file_info_td.innerHTML = elem.getAttribute("name");
 
-            tab_fileSelectedForDeletion.appendChild(file_info_td);
+            file_info_tr.appendChild(file_info_td);
+            tab_fileSelectedForDeletion.appendChild(file_info_tr);
 
             var file_id_input = document.createElement("input");
             file_id_input.setAttribute("type", "hidden");
             file_id_input.setAttribute("class", "form-control");
-            file_id_input.setAttribute("name", "delete-fileid[]");
+            file_id_input.setAttribute("name", "delete-fileid-" + i);
             file_id_input.setAttribute("value", elem.getAttribute("value"));
 
             div_idToDelete.appendChild(file_id_input);
-        });
+        }
+
+        var input_nbFiles = document.createElement("input");
+        input_nbFiles.setAttribute("type", "hidden");
+        input_nbFiles.setAttribute("name", "nb-fileid");
+        input_nbFiles.setAttribute("value", taille);
+
+        div_idToDelete.appendChild(input_nbFiles);
     }
 }
 

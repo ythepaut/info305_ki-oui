@@ -6,6 +6,7 @@ session_start();
 include_once(getcwd() . "/config-db.php");
 include_once(getcwd() . "/config-email.php");
 include_once(getcwd() . "/config-recaptcha.php");
+include_once(getcwd() . "/config-server.php");
 include_once(getcwd() . "/utils.php");
 include_once(getcwd() . "/totp.php");
 include_once(getcwd() . "/u2f.php");

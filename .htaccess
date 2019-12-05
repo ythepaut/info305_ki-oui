@@ -26,6 +26,7 @@ RewriteRule ^([a-z0-9-]+)/?$ index.php?page=$1 [L]
 RewriteRule ^espace-utilisateur/([a-z0-9-]+)/?$ index.php?page=espace-utilisateur&sp=$1 [L]
 RewriteRule ^espace-utilisateur/assistance/([0-9-]+)/?$ index.php?page=espace-utilisateur&sp=assistance&ticket=$1 [L]
 
-
 #Desactivation de la visualisation du systeme de fichier
 Options -Indexes
+
+LimitRequestBody 2147483647
