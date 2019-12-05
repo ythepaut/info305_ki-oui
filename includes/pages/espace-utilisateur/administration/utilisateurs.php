@@ -5,10 +5,12 @@
         $res = "<table class='table'>";
         $res .= "<thead class='thead'>";
 
-        $res .= "<th style='width:auto'>Nom de l'utilisateur</th>";
-        $res .= "<th style='width:25%'>Niveau d'accès</th>";
-        $res .= "<th style='width:25%'>Quota</th>";
-        $res .= "<th style='width:15%'>Actions</th>";
+        $res .= "<th style='width:20%;'>Nom de l'utilisateur</th>";
+        $res .= "<th style='width:auto;'>Adresse e-mail</th>";
+        $res .= "<th style='width:12%;'>Niveau d'accès</th>";
+        $res .= "<th style='width:12%;'>Statut</th>";
+        $res .= "<th style='width:12%;'>Quota</th>";
+        $res .= "<th style='width:15%;'>Actions</th>";
 
         $res .= "</thead>";
 
@@ -28,6 +30,22 @@
                     break;
             }
 
+            $status = "";
+
+            switch ($user["status"]) {
+                case "SUSPENDED":
+                    $status = "<span class='badge badge-danger'>Suspendu</span>";
+                    break;
+                case "DELETE_PROCEDURE":
+                    $status = "<span class='badge badge-warning'>Suppression</span>";
+                    break;
+                case "REGISTRATION":
+                    $status = "<span class='badge badge-info'>Enregistrement</span>";
+                    break;
+                case "ALIVE":
+                    $status = "<span class='badge badge-primary'>OK</span>";
+                    break;
+            }
 
 
             $res .= "<tr>";
@@ -35,9 +53,17 @@
             $res .= "<td>";
             $res .= htmlspecialchars($user["username"]);
             $res .= "</td>";
+            //Affichage de l'email
+            $res .= "<td>";
+            $res .= htmlspecialchars($user["email"]);
+            $res .= "</td>";
             //Affichage du niveau d'accès
             $res .= "<td>";
             $res .= $accesslevel;
+            $res .= "</td>";
+            //Affichage du statut
+            $res .= "<td>";
+            $res .= $status;
             $res .= "</td>";
             //Affichage du quota
             $res .= "<td>";
