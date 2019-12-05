@@ -104,19 +104,22 @@ switch ($action) {
         break;
 
     case "upload-file":
-        if (isset($_SESSION["LoggedIn"]) && $_SESSION['LoggedIn']) {
-            $res = upload($connection);
+        $res = "hmmm";
 
-            if ($res) {
+        if (isset($_SESSION["LoggedIn"]) && $_SESSION['LoggedIn']) {
+            $res_bool = upload($connection);
+
+            if ($res_bool) {
                 header("location:/espace-utilisateur/accueil-utilisateur");
+                $res = "Ok";
             } else {
-                echo "Erreur";
+                $res = "Erreur";
             }
         } else {
-            echo "non connecté ?";
+            $res = "Non connecté ?";
         }
 
-        die();
+        die($res);
 
         break;
 
@@ -150,8 +153,13 @@ switch ($action) {
         break;
 
     case "delete-multiple-files":
-        for ($i=0; $i<count($_POST['delete-fileid']); $i++) {
-            $res = deleteFile($_POST['delete-fileid'][$i], $connection);
+        $debug_export = var_export($_POST, true);
+        file_put_contents("log.txt", $debug_export);
+
+        $res = "";
+
+        for ($i=0; $i<$_POST['nb-fileid']; $i++) {
+            $res = deleteFile($_POST['delete-fileid-' . $i], $connection);
         }
 
         die($res);
@@ -1654,7 +1662,7 @@ function changeAccessLevel($newAccessLevel, $userId, $connection) {
                 $query->bind_param("si", $newAccessLevel, $userId);
                 $query->execute();
                 $query->close();
-                
+
                 $result = "SUCCESS#Le niveau d'accès a bien été modifié.#/espace-utilisateur/administration";
 
             } else {
@@ -1714,7 +1722,7 @@ function changeStatus($newStatus, $userId, $connection) {
 /**
  * Fonction qui modifie le quota d'un utilisateur
  * (Formulaire AJAX)
- * 
+ *
  * @param string            $unit               - unitée du quota
  * @param integer           $newQuota           - le nouveau quota en 'brut' (Ex: 45)
  * @param integer           $userId             - Identifiant de l'utilisateur
@@ -1749,9 +1757,9 @@ function changeQuota($unit, $newQuota, $userId, $connection) {
                 } else if ($unit == "o") {
                     $puissance = 1;
                 }
-                
+
                 $octetsQuota = round($newQuota*$puissance);
-                
+
                 $query = $connection->prepare("UPDATE kioui_accounts SET quota = ? WHERE id = ?");
                 $query->bind_param("si", $octetsQuota, $userId);
                 $query->execute();

@@ -145,6 +145,8 @@ function addFiles(files) {
  * @param   {int}       n_file          Numéro du fichier
  */
 function sendFile(file, n_file) {
+    var tps = Math.random()*500 + 750;
+
     setTimeout(function() {
         var location = document.querySelector("#uploadForm").getAttribute("action");
 
@@ -154,7 +156,7 @@ function sendFile(file, n_file) {
         formData.append("action", "upload-file");
 
         sendRequest(formData, location, n_file);
-    }, 1000);
+    }, tps);
 }
 
 /**
@@ -229,7 +231,7 @@ function onloadHandler(e, n_file) {
             }
         }
 
-        location.reload();
+        // location.reload();
     }, 1000);
 }
 
@@ -238,6 +240,10 @@ function onloadHandler(e, n_file) {
  */
 function onprogressHandler(e, n_file) {
     var percent = Math.floor(e.loaded/e.total*100*10)/10;
+
+    console.log("Progression :");
+    console.log(percent);
+    console.log("---");
 
     var progress_bar = document.querySelector("#file-progress-bar-N" + n_file);
     progress_bar.setAttribute("style", "width:" + percent + "%");
@@ -252,12 +258,18 @@ function onreadystatechangeHandler(e, n_file) {
     var text = e.target.responseText;
     var status = e.target.status;
 
-    // if (readyState == 4 && status == '200') {
-    if (true) {
-        // TODO
+    console.log("Réponse :");
+    console.log(readyState);
+    console.log(status);
+    console.log("---");
 
+    // TODO
+    /*
+    if (readyState == 4 && status == '200') {
         if (e.target.responseText) {
-            // result.innerHTML = '<p>The server saw it as:</p><pre>' + e.target.responseText + '</pre>';
+            console.log(e.target.responseText);
+            var result = document.querySelector("#response");
+            result.innerHTML = '<p>The server saw it as:</p><pre>' + e.target.responseText + '</pre>';
         }
     }
     else {
@@ -270,7 +282,7 @@ function onreadystatechangeHandler(e, n_file) {
         console.log(readyState);
         console.log(status);
         console.log(e.target.responseText);
-    }
+    }*/
 }
 
 var all_files = [];
