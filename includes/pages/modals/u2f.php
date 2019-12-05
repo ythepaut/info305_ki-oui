@@ -85,8 +85,16 @@
 
                             <form action="<?php echo(getSrc('./includes/classes/actions.php')); ?>" method="POST" class="ajax">
                             
-                                <p>Vous êtes sur le point de retirer la double authentification par clé physique U2F.<br />
-                                Afin de confirmer votre action, veuillez saisir votre mot de passe.</p>
+                                <p>Vous êtes sur le point de retirer la double authentification par clé physique U2F.
+
+                                <br />
+
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text label-icon" id="icon_disable-u2f_passwd"><i class="fas fa-unlock"></i></span>
+                                    </div>
+                                    <input type="password" name="disable-u2f_passwd" class="form-control" placeholder="Mot de passe requis pour confirmer votre action" aria-describedby="icon_disable-u2f_passwd" required />
+                                </div>
 
                                 <br />
 

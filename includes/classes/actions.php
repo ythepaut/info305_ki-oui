@@ -57,7 +57,7 @@ switch ($action) {
         die(enableU2F($_POST['enable-u2f_reg'], $_POST['enable-u2f_req'], $connection));
         break;
     case "disable-u2f":
-        die(disableU2F($connection));
+        die(disableU2F($_POST['disable-u2f_passwd'], $connection));
         break;
     case "validate-totp":
         die(validateTOTP($_POST['validate-totp_code'], $connection));
@@ -593,7 +593,7 @@ function enableU2F($reg, $req, $connection) {
  *
  * @return string
  */
-function disableU2F($connection) {
+function disableU2F($passwd, $connection) {
     $result = "ERROR_UNKNOWN#Une erreur est survenue.";
 
     if (isValidSession($connection)) {
@@ -601,13 +601,20 @@ function disableU2F($connection) {
         //U2F activé ?
         if ($_SESSION['Data']['u2f'] != "") {
 
-            $newu2f = "";
-            $query = $connection->prepare("UPDATE kioui_accounts SET u2f = ? WHERE id = ?");
-            $query->bind_param("si", $newu2f, $_SESSION['Data']['id']);
-            $query->execute();
-            $query->close();
+            //Identifiants correct ?
+            if (password_verify(hash('sha512', hash('sha512', $passwd . $_SESSION['Data']['salt'])), $_SESSION['Data']['password'])) {
 
-            $result = "SUCCESS#Double authentification par clé physique désactivée avec succès.#/espace-utilisateur/compte";
+                $newu2f = "";
+                $query = $connection->prepare("UPDATE kioui_accounts SET u2f = ? WHERE id = ?");
+                $query->bind_param("si", $newu2f, $_SESSION['Data']['id']);
+                $query->execute();
+                $query->close();
+
+                $result = "SUCCESS#Double authentification par clé physique désactivée avec succès.#/espace-utilisateur/compte";
+                
+            } else {
+                $result = "ERROR_INVALID_CREDENTIALS#Mot de passe invalide.";
+            }
 
         } else {
             $result = "ERROR_U2F_DISABLED#Vous avez déjà la double authentification par clé physique désactivé.";

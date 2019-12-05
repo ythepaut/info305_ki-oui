@@ -1,3 +1,9 @@
+<style>
+::-webkit-scrollbar {
+    width: 7px !important;
+}
+</style>
+
 <div class="container-fluid">
     <div class="row">
         <?php include("./includes/pages/espace-utilisateur/nav-utilisateur.php"); ?>

@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col panel-outline">
         <?php 
-        $query = mysqli_query($connection, "SELECT * FROM kioui_files");
+        $query = mysqli_query($connection, "SELECT * FROM kioui_files ORDER BY id DESC");
         $res = "<table class='table'>";
         $res .= "<thead class='thead'>";
 

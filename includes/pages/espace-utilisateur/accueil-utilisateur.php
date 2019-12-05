@@ -131,7 +131,7 @@
                         <!-- pre id="result"> Résultat PHP </pre -->
 
                         <input type="file" name="files[]" id="inputFile" multiple onchange="addFiles(this.files);" />
-                        <label for="inputFile" id="inputLabel"><i class="fas fa-file-import"></i> Ajouter des fichiers </label>
+                        <label for="inputFile" id="inputLabel"><i class="fas fa-file-import"></i> Ajouter des fichiers </label> <span style="color: #999;">Ou glisser-déposer des fichiers</span>
 
                         <input type="number" id="allowedSpace" value=<?php echo('"' . ($_SESSION["Data"]["quota"] - getSize($_SESSION["Data"]["id"], $connection)) . '"'); ?> style="display: none;"></input>
 

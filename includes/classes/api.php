@@ -79,7 +79,9 @@ function auth($query, $connection) {
                 $dbquery->execute();
                 $dbquery->close();
 
-                $result = array("status" => "success", "message" => "Your token has been generated.", "token" => $token);
+                $key = hash('sha512', $query['passwd'] . $userData['salt']);
+
+                $result = array("status" => "success", "message" => "Your token has been generated.", "token" => $token, "key" => $key);
 
             } else {
                 $result = array("status" => "error", "error" => "ERROR_ACCOUNT_INACCESSIBLE", "verbose" => "This account is not validated or it is suspended or is in cancellation procedure.");
