@@ -39,7 +39,10 @@ switch ($action) {
         die(backupKey($_POST['backup-key_key'], $connection));
         break;
     case "change-access-level":
-        die(changeAccessLevel($_POST['change-access-level_newstatus'],$_POST['change-access-level_iduser'],$connection));
+        die(changeAccessLevel($_POST['change-access-level_newstatus'], $_POST['change-access-level_iduser'], $connection));
+        break;
+    case "change-status":
+        die(changeStatus($_POST['change-status_newstatus'], $_POST['change-status_iduser'], $connection));
         break;
     case "change-quota":
         die(changeQuota($_POST["change-quota_units"], $_POST["change-quota_value"], $_POST["change-quota_iduser"], $connection));
@@ -1632,7 +1635,7 @@ function verifEmail($token, $connection) {
  * Fonction qui modifie le niveau d'accès d'un utilisateur
  * (Formulaire AJAX)
  * 
- * @param string            $newAccessLevel     - Nouveau niveua d'accès pour l'utilisateur
+ * @param string            $newAccessLevel     - Nouveau niveua d'accès de l'utilisateur
  * @param integer           $userId             - Identifiant de l'utilisateur
  * @param mysqlconnection   $connection         - Connexion BDD effectuée dans le fichier config-db.php
  *
@@ -1664,6 +1667,46 @@ function changeAccessLevel($newAccessLevel, $userId, $connection) {
 
     }
 
+    return $result;
+}
+
+
+/**
+ * Fonction qui modifie le statut d'un utilisateur
+ * (Formulaire AJAX)
+ * 
+ * @param string            $newStatus          - Nouveau statut de l'utilisateur
+ * @param integer           $userId             - Identifiant de l'utilisateur
+ * @param mysqlconnection   $connection         - Connexion BDD effectuée dans le fichier config-db.php
+ *
+ * @return string
+ */
+function changeStatus($newStatus, $userId, $connection) {
+    $result = "ERROR_UNKNOWN#Une erreur est survenue.";
+
+    if ($newStatus == "ALIVE" || $newStatus == "SUSPENDED") {
+
+        if (isValidSession($connection)) {
+
+            if ($_SESSION['Data']['access_level'] == "ADMINISTRATOR") {
+
+                $query = $connection->prepare("UPDATE kioui_accounts SET status = ? WHERE id = ?");
+                $query->bind_param("si", $newStatus, $userId);
+                $query->execute();
+                $query->close();
+                
+                $result = "SUCCESS#Le statut a bien été modifié.#/espace-utilisateur/administration";
+
+            } else {
+                $result = "ERROR_INSUFFICIENT_PERMISSIONS#Votre niveau d'accès ne vous permet pas d'éffectuer cette action.";
+            }
+
+        } else {
+            $result = "ERROR_INVALID_SESSION#Votre session est invalide. Déconnectez vous puis reconnectez vous. Si le problème persiste contactez le support.";
+        }
+
+    }
+    
     return $result;
 }
 

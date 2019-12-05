@@ -72,7 +72,8 @@
             //Action
             $res .= "<td>";
             $res .= "<a href='#' title=\"Modifier le quota\" data-toggle='modal' data-target='#modalChangeQuota' onclick='editModalQuota(" . $user['id'] . ")'><i class='fas fa-tachometer-alt edit'></i></a>&nbsp;&nbsp;&nbsp;";
-            $res .= "<a href='#' title=\"Modifier le niveau d'access\" data-toggle='modal' data-target='#modalChangeAccessLevel' onclick='editModalAccessLevel(" . $user['id'] . ")'><i class='far fa-id-card edit'></i></i></a>";
+            $res .= "<a href='#' title=\"Modifier le niveau d'access\" data-toggle='modal' data-target='#modalChangeAccessLevel' onclick='editModalAccessLevel(" . $user['id'] . ")'><i class='far fa-id-card edit'></i></i></a>&nbsp;&nbsp;&nbsp;";
+            $res .= "<a href='#' title=\"Modifier le statut du compte\" data-toggle='modal' data-target='#modalChangeStatus' onclick='editModalStatus(" . $user['id'] . ")'><i class='fas fa-gavel edit'></i></i></a>";
             $res .= "</td>";
 
             $res .= "</tr>";
@@ -82,6 +83,7 @@
         echo($res);
         include("./includes/pages/modals/change-access-level.php");
         include("./includes/pages/modals/change-quota.php");
+        include("./includes/pages/modals/change-status.php");
         ?>
     </div>
 </div>

@@ -7,7 +7,7 @@ require_once(getcwd() . '/PHPMailer/PHPMailerAutoload.php');
 
 
 //Executions des tâches
-deleteFilesByRules($connection);
+//deleteFilesByRules($connection); //Fonctionne mais idée abandonné
 deleteAccountProcedure($connection, $em);
 
 

@@ -77,6 +77,13 @@ function editModalAccessLevel(id){
 }
 
 /**
+ * Fonction qui édite le modal de modification de statut
+*/
+function editModalStatus(id){
+	document.querySelector("#change-status_iduser").setAttribute("value", id);
+}
+
+/**
  * Fonction qui édite le modal de modification du quota
 */
 function editModalQuota(id){
