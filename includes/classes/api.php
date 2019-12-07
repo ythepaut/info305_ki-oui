@@ -30,10 +30,15 @@ $action = ($action == "" && isset($_GET['action']) && $_GET['action'] != "") ? $
 
 $query = (isset($_POST['action'])) ? $_POST : $_GET;
 
+header('Access-Control-Allow-Origin: *');
+
 switch ($action) {
 
     case "auth":
         die(json_encode(auth($query, $connection), JSON_PRETTY_PRINT));
+        break;
+    case "upload":
+        die(json_encode(uploadFile($query, $connection), JSON_PRETTY_PRINT));
         break;
 
     default:
@@ -47,7 +52,7 @@ switch ($action) {
  * Fonction qui authentifie un utilisateur et retourne un jeton de connexion
  * (Requete API - Extension)
  * 
- * @param string            $query              -   Requete API
+ * @param array             $query              -   Requete API
  * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php          
  * 
  * @return array
@@ -105,6 +110,56 @@ function auth($query, $connection) {
 
 }
 
+
+/**
+ * Fonction qui ajoute un fichier au compte d'un utilisateur
+ * (Requete API - Extension)
+ * 
+ * @param array             $query              -   Requete API
+ * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php          
+ * 
+ * @return array
+ */
+function uploadFile($query, $connection) {
+
+    $result = array("status" => "error", "error" => "ERROR_UNKNOWN", "verbose" => "An unknown error occured during the process. This is our fault.");
+
+    if (isset($query['token'], $query['key'])) {
+
+        //Recuperation des données
+        $dbquery = $connection->prepare("SELECT * FROM kioui_accounts WHERE auth_token = ?");
+        $dbquery->bind_param("s", $query['token']);
+        $dbquery->execute();
+        $dbresult = $dbquery->get_result();
+        $dbquery->close();
+        $userData = $dbresult->fetch_assoc();
+
+        if ($userData['password'] != "" && password_verify(hash('sha512', $query['key']), $userData['password'])) {
+
+            if ($userData['auth_token_expire'] > time()) {
+
+                //TODO Ajouter le fichier
+                $result = array("status" => "success", "message" => "Your file has been uploaded.");
+
+            } else {
+                $result = array("status" => "error", "error" => "ERROR_EXPIRED_TOKEN", "verbose" => "Token is expired.");
+            }
+
+        } else {
+            $result = array("status" => "error", "error" => "ERROR_INVALID_ARGUMENT", "verbose" => "Invalid argument `token` or `key`.");
+        }
+
+    } else {
+        if (!isset($query['token'])) {
+            $result = array("status" => "error", "error" => "ERROR_INVALID_ARGUMENT", "verbose" => "Missing or invalid argument `token`.");
+        } elseif (!isset($query['key'])) {
+            $result = array("status" => "error", "error" => "ERROR_INVALID_ARGUMENT", "verbose" => "Missing or invalid argument `key`.");
+        }
+    }
+
+    return $result;
+
+}
 
 
 

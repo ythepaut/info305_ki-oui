@@ -3,7 +3,7 @@
 		<div class="errorpage col-auto row">
             
             <div class="col-lg-3">
-                <h1><i class="far fa-times-circle"></i></h1>
+                <h1><i class="fas fa-hand-paper"></i></h1>
             </div>
 
             <div class="col-lg-9">
