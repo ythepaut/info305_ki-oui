@@ -49,6 +49,20 @@ function encryptText($text, $password, $salt = null, $raw = true) {
     }
     return array($cryptedText, $salt, $hash);
 }
+
+/**
+ * Fonction déchiffrant un texte à partir d'un mot de passe et d'un sel
+ *
+ * @param    string        $cryptedText                 -   Texte à déchiffrer
+ * @param    string        $password                    -   Mot de passe
+ * @param    string        $salt                        -   Sel
+ * @param    string        $hash                        -   Hash du texte déchiffré, si les hash ne correspondent pas
+ *                                                          et que hast != null alors la fonction renvoie null
+ * @param    boolean       $raw                         -   Si vrai alors texte original en binaire,
+ *                                                          sinon en base 64
+ *
+ * @return   string        $text                        -   Texte déchiffré
+ */
 function decryptText($cryptedText, $password, $salt, $hash = null, $raw = true) {
     if (!$raw) {
         $cryptedText = base64_decode($cryptedText);
@@ -424,6 +438,15 @@ function getNbSize($connection) {
     return convertUnits($sum);
 }
 
+/**
+ * Génère un lien de partage de fichier
+ *
+ * @param       string      $password           -   Mot de passe du fichier
+ * @param       int         $fileId             -   id dans la BDD du fichier
+ * @param   mysqlconnection $connection         -   Connexion à la BDD
+ *
+ * @return      string                          -   URL de partage
+ */
 function generateShareLink($password, $fileId, $connection) {
     return generateDlLink($password, $fileId, $connection, $base = "share-file");
 }
@@ -627,24 +650,26 @@ function time_elapsed_string($datetime, $full = false) {
 
 /**
  * Fonction qui retourne l'url d'une image en fct d'une extension de fichier
- * 
+ *
  * @param string             $extension             - Extension du fichier
- * 
+ *
  * @return string
  */
 function extensionImage($extension) {
-
     $result = "https://img.icons8.com/dusk/256/000000/file--v2.png";
-    
+
     switch ($extension) {
         case "png":
         case "jpg":
         case "jpeg":
         case "gif":
-            $result = "https://img.icons8.com/dusk/256/000000/picture.png";
+            $result = "https://img.icons8.com/dusk/256/000000/image-file.png";
+            break;
+        case "xcf":
+            $result = "https://img.icons8.com/dusk/64/000000/gimp.png";
             break;
         case "pdf":
-            $result = "https://img.icons8.com/dusk/256/000000/pdf.png";
+            $result = "https://img.icons8.com/dusk/256/000000/pdf-2.png";
             break;
         case "wav":
         case "mp3":
@@ -652,19 +677,79 @@ function extensionImage($extension) {
             $result = "https://img.icons8.com/dusk/256/000000/musical.png";
             break;
         case "mp4":
+        case "mov":
         case "wmv":
             $result = "https://img.icons8.com/dusk/256/000000/video-file.png";
             break;
         case "zip":
-        case "gz":
-        case "rar":
+            $result = "https://img.icons8.com/dusk/256/000000/zip.png";
+            break;
         case "7zip":
-            $result = "https://img.icons8.com/dusk/256/000000/archive-folder.png";
+            $result = "https://img.icons8.com/dusk/256/000000/7zip.png";
+            break;
+        case "rar":
+            $result = "https://img.icons8.com/dusk/256/000000/rar.png";
+            break;
+        case "gz":
+        case "tar":
+        case "tar.gz":
+            $result = "https://img.icons8.com/dusk/256/000000/tar.png";
             break;
         case "txt":
             $result = "https://img.icons8.com/dusk/256/000000/txt.png";
             break;
-
+        case "html":
+            $result = "https://img.icons8.com/dusk/256/000000/html-5.png";
+            break;
+        case "css":
+            $result = "https://img.icons8.com/dusk/256/000000/css3.png";
+            break;
+        case "php":
+            $result = "https://img.icons8.com/dusk/256/000000/php-logo.png";
+            break;
+        case "py":
+        case "pyc":
+            $result = "https://img.icons8.com/dusk/256/000000/python.png";
+            break;
+        case "bat":
+            $result = "https://img.icons8.com/dusk/256/000000/console.png";
+            break;
+        case "ps1":
+        case "sh":
+            $result = "https://img.icons8.com/dusk/256/000000/code.png";
+            break;
+        case "exe":
+            $result = "https://img.icons8.com/dusk/256/000000/windows-logo.png";
+            break;
+        case "jar":
+        case "java":
+        case "class":
+            $result = "https://img.icons8.com/dusk/256/000000/java-coffee-cup-logo.png";
+            break;
+        case "c":
+            $result = "https://img.icons8.com/dusk/256/000000/c-programming.png";
+            break;
+        case "cpp":
+            $result = "https://img.icons8.com/dusk/256/000000/c-programming.png";
+            break;
+        case "torrent":
+            $result = "https://img.icons8.com/dusk/256/000000/utorrent.png";
+            break;
+        case "odt":
+        case "docx":
+            $result = "https://img.icons8.com/dusk/256/000000/ms-word.png";
+            break;
+        case "ods":
+        case "xls":
+        case "xlsx":
+            $result = "https://img.icons8.com/dusk/256/000000/ms-word.png";
+            break;
+        case "odp":
+        case "pptx":
+            $result = "https://img.icons8.com/dusk/256/000000/ms-powerpoint.png";
+            break;
+        default:
+            break;
     }
 
     return $result;
@@ -673,12 +758,12 @@ function extensionImage($extension) {
 
 /**
  * Fonction qui crée un evenement pour l'affichage des statistiques administrateur
- * 
+ *
  * @param string              $type                   - Type d'evenement
  * @param string              $user                   - Nom d'utilisateur associé à l'evenement
  * @param string              $size  (OPT)            - Taille de fichier supprimé/ajouté si evenement associé à un ajout/suppression de fichier
  * @param mysqlconnection     $connection             - Connexion BDD effectuée dans le fichier config-db.php
- * 
+ *
  * @return void
  */
 function addEvent($type, $user, $size, $connection) {
@@ -708,10 +793,10 @@ function addEvent($type, $user, $size, $connection) {
 
 /**
  * Fonction qui modifie l'activité dans les stats admin
- * 
+ *
  * @param string              $logtype                - Evenement à log (connexion, inscription, upload ou download)
  * @param mysqlconnection     $connection             - Connexion BDD effectuée dans le fichier config-db.php
- * 
+ *
  * @return void
  */
 function incrementStatLog($logtype, $connection) {
@@ -741,7 +826,7 @@ function incrementStatLog($logtype, $connection) {
         if (array_key_exists($date, $logs)) {
             //Incrementation
             $logs[$date] += 1;
-            
+
             $logsJSON = json_encode($logs);
 
             $query = $connection->prepare("UPDATE kioui_stats SET " . $column . " = ? WHERE id = 0");
@@ -760,7 +845,7 @@ function incrementStatLog($logtype, $connection) {
             $logsDown[$date] = 0;
 
             $logs[$date] = 1;
-            
+
             $logsJSON = json_encode($logs);
 
             $query = $connection->prepare("UPDATE kioui_stats SET newUserLog = ? , reconnectUserLog = ? , uploadLog = ? , downloadLog = ? WHERE id = 0");
