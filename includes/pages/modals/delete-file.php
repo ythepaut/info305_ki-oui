@@ -25,6 +25,7 @@
                             <input type="hidden" class="form-control" id="delete-fileid" name="delete-fileid" value="{ID}" />
 
                             <br />
+                            <br />
                             <input type="hidden" name="action" value="delete" />
                             <input type="submit" value="Supprimer" name="Supprimer" />
 

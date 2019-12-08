@@ -15,13 +15,13 @@
                 <!--Tab nav-->
                 <ul class="nav nav-tabs" role="tablist">
                     <li class="nav-item">
-                        <a class="nav-link active link" style="border: 0px solid transparent;" id="stac-tab" data-toggle="tab" href="#stac" role="tab" aria-controls="stac" aria-selected="true">Statistiques et actions globales</a>
+                        <a class="nav-link active link" style="border: 0px solid transparent;" id="stac-tab" data-toggle="tab" href="#stac" role="tab" aria-controls="stac" aria-selected="true" onclick="window.location.href='/espace-utilisateur/administration/#/statistiques';">Statistiques et actions globales</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link link" style="border: 0px solid transparent;" id="gesut-tab" data-toggle="tab" href="#gesut" role="tab" aria-controls="gesut" aria-selected="false">Gestion des utilisateurs</a>
+                        <a class="nav-link link" style="border: 0px solid transparent;" id="gesut-tab" data-toggle="tab" href="#gesut" role="tab" aria-controls="gesut" aria-selected="false" onclick="window.location.href='/espace-utilisateur/administration/#/utilisateurs';">Gestion des utilisateurs</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link link" style="border: 0px solid transparent;" id="gesfi-tab" data-toggle="tab" href="#gesfi" role="tab" aria-controls="gesfi" aria-selected="false">Gestion des fichiers</a>
+                        <a class="nav-link link" style="border: 0px solid transparent;" id="gesfi-tab" data-toggle="tab" href="#gesfi" role="tab" aria-controls="gesfi" aria-selected="false" onclick="window.location.href='/espace-utilisateur/administration/#/fichiers';">Gestion des fichiers</a>
                     </li>
                 </ul>
 

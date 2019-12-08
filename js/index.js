@@ -205,3 +205,16 @@ function getSrcJs(relative_src) {
 	}
 	return result_src;
 }
+
+
+//Administration tab
+document.addEventListener("DOMContentLoaded", function() {
+    let url = window.location.href;
+    if (url.includes('/administration/#/statistiques')) {
+        $('#stac-tab').tab('show');
+    } else if (url.includes('/administration/#/utilisateurs')) {
+        $('#gesut-tab').tab('show');
+    } else if (url.includes('/administration/#/fichiers')) {
+        $('#gesfi-tab').tab('show');
+    }
+});

@@ -1670,7 +1670,7 @@ function changeAccessLevel($newAccessLevel, $userId, $connection) {
                 $query->execute();
                 $query->close();
 
-                $result = "SUCCESS#Le niveau d'accès a bien été modifié.#/espace-utilisateur/administration";
+                $result = "SUCCESS#Le niveau d'accès a bien été modifié.#/espace-utilisateur/administration/#/utilisateurs";
 
             } else {
                 $result = "ERROR_INSUFFICIENT_PERMISSIONS#Votre niveau d'accès ne vous permet pas d'éffectuer cette action.";
@@ -1710,7 +1710,7 @@ function changeStatus($newStatus, $userId, $connection) {
                 $query->execute();
                 $query->close();
                 
-                $result = "SUCCESS#Le statut a bien été modifié.#/espace-utilisateur/administration";
+                $result = "SUCCESS#Le statut a bien été modifié.#/espace-utilisateur/administration/#/utilisateurs";
 
             } else {
                 $result = "ERROR_INSUFFICIENT_PERMISSIONS#Votre niveau d'accès ne vous permet pas d'éffectuer cette action.";
@@ -1772,7 +1772,7 @@ function changeQuota($unit, $newQuota, $userId, $connection) {
                 $query->execute();
                 $query->close();
 
-                $result = "SUCCESS#Le quota a bien été modifié.#/espace-utilisateur/administration";
+                $result = "SUCCESS#Le quota a bien été modifié.#/espace-utilisateur/administration/#/utilisateurs";
 
             } else {
                 $result = "ERROR_MISSING_FIELDS#Veuillez remplir tous les champs.";

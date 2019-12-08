@@ -71,7 +71,11 @@ $('form.ajax').on('submit', function() {
 
                     //Redirection si lien non "null"
                     if (responseArray[2] != "null") {
-                        setTimeout(function() { window.location.href = responseArray[2]; }, 1000);
+                        if (responseArray[3] != null) {
+                            setTimeout(function() { window.location.href = responseArray[2] + "#" + responseArray[3]; window.location.reload(); }, 1000);
+                        } else {
+                            setTimeout(function() { window.location.href = responseArray[2]; }, 1000);
+                        }
                     }
                     
                 } else {
