@@ -537,6 +537,36 @@ div.alert.alert-success {
     color: #2ecc71;
 }
 
+button[value="french"], button[value="english"] {
+    color: #000;
+    background-color: #f2f3f7;
+}
+button[value="french"]:hover, button[value="english"]:hover {
+    background-color: #fff;
+}
+
+button[value="kioui"] {
+    color: #fff;
+    background-color: #1dd1a1;
+}
+button[value="kioui"]:hover {
+    background-color: #5adfbb;
+}
+button[value="frez"] {
+    color: #fff;
+    background-color: #ff6b6b;
+}
+button[value="frez"]:hover {
+    background-color: #F38283;
+}
+button[value="dark"], button[value="braille"] {
+    color: #fff;
+    background-color: #2B2B2B;
+}
+button[value="dark"]:hover, button[value="braille"]:hover {
+    color: #fff;
+    background-color: #2B2B2B;
+}
 
 /* Styles CGU */
 
