@@ -3,7 +3,7 @@
 </noscript>
 
 <section class="pair container-fluid">
-	<div class="row ligne0">
+	<div class="row ligne0" id="index-background">
 
 		<div class="inner col-lg-5">
         <div id="titrecentre">
