@@ -278,7 +278,7 @@ function login($email, $passwd, $remember = "off", $connection, $em) {
         $result = "ERROR_MISSING_FIELDS#Veuillez remplir tous les champs.";
     }
 
-    return $result . "#<script>window.href.location = '/';</script>";
+    return $result;
 }
 function sendTFACode($em, $connection) {
     $result = "ERROR_UNKNOWN#Une erreur est survenue.";
@@ -418,7 +418,7 @@ function register($username, $email, $passwd, $passwd2, $cgu, $recaptchatoken, $
         $result = "ERROR_MISSING_FIELDS#Veuillez remplir tous les champs.";
     }
 
-    return $result . "#<script>window.href.location = '/';</script>";
+    return $result;
 }
 
 

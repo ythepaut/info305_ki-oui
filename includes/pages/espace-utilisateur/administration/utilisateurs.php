@@ -5,11 +5,12 @@
         $res = "<table class='table'>";
         $res .= "<thead class='thead'>";
 
-        $res .= "<th style='width:20%;'>Nom de l'utilisateur</th>";
+        $res .= "<th style='width:15%;'>Nom de l'utilisateur</th>";
         $res .= "<th style='width:auto;'>Adresse e-mail</th>";
         $res .= "<th style='width:12%;'>Niveau d'accès</th>";
-        $res .= "<th style='width:12%;'>Statut</th>";
-        $res .= "<th style='width:12%;'>Quota</th>";
+        $res .= "<th style='width:9%;'>Statut</th>";
+        $res .= "<th style='width:7%;'>Quota</th>";
+        $res .= "<th style='width:18%;'>Utilisation</th>";
         $res .= "<th style='width:15%;'>Actions</th>";
 
         $res .= "</thead>";
@@ -48,6 +49,18 @@
             }
 
 
+            $pourcentage = round((getSize($user['id'], $connection) / $user['quota']) * 100, 2);
+            $pourcentage = ($pourcentage == 0) ? "0.00" : $pourcentage;
+            $occupe = round(getSize($user['id'], $connection), 2);
+
+            $couleur = "bg-success";
+
+            if ($pourcentage > 80) {
+                $couleur = "bg-danger";
+            } elseif ($pourcentage > 60) {
+                $couleur = "bg-warning";
+            }
+
             $res .= "<tr>";
             //Affichage du nom de l'utilisateur
             $res .= "<td>";
@@ -68,6 +81,10 @@
             //Affichage du quota
             $res .= "<td>";
             $res .= convertUnits($user["quota"]);
+            $res .= "</td>";
+            //Affichage utilisation espace
+            $res .= "<td>";
+            $res .= "<div class='progress' title='" . convertUnits($occupe) . "/" . convertUnits($user['quota']) . "'> <div class='progress-bar " . $couleur . "' role='progressbar' style='width: " . $pourcentage . "%' aria-valuenow='" . $pourcentage . "' aria-valuemin='0' aria-valuemax='100'></div> </div>";
             $res .= "</td>";
             //Action
             $res .= "<td>";

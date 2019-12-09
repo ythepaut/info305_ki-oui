@@ -81,7 +81,15 @@
                         $restant = round($_SESSION['Data']['quota']/(10**6) - getSize($_SESSION['Data']['id'], $connection)/(10**6), 2);
                         $restant = ($occupe < $_SESSION['Data']['quota']/(10**6)) ? $restant : 0;
 
-                        $couleur = ($restant > 0) ? "#54a0ff" : "#ee5253";
+                        if ($pourcentage > 100) {
+                            $couleur = "#ee5253";
+                        } elseif ($pourcentage > 80) {
+                            $couleur = "#f39c12";
+                        } elseif ($pourcentage > 60) {
+                            $couleur = "#f1c40f";
+                        } else {
+                            $couleur = "#54a0ff";
+                        }
 
                         ?>
 
