@@ -130,6 +130,9 @@ function editModalTheme(theme) {
 		case 'dark':
 			createCookie('theme', 'dark', false);
 			break;
+		case 'braille':
+			createCookie('theme', 'braille', false);
+			break;
 	}
 	themeCookie = readCookie('theme');
 	changeTheme(themeCookie);
@@ -153,6 +156,8 @@ function changeTheme(themeCookie) {
 			html.style.cssText += "--main-light-color-lighter: #5adfbb;";
 			html.style.cssText += "--background-color: #f1f1f1;";
 			html.style.cssText += "--background-light-color: #fff;";
+			// police
+			body.style.setProperty("font-family", "sans-serif");
 			// image d'accueil
 			if (background) {	
 			background.style.setProperty("background-image", 'url("../ressources/img/accueil.jpeg")');
@@ -165,6 +170,8 @@ function changeTheme(themeCookie) {
 			html.style.cssText += "--main-light-color-lighter: #F38283;";
 			html.style.cssText += "--background-color: #f1f1f1;";
 			html.style.cssText += "--background-light-color: #fff;";
+			// police
+			body.style.setProperty("font-family", "sans-serif");
 			// image d'accueil
 			if (background) {	
 			background.style.setProperty("background-image", 'url("../ressources/img/accueil-frez.jpeg")');
@@ -179,9 +186,26 @@ function changeTheme(themeCookie) {
 			html.style.cssText += "--background-light-color: #212121;";
 			body.style.setProperty("color", "white !veryimportant;");
 			body.style.setProperty("background-color", "var(--background-light-color) !veryimportant;");
+			// police
+			body.style.setProperty("font-family", "sans-serif");
 			// image d'accueil
 			if (background) {	
 			background.style.setProperty("background-image", 'url("../ressources/img/accueil-dark.jpeg")');
+			}
+		break;
+
+		case 'braille':
+			// couleurs
+			html.style.cssText = "--main-color: black;";
+			html.style.cssText += "--main-light-color: #2B2B2B;";
+			html.style.cssText += "--main-light-color-lighter: #474747;";
+			html.style.cssText += "--background-color: #f1f1f1;";
+			html.style.cssText += "--background-light-color: #fff;";
+			// police
+			body.style.setProperty("font-family", "braille");
+			// image d'accueil
+			if (background) {	
+			background.style.setProperty("background-image", 'url("../ressources/img/accueil.jpeg")');
 			}
 		break;
 	}

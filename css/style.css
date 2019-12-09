@@ -1,3 +1,9 @@
+@font-face {
+    font-family: "braille";
+    src: url("./braille.ttf");
+    font-style: normal;
+}
+
 html {
   --main-color: #10ac84;
   --main-light-color: #1dd1a1;
@@ -31,10 +37,10 @@ a.link {
     background: var(--main-color);
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: #0e9674;
+    background: var(--main-color);
 }
 ::-webkit-scrollbar-thumb:active {
-    background: #128568;
+    background: var(--main-color);
 }
 body {
     overflow-y: scroll;
