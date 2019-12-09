@@ -63,6 +63,7 @@
         <script src="<?php echo(getSrc('./js/index.js')); ?>"></script>
         <script src="<?php echo(getSrc('./js/upload.js')); ?>"></script>
         <script src="<?php echo(getSrc('./js/ajax.js')); ?>"></script>
+        <script src="<?php echo(getSrc('./js/tts.js')); ?>"></script>
 
         <!--FontAwesome-->
         <script src="https://kit.fontawesome.com/902b444792.js" crossorigin="anonymous"></script>
