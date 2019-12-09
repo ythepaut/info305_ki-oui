@@ -23,11 +23,11 @@
                         </div>
 
                         <div class="col-lg-2">
-                            <a href="#" name="language" value="french" checked>Français</a>
+                            <button name="language" value="french" checked>Français</button>
                         </div>
 
                         <div class="col-lg-2">
-                            <a href="#" name="language" value="english">Anglais</a>
+                            <button name="language" value="english">Anglais</button>
                         </div>
 
                     </div>
@@ -41,19 +41,19 @@
                         </div>
 
                         <div class="col-lg-2">
-                            <a href="#" name="theme" value="kioui" onclick="editModalTheme('kioui');">Ki-Oui</a>
+                            <button name="theme" value="kioui" onclick="editModalTheme('kioui');">Ki-Oui</button>
                         </div>
 
                         <div class="col-lg-2">
-                            <a href="#" name="theme" value="frez" onclick="editModalTheme('frez');">Fr-Ez</a>
+                            <button name="theme" value="frez" onclick="editModalTheme('frez');">Fr-Ez</button>
                         </div>
 
                         <div class="col-lg-2">
-                            <a href="#" name="theme" value="dark" onclick="editModalTheme('dark');">Dark</a>
+                            <button name="theme" value="dark" onclick="editModalTheme('dark');">Dark</button>
                         </div>
 
                         <div class="col-lg-2">
-                            <a href="#" name="stheme" value="braille" onclick="editModalTheme('braille');">Braille</a>
+                            <button name="stheme" value="braille" onclick="editModalTheme('braille');">Braille</button>
                         </div>
 
                     </div>
