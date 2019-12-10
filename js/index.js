@@ -15,7 +15,7 @@ function editModalDelete(fileid) {
 }
 
 /**
- * Je ferai le commentaire <3 -Roro
+ * Fonction qui édite le modal de changement de sel
  */
 function editModalChangeSalt(fileid) {
 	let deleteButton = document.querySelector("#change_salt-fileid");
