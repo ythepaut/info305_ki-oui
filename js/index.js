@@ -240,7 +240,7 @@ function changeTheme(themeCookie) {
 			body.style.setProperty("font-family", "braille");
 			// image d'accueil
 			if (background) {	
-			background.style.setProperty("background-image", 'url("../ressources/img/accueil.jpeg")');
+			background.style.setProperty("background-image", 'url("../ressources/img/accueil-braille.jpeg")');
 			}
 		break;
 	}
