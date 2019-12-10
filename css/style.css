@@ -379,7 +379,7 @@ div.panel-outline {
 
 
 section.panel-background {
-	background-color: var(--background-color);
+	background-color: #f2f3f7;
     color: #404957 !important;
     min-height: 75vh;
 }
