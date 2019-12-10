@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <?php
 define("AES_METHOD", "AES-256-CBC");
 define("SIZE_FILE_NAME", 16);
@@ -1541,4 +1540,3 @@ function incrementStatLog($logtype, $connection) {
 }
 
 ?>
->>>>>>> 46b47faf58f98a4a335b21817f5157014556fd40
