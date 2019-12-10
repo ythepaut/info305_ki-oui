@@ -303,6 +303,14 @@
             <div class="col-lg-6 chart-container">
                 <canvas id="chart-js-stats3" width="585" height="293" class="chartjs"></canvas>
             </div>
+            <div class="col-lg-6" style="text-align: center;">
+                <br />
+                <span>Represente la fidélité de vos utilisateurs</span>
+            </div>
+            <div class="col-lg-6" style="text-align: center;">
+                <br />
+                <span>Represente l'efficacité du bouche à oreille</span>
+            </div>
             <script>
 
 
@@ -320,13 +328,14 @@
                 };
                 var data2 = {
                     datasets: [{
-                        data:[21,79],
-                        backgroundColor:["#fdcb6e", "#00b894"],
+                        data:[21, 52, 27],
+                        backgroundColor:["#FDA7DF", "#9980FA", "#5758BB"],
                         weight: 15,
                     }],
                     labels: [
-                        'Utilisateurs ponctuels (%)',
-                        'Utilisateurs recurrents (%)'
+                        "Utilisateurs actif cette semaine (%)",
+                        "Utilisateurs actif ce mois (%)",
+                        "Reste (%)"
                     ]
                 };
                 new Chart(document.querySelector("#chart-js-stats2"),{
@@ -338,12 +347,12 @@
                 var data3 = {
                     datasets: [{
                         data:[7,93],
-                        backgroundColor:["#74b9ff", "#a29bfe"],
+                        backgroundColor:["#B53471", "#ED4C67"],
                         weight: 15,
                     }],
                     labels: [
-                        'Utilisateurs parrains (%)',
-                        'Utilisateurs parrainés (%)'
+                        "Taux d'utilisateurs parrainés (%)",
+                        "Taux d'utilisateurs non parrainés (%)"
                     ]
                 };
                 new Chart(document.querySelector("#chart-js-stats3"),{

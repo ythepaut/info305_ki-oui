@@ -480,8 +480,7 @@ input[type="file"]+label:disabled {
 }
 
 .dropzone {
-    overflow-y: scroll;
-    height: 16em;
+    overflow-y: scroll !important;
 }
 
 .dropzone.dragover {
