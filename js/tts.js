@@ -1,18 +1,15 @@
-var synth = window.speechSynthesis;
+var synth;
 
 var muted = false;
 var voices;
 var voice_fr;
 
-if (synth === undefined) {
-    muted = true;
-}
-else {
-    initVoices();
-    cancelSound();
-}
-
+/**
+ * Initialise la voix
+ */
 function initVoices() {
+    synth = window.speechSynthesis;
+
     voices = synth.getVoices();
     voice_fr = null;
 
@@ -30,6 +27,9 @@ function initVoices() {
     }
 }
 
+/**
+ * Annule la lecture d'un son
+ */
 function cancelSound() {
     if (synth.speaking) {
         synth.cancel();
@@ -51,13 +51,17 @@ function speak(txt) {
                 // fin du texte
             }
             utterThis.onerror = function (event) {
+                if (!muted) {
+                    initVoices();
+                }
+
                 console.error('Erreur TTS');
                 console.log(event);
             }
 
             utterThis.voice = voice_fr;
             utterThis.pitch = 1;
-            utterThis.rate = 1.3;
+            utterThis.rate = 1.1;
             synth.speak(utterThis);
         }
     }
@@ -109,3 +113,13 @@ body.addEventListener('mousemove', e => {
         }
     }
 });
+
+synth = window.speechSynthesis;
+
+if (synth === undefined) {
+    muted = true;
+}
+else {
+    initVoices();
+    cancelSound();
+}

@@ -187,10 +187,10 @@
                             <?php } else { ?>
                             <a href="/espace-utilisateur/sort-by-name-desc"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "original_name/ASC") {echo("active"); } ?>" title="Trier par nom"></i></a>
                             <?php } ?></th>
-                            <th style="width:15%;" class="d-none d-lg-table-cell">Taille du fichier &nbsp;<a href="/espace-utilisateur/sort-by-size"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "size/DESC") {echo("active"); } ?>" title="Trier par taille"></i></a></th>
-                            <th style="width:15%;" class="d-none d-lg-table-cell">Date &nbsp;<a href="/espace-utilisateur/sort-by-date"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "id/DESC") {echo("active"); } ?>" title="Trier par date"></i></a></th>
-                            <th style="width:15%;" class="d-none d-lg-table-cell">Téléchargements &nbsp;<a href="/espace-utilisateur/sort-by-dl"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "download_count/DESC") {echo("active"); } ?>" title="Trier nombre de téléchargements"></i></a></th>
-                            <th style="width:10%;">Actions</th>
+                            <th style="width:10%;" class="d-none d-lg-table-cell">Taille du fichier &nbsp;<a href="/espace-utilisateur/sort-by-size"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "size/DESC") {echo("active"); } ?>" title="Trier par taille"></i></a></th>
+                            <th style="width:10%;" class="d-none d-lg-table-cell">Date &nbsp;<a href="/espace-utilisateur/sort-by-date"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "id/DESC") {echo("active"); } ?>" title="Trier par date"></i></a></th>
+                            <th style="width:10%;" class="d-none d-lg-table-cell">Téléchargements &nbsp;<a href="/espace-utilisateur/sort-by-dl"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "download_count/DESC") {echo("active"); } ?>" title="Trier nombre de téléchargements"></i></a></th>
+                            <th style="width:16%;">Actions</th>
                             <th style="width:2%;"><a href='#' data-toggle='modal' data-target='#modalDeleteMultipleFiles' onclick='editModalDeleteMultipleFiles()'><i class='fas fa-trash-alt delete'></i></a></th>
                         </thead>
                     <?php } ?>
@@ -237,9 +237,9 @@
                             //Colonne Date
                             $table .=  "<td class='d-none d-lg-table-cell'>" . $file["download_count"] . "</td>\n";
                             //Colonne Action
-                            $table .=  "<td>" . "<a href='#' data-toggle='modal' data-target='#modalChangeSalt' onclick='editModalChangeSalt(" . $file['id'] . ")'><i class='fas fa-share-alt edit'></i></a>" . "&nbsp; &nbsp; &nbsp;" .
-                                                "<a href='#' data-toggle='modal' data-target='#modalShareLink' onclick='editModalShare(\"" . generateShareLink($_SESSION['UserPassword'], $file['id'], $connection) . "\")'><i class='fas fa-share-alt edit'></i></a>" . "&nbsp; &nbsp; &nbsp;" .
-                                                "<a href='#' data-toggle='modal' data-target='#modalDirectDownload' onclick='editModalDirectDownload(".'"'."$path".'"'.", ".'"'."$key".'"'.", ".'"'.$originalName.'"'.")'><i class='fas fa-download edit'></i></a>" . "&nbsp; &nbsp; &nbsp;" .
+                            $table .=  "<td>" . "<a href='#' data-toggle='modal' data-target='#modalChangeSalt' onclick='editModalChangeSalt(" . $file['id'] . ")'><i class='fas fa-retweet edit'></i></a>" . "&nbsp; &nbsp; &nbsp; &nbsp;" .
+                                                "<a href='#' data-toggle='modal' data-target='#modalShareLink' onclick='editModalShare(\"" . generateShareLink($_SESSION['UserPassword'], $file['id'], $connection) . "\")'><i class='fas fa-share-alt edit'></i></a>" . "&nbsp; &nbsp; &nbsp; &nbsp;" .
+                                                "<a href='#' data-toggle='modal' data-target='#modalDirectDownload' onclick='editModalDirectDownload(".'"'."$path".'"'.", ".'"'."$key".'"'.", ".'"'.$originalName.'"'.")'><i class='fas fa-download edit'></i></a>" . "&nbsp; &nbsp; &nbsp; &nbsp;" .
                                                 "<a href='#' data-toggle='modal' data-target='#modalDeleteFile' onclick='editModalDelete(" . $file['id'] . ")'><i class='fas fa-trash-alt delete'></i></a>" .
                                                 "</td>\n";
                             $table .=  "<td class='d-none d-lg-table-cell'><div class=\"custom-control custom-checkbox\"><input type=\"checkbox\" class=\"custom-control-input checkbox-delete-files\" name=\"" . $originalName . "\" id=\"checkbox-delete-files" . $file['id'] . "\" value=\"" . $file['id'] . "\" /><label class=\"custom-control-label\" for=\"checkbox-delete-files" . $file['id'] . "\"></label></div></td>\n";
