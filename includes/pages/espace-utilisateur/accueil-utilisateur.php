@@ -244,7 +244,7 @@
                             $originalName = str_replace("'", "&apos;", $originalName);
                             $originalName = str_replace("\"", '&quot;', $originalName);
 
-                            $originalName = (strlen($originalName) > 70) ? substr($originalName, 0, 67) . "..." : $originalName;
+                            $originalName = (strlen($originalName) > 60) ? substr($originalName, 0, 57) . "..." : $originalName;
 
                             //Colonne Nom
                             $table .=  "<tr><td>" . "<img style='width: 18px;' alt='Fichier' src='" . extensionImage(explode(".", decryptText($file["original_name"], $key, $file["salt"], null, false))[count(explode(".", decryptText($file["original_name"], $key, $file["salt"], null, false))) - 1]) . "' />" . "</td>\n";

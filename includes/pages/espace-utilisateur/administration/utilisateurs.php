@@ -7,11 +7,11 @@
 
         $res .= "<th style='width:15%;'>Nom de l'utilisateur</th>";
         $res .= "<th style='width:auto;'>Adresse e-mail</th>";
-        $res .= "<th style='width:12%;'>Niveau d'accès</th>";
-        $res .= "<th style='width:9%;'>Statut</th>";
-        $res .= "<th style='width:7%;'>Quota</th>";
-        $res .= "<th style='width:18%;'>Utilisation</th>";
-        $res .= "<th style='width:15%;'>Actions</th>";
+        $res .= "<th style='width:13%;'>Niveau d'accès</th>";
+        $res .= "<th style='width:10%;'>Statut</th>";
+        $res .= "<th style='width:8%;'>Quota</th>";
+        $res .= "<th style='width:19%;'>Utilisation</th>";
+        $res .= "<th style='width:9%; text-align: right;'>Actions</th>";
 
         $res .= "</thead>";
 
@@ -84,10 +84,10 @@
             $res .= "</td>";
             //Affichage utilisation espace
             $res .= "<td>";
-            $res .= "<div class='progress' title='" . convertUnits($occupe) . "/" . convertUnits($user['quota']) . "'> <div class='progress-bar " . $couleur . "' role='progressbar' style='width: " . $pourcentage . "%' aria-valuenow='" . $pourcentage . "' aria-valuemin='0' aria-valuemax='100'></div> </div>";
+            $res .= "<div class='progress' title='" . convertUnits($occupe) . "/" . convertUnits($user['quota']) . "  (" . $pourcentage . "%)" . "'> <div class='progress-bar " . $couleur . "' role='progressbar' style='width: " . $pourcentage . "%' aria-valuenow='" . $pourcentage . "' aria-valuemin='0' aria-valuemax='100'></div> </div>";
             $res .= "</td>";
             //Action
-            $res .= "<td>";
+            $res .= "<td style='text-align: right;'>";
             $res .= "<a href='#' title=\"Modifier le quota\" data-toggle='modal' data-target='#modalChangeQuota' onclick='editModalQuota(" . $user['id'] . ")'><i class='fas fa-tachometer-alt edit'></i></a>&nbsp;&nbsp;&nbsp;";
             $res .= "<a href='#' title=\"Modifier le niveau d'access\" data-toggle='modal' data-target='#modalChangeAccessLevel' onclick='editModalAccessLevel(" . $user['id'] . ")'><i class='far fa-id-card edit'></i></i></a>&nbsp;&nbsp;&nbsp;";
             $res .= "<a href='#' title=\"Modifier le statut du compte\" data-toggle='modal' data-target='#modalChangeStatus' onclick='editModalStatus(" . $user['id'] . ")'><i class='fas fa-gavel edit'></i></i></a>";
