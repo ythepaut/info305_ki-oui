@@ -23,11 +23,11 @@
                         </div>
 
                         <div class="col-lg-2">
-                            <input type="radio" name="language" value="french" checked> Français
+                            <button name="language" value="french" checked>Français</button>
                         </div>
 
                         <div class="col-lg-2">
-                            <input type="radio" name="language" value="english"> Anglais
+                            <button name="language" value="english">Anglais</button>
                         </div>
 
                     </div>
@@ -41,15 +41,19 @@
                         </div>
 
                         <div class="col-lg-2">
-                            <input type="radio" name="theme" value="kioui" onclick="editModalTheme('kioui');" />Ki-Oui
+                            <button name="theme" value="kioui" onclick="editModalTheme('kioui');">Ki-Oui</button>
                         </div>
 
                         <div class="col-lg-2">
-                            <input type="radio" name="theme" value="frez" onclick="editModalTheme('frez');" />Fr-Ez
+                            <button name="theme" value="frez" onclick="editModalTheme('frez');">Fr-Ez</button>
                         </div>
 
                         <div class="col-lg-2">
-                            <input type="radio" name="theme" value="dark" onclick="editModalTheme('dark');" />Dark
+                            <button name="theme" value="dark" onclick="editModalTheme('dark');">Dark</button>
+                        </div>
+
+                        <div class="col-lg-2">
+                            <button name="stheme" value="braille" onclick="editModalTheme('braille');">Braille</button>
                         </div>
 
                     </div>

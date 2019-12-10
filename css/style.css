@@ -1,3 +1,17 @@
+@font-face {
+    font-family: "braille";
+    src: url("./braille.ttf");
+    font-style: normal;
+}
+
+html {
+  --main-color: #10ac84;
+  --main-light-color: #1dd1a1;
+  --main-light-color-lighter: #5ADFBB;
+  --background-color: #c8d6e5;
+  --background-light-color: #fff;
+}
+
 * {
 	padding: 0px;
 	margin: 0px;
@@ -17,16 +31,16 @@ a.link {
     width: 0px;
 }
 ::-webkit-scrollbar-track {
-    background: #fff;
+    background: var(--background-light-color);
 }
 ::-webkit-scrollbar-thumb {
-    background: #10ac84;
+    background: var(--main-color);
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: #0e9674;
+    background: var(--main-color);
 }
 ::-webkit-scrollbar-thumb:active {
-    background: #128568;
+    background: var(--main-color);
 }
 body {
     overflow-y: scroll;
@@ -36,7 +50,7 @@ body {
 /* Header */
 
 nav {
-	background-color: #10ac84;
+	background-color: var(--main-color);
 	color: #fff;
 }
 
@@ -109,11 +123,11 @@ nav form > a > span {
 /**/
 
 main > section.pair {
-	background-color: #fff;
+	background-color: var(--background-light-color);
 }
 
 main > section.impair {
-	background-color: #f1f1f1;
+	background-color: var(--background-color);
 }
 
 main > section .inner {
@@ -122,11 +136,11 @@ main > section .inner {
 }
 
 main > section > .ligne0 {
-	background-image: url("../ressources/img/accueil.jpeg");
+    background-image: url("../ressources/img/accueil.jpeg");
     background-repeat: repeat;
-	background-size: 25%;
-	background-attachment: fixed;
-	min-height: 400px;
+    background-size: 25%;
+    background-attachment: fixed;
+    min-height: 400px;
 }
 
 main > section > .ligne0 #titrecentre {
@@ -140,11 +154,11 @@ main > section > .ligne0 #titrecentre {
 }
 
 main > section > .ligne0 > .col-lg-5 {
-	background-color: #fff
+	background-color: var(--background-light-color)
 }
 
 main > section > .ligne0 > .col-lg-1 {
-	background: linear-gradient( to left top, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 50%, #fff 50%, #fff 100%);
+	background: linear-gradient( to left top, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 50%, var(--background-light-color) 50%, var(--background-light-color) 100%);
 }
 
 main > section > .ligne0 > .inner > p {
@@ -154,13 +168,13 @@ main > section > .ligne0 > .inner > p {
 main > section > .ligne1 > .inner > i {
 	font-size: 80px;
 	margin: 20px 0;
-	color: #1dd1a1;
+	color: var(--main-light-color);
 }
 
 main > section > .ligne2 > .inner > .stats {
 	font-weight: bold;
 	font-size: 80px;
-	color: #1dd1a1;
+	color: var(--main-light-color);
 }
 
 /* Pages d'erreur */
@@ -176,16 +190,6 @@ div.errorpage h1 {
 	color: #e74c3c;
 }
 
-div.errorpage h1 i {
-    animation-iteration-count: infinite;
-    animation: errorblink 1.7s linear infinite;
-}
-@keyframes errorblink {  
-    0% { color: #e64735; }
-    50% { color: #df5b4d; }
-    100% { color: #e64735; }
-  }
-
 /* Inputs */
 
 .label-icon {
@@ -200,7 +204,7 @@ i.info {
 }
 
 i.success {
-    color: #10ac84;
+    color: var(--main-color);
 }
 
 i.warning {
@@ -213,7 +217,7 @@ i.error {
 
 
 i.enabled {
-    color: #10ac84;
+    color: var(--main-color);
     cursor: pointer;
     transition: all 0.5s;
 }
@@ -227,7 +231,7 @@ i.disabled {
     transition: all 0.5s;
 }
 i.disabled:hover {
-    color: #10ac84;
+    color: var(--main-color);
 }
 
 
@@ -275,8 +279,8 @@ a.button {
 
 
 button:not(.close), input[type="submit"], a.button {
-	color: #fff;
-	background-color: #1dd1a1;
+	color: var(--background-light-color);
+	background-color: var(--main-light-color);
 	border: none;
 	border-radius: 0.25rem;
 	box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2);
@@ -290,7 +294,7 @@ button:not(.close), input[type="submit"], a.button {
 }
 
 button:hover:not(.close), button:active:not(.close), input[type="submit"]:hover, a.button:hover {
-	background-color: #5adfbb;
+    background-color: var(--main-light-color-lighter);
 }
 
 button:active:not(.close), input[type="submit"]:active, a.button:active {
@@ -299,7 +303,7 @@ button:active:not(.close), input[type="submit"]:active, a.button:active {
 }
 
 button:disabled:not(.close), input[type="submit"]:disabled, a.button:disabled {
-	background-color: #c8d6e5;
+	background-color: var(--background-color);
 	color: #222f3e;
 	cursor: not-allowed;
 }
@@ -337,12 +341,12 @@ button:disabled:not(.close), input[type="submit"]:disabled, a.button:disabled {
     background-color: #283849;
 }
 .user-nav li.active {
-    border-left: solid 3px #10ac84;
+    border-left: solid 3px var(--main-color);
 }
 
 .user-nav li a {
     display: block;
-    color: #fff;
+    color: var(--background-light-color);
     font-size: 16px;
     padding: 16px 24px;
 }
@@ -365,7 +369,7 @@ h4.panel-title {
 div.panel-outline {
 	border: solid 1px #dcdcdc;
 	margin: 20px 15px;
-    background-color: #fff;
+    background-color: var(--background-light-color);
 }
 @media only screen and (max-width: 1000px) {
     div.panel-outline {
@@ -385,7 +389,7 @@ canvas.quota {
 }
 
 .item-grid {
-    background-color: #fff;
+    background-color: var(--background-light-color);
     border-radius: 0.25rem;
     border: solid 1px #e4e4e4;
 }
@@ -426,8 +430,8 @@ input[type="file"] {
 
 label#inputLabel {
     margin-top: -100px;
-    color: #fff;
-	background-color: #1dd1a1;
+    color: var(--background-light-color);
+	background-color: var(--main-light-color);
 	border: none;
 	border-radius: 5px;
 	box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2);
@@ -445,7 +449,7 @@ input[type="file"]+label:hover, input[type="file"]+label:active {
 }
 
 input[type="file"]+label:disabled {
-	background-color: #c8d6e5;
+	background-color: var(--background-color);
 	color: #222f3e;
 	cursor: not-allowed;
 }
@@ -480,14 +484,14 @@ input[type="file"]+label:disabled {
 }
 
 .dropzone.dragover {
-    border: 4px dotted #1dd1a1;
+    border: 4px dotted var(--main-light-color);
 }
 
 /*
 .dropzone.dragover {
     height: 100px;
     width: 200px;
-    background: linear-gradient(90deg, #1dd1a1 50%, transparent 50%), linear-gradient(90deg, #1dd1a1 50%, transparent 50%), linear-gradient(0deg, #1dd1a1 50%, transparent 50%), linear-gradient(0deg, #1dd1a1 50%, transparent 50%);
+    background: linear-gradient(90deg, var(--main-light-color) 50%, transparent 50%), linear-gradient(90deg, var(--main-light-color) 50%, transparent 50%), linear-gradient(0deg, var(--main-light-color) 50%, transparent 50%), linear-gradient(0deg, var(--main-light-color) 50%, transparent 50%);
     background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
     background-size: 15px 4px, 15px 4px, 4px 15px, 4px 15px;
     background-position: 0px 0px, 200px 100px, 0px 100px, 200px 0px;
@@ -510,7 +514,7 @@ input[type="file"]+label:disabled {
 h4.modal-title {
     font-size: 24px;
     font-weight: bold;
-    color: #1dd1a1;
+    color: var(--main-light-color);
     margin-bottom: 25px;
 }
 
@@ -538,6 +542,36 @@ div.alert.alert-success {
     color: #2ecc71;
 }
 
+button[value="french"], button[value="english"] {
+    color: #000;
+    background-color: #f2f3f7;
+}
+button[value="french"]:hover, button[value="english"]:hover {
+    background-color: #fff;
+}
+
+button[value="kioui"] {
+    color: #fff;
+    background-color: #1dd1a1;
+}
+button[value="kioui"]:hover {
+    background-color: #5adfbb;
+}
+button[value="frez"] {
+    color: #fff;
+    background-color: #ff6b6b;
+}
+button[value="frez"]:hover {
+    background-color: #F38283;
+}
+button[value="dark"], button[value="braille"] {
+    color: #fff;
+    background-color: #2B2B2B;
+}
+button[value="dark"]:hover, button[value="braille"]:hover {
+    color: #fff;
+    background-color: #2B2B2B;
+}
 
 /* Styles CGU */
 
@@ -580,8 +614,8 @@ div.alert.alert-success {
 .nav-link.active {
     background: #f2f3f7 !important;
     cursor: default !important;
-    border-bottom: 3px solid #10ac84 !important;
-    color: #10ac84 !important;
+    border-bottom: 3px solid var(--main-color) !important;
+    color: var(--main-color) !important;
     font-weight: bold !important;
 }
 li.nav-item {
@@ -620,7 +654,7 @@ li.nav-item {
 
 .panel-outline-admin {
     margin: 20px 15px;
-    background-color: #fff;
+    background-color: var(--background-light-color);
     border: 0px solid transparent !important;
     border-radius: 4px !important;
     -webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.05) !important;
@@ -660,7 +694,7 @@ li.nav-item {
 
 footer {
     bottom:-1;
-    color: #fff;
+    color: var(--background-light-color);
     background-color: #576574;
     text-align: center;
     font-size: 14px;
@@ -678,7 +712,7 @@ footer > .copy {
 }
 
 footer a {
-	color: #fff;
+	color: var(--background-light-color);
 }
 
 footer h3 {
