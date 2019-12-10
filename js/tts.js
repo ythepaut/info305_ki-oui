@@ -1,46 +1,66 @@
 var synth = window.speechSynthesis;
 
-var voices = synth.getVoices();
-var voice_fr = null;
+var muted = false;
+var voices;
+var voice_fr;
 
-for (let i=0; i<voices.length; i++) {
-    if (voices[i].lang.includes("fr")) {
-        voice_fr = voices[i];
+if (synth === undefined) {
+    muted = true;
+}
+else {
+    initVoices();
+    cancelSound();
+}
+
+function initVoices() {
+    voices = synth.getVoices();
+    voice_fr = null;
+
+    for (let i=0; i<voices.length; i++) {
+        if (voices[i].lang.includes("fr")) {
+            voice_fr = voices[i];
+        }
+        else if (voice_fr === null && voices[i].lang.includes("en")) {
+            voice_fr = voices[i];
+        }
     }
-    else if (voice_fr === null && voices[i].lang.includes("en")) {
-        voice_fr = voices[i];
+
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = voices;
     }
 }
 
-if (speechSynthesis.onvoiceschanged !== undefined) {
-  speechSynthesis.onvoiceschanged = voices;
-}
-
-function speak(txt) {
+function cancelSound() {
     if (synth.speaking) {
         synth.cancel();
     }
-    if (txt !== '') {
-    var utterThis = new SpeechSynthesisUtterance(txt);
-    utterThis.onend = function (event) {
-        //console.log('SpeechSynthesisUtterance.onend');
-    }
-    utterThis.onerror = function (event) {
-        console.error('Erreur TTS');
-        console.log(event);
-    }
-
-    utterThis.voice = voice_fr;
-    utterThis.pitch = 1;
-    utterThis.rate = 1.3;
-    synth.speak(utterThis);
-  }
 }
 
-function speakGeneral() {
-    var txt = document.querySelector('.txt').value;
+/**
+ * Lit un texte à voix hante
+ *
+ * @param   {string}            txt             Texte à lire
+ */
+function speak(txt) {
+    if (!muted) {
+        cancelSound();
 
-    speak(txt);
+        if (txt !== '') {
+            var utterThis = new SpeechSynthesisUtterance(txt);
+            utterThis.onend = function (event) {
+                // fin du texte
+            }
+            utterThis.onerror = function (event) {
+                console.error('Erreur TTS');
+                console.log(event);
+            }
+
+            utterThis.voice = voice_fr;
+            utterThis.pitch = 1;
+            utterThis.rate = 1.3;
+            synth.speak(utterThis);
+        }
+    }
 }
 
 var body = document.querySelector("html");
@@ -85,9 +105,7 @@ body.addEventListener('mousemove', e => {
         } else {
             balise_precedente = null;
 
-            if (synth.speaking) {
-                synth.cancel();
-            }
+            cancelSound();
         }
     }
 });
