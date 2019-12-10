@@ -175,6 +175,72 @@ function unzipCryptedFile($connection, $cryptedFileName, $key) {
 
 
 /**
+ * Fonction qui actualise la clé ou le sel d'un fichier donné
+ * 
+ * @param   mysqlconnection $connection         -   Connection à la base de données SQL 
+ * @param   string          $cryptedFileName    -   le nom du fichier encrypté
+ * @param   string          $userKey            -   la clé de décryptage de l'utilisateur
+ * @param   string          $newUserKey         -   Facultatif: la nouvelle clé de cryptage de l'utilisateur
+ * @param   string          $newSalt            -   Facultatif: le nouveau sel du fichier
+ * 
+ * @return  void
+ */
+function updateEncryption($cryptedFileName, $userKey, $connection, $newKey = "", $newSalt = "") {
+    if ($newKey != "" || $newSalt != "") {
+
+        //récupération des données du fichier
+        $query = $connection->prepare("SELECT * FROM kioui_files WHERE original_name = ?");
+        $query->bind_param("s", $cryptedFileName);
+        $query->execute();
+        $result = $query->get_result();
+        $query->close();
+        $fileData = $result->fetch_assoc();
+
+        if (file_exists(UPLOAD_DIR.$fileData['path']) && $fileData != null) {
+
+            if ($newKey == ""){
+                $newKey = $userKey;
+            }
+            if ($newSalt == ""){
+                $newSalt = $fileData['salt'];
+            }
+
+            $name = decryptText($fileData["original_name"], $userKey, $fileData["salt"], null, false);
+            
+            $zipTextEncrypted = file_get_contents(UPLOAD_DIR.$fileData['path']);
+            $zipText = decryptText($zipTextEncrypted, $userKey, $fileData["salt"], $fileData["hash"]);
+
+
+            if ($zipText !== null) {
+                //réencryptage des données
+                list($newName, $salt, $hash) = encryptText($name, $newKey, $newSalt, false);
+                list($encryptedText, $salt, $hash) = encryptText($zipText, $newKey, $salt); 
+
+                //update du contenu du fichier
+                file_put_contents(UPLOAD_DIR.$fileData['path'], $encryptedText);
+                if (!file_exists(UPLOAD_DIR.$fileData['path'])){
+                    throw new Exception ("echec de l'ouverture du fichier");
+                }
+
+                //update de la BDD
+                $query = $connection->prepare("UPDATE kioui_files SET original_name = ?  , salt = ? , content_hash = ? WHERE original_name = ?");
+                $query->bind_param("ssss", $newName, $salt, $hash, $cryptedFileName);
+                $query->execute();
+                $query->close();
+
+            } else {
+                throw new Exception("le fichier est vide");
+            }
+
+        } else {
+            throw new Exception("Le fichier n'existe pas");
+        }
+
+    }
+}
+
+
+/**
  * Fonction qui retourne la source relative d'un fichier en fonction de l'emplacement actuel.
  *
  * @param string        $relative_src       -       Chemin d'accès relatif par défaut

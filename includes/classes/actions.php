@@ -164,7 +164,9 @@ switch ($action) {
 
         die($res);
         break;
-
+    case "change-file-salt":
+        die(changeFileSalt($_POST["change_salt-fileid"], $connection));
+        break;
     default:
         throw new Exception("ERROR_MISSING_ACTION#Action invalide - " . 'action' . ":'$action'");
 }
@@ -1789,4 +1791,52 @@ function changeQuota($unit, $newQuota, $userId, $connection) {
     return $result;
 }
 
+
+/**
+ * Fonction qui change le sel d'un fichier (formulaire AJAX)
+ * 
+ * @param integer           $fileId             -   l'identifiant du fichier
+ * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php
+ * 
+ * @return string
+ */
+function changeFileSalt($fileId, $connection) {
+    $result = "ERROR_UNKNOWN#Une erreur est survenue.";
+
+    if (isValidSession($connection)) {
+        if (isset($fileId)) {
+            // acquisition du fichier crypté
+            $query = $connection->prepare("SELECT * FROM kioui_files WHERE id = ? ");
+            $query->bind_param("i", $fileId);
+            $query->execute();
+            $res = $query->get_result();
+            $query->close();
+            $fileData = $res->fetch_assoc();
+
+            $fileOwner = $fileData['owner'];
+
+            //Recuperation des données de l'utilisateur
+            $query = $connection->prepare("SELECT * FROM kioui_accounts WHERE id = ?");
+            $query->bind_param("i", $_SESSION['Data']['id']);
+            $query->execute();
+            $result = $query->get_result();
+            $query->close();
+            $userData = $result->fetch_assoc();
+
+            if ($fileOwner == $_SESSION['Data']['id']) {
+                $newSalt = randomString(16);
+                
+                updateEncryption($fileData['original_name'], $_SESSION["UserPassword"], $connection, null, $newSalt);
+
+                $_SESSION['Data']['salt'] = $newSalt;
+                
+                $result = "SUCCESS#Clé du fichier changée avec succès.#/espace-utilisateur/accueil";
+            }
+        }
+    } else {
+        $result = "ERROR_INVALID_SESSION#Votre session est invalide. Déconnectez vous puis reconnectez vous. Si le problème persiste contactez le support.";
+    }
+
+    return $result;
+}
 ?>
