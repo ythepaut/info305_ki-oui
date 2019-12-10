@@ -19,8 +19,17 @@ function editModalDelete(fileid) {
  */
 function editModalDeleteMultipleFiles() {
 
+    let deletedCheckbox_tab_all = document.querySelectorAll(".checkbox-delete-files");
+
+    var deletedCheckbox_tab = [];
+
+    deletedCheckbox_tab_all.forEach(function(elem) {
+        if (elem.checked) {
+            deletedCheckbox_tab.push(elem);
+        }
+    });
+
     let spanHowManyFilesSelected = document.querySelector("#howManyFilesSelected");
-    let deletedCheckbox_tab = document.querySelectorAll(".checkbox-delete-files");
 
     var taille = deletedCheckbox_tab.length;
 
