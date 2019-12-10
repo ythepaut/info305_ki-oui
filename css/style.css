@@ -190,6 +190,16 @@ div.errorpage h1 {
 	color: #e74c3c;
 }
 
+div.errorpage h1 i {
+    animation-iteration-count: infinite;
+    animation: errorblink 1.7s linear infinite;
+}
+@keyframes errorblink {  
+    0% { color: #e64735; }
+    50% { color: #df5b4d; }
+    100% { color: #e64735; }
+  }
+
 /* Inputs */
 
 .label-icon {
