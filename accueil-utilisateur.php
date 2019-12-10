@@ -133,21 +133,12 @@
                     </script>
                 </div>
 
-<<<<<<< HEAD
-                <div class="col-lg inner panel-outline">
-=======
                 <div class="col-lg inner panel-outline dropzone" style="overflow: hidden !important;">
->>>>>>> 46b47faf58f98a4a335b21817f5157014556fd40
                     <form action="<?php echo(getSrc('./includes/classes/actions.php')); ?>" method="post" enctype="multipart/form-data" id="uploadForm">
                         <h4 class="panel-title"> Ajouter des fichiers </h4>
 
-<<<<<<< HEAD
-                        <label for="inputFile" id="inputLabel"><i class="fas fa-file-import"></i> Ajouter des fichiers </label>
-                        <div id="allInputs"></div>
-=======
                         <input type="file" name="files[]" id="inputFile" multiple onchange="addFiles(this.files);" />
                         <label for="inputFile" id="inputLabel"><i class="fas fa-file-import"></i> Ajouter des fichiers </label> <span style="color: #999;">Ou glisser-déposer des fichiers</span>
->>>>>>> 46b47faf58f98a4a335b21817f5157014556fd40
 
                         <table class="table" id="files_tab">
                             <thead class="thead-light">
