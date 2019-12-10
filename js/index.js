@@ -17,6 +17,14 @@ function editModalDelete(fileid) {
 /**
  * Je ferai le commentaire <3 -Roro
  */
+function editModalChangeSalt(fileid) {
+	let deleteButton = document.querySelector("#change_salt-fileid");
+	deleteButton.setAttribute("value", fileid);
+}
+
+/**
+ * Je ferai le commentaire <3 -Roro
+ */
 function editModalDeleteMultipleFiles() {
 
     let deletedCheckbox_tab_all = document.querySelectorAll(".checkbox-delete-files");
