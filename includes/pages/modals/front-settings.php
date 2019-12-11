@@ -30,6 +30,10 @@
                             <button name="language" value="english">Anglais</button>
                         </div>
 
+                        <div class="col-lg-2">
+                            <button name="stheme" value="braille" onclick="editModalTheme('braille');">Braille</button>
+                        </div>
+
                     </div>
 
                     <hr/>
@@ -46,14 +50,6 @@
 
                         <div class="col-lg-2">
                             <button name="theme" value="frez" onclick="editModalTheme('frez');">Fr-Ez</button>
-                        </div>
-
-                        <div class="col-lg-2">
-                            <button name="theme" value="dark" onclick="editModalTheme('dark');">Dark</button>
-                        </div>
-
-                        <div class="col-lg-2">
-                            <button name="stheme" value="braille" onclick="editModalTheme('braille');">Braille</button>
                         </div>
 
                     </div>

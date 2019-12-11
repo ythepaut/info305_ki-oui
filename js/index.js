@@ -213,22 +213,6 @@ function changeTheme(themeCookie) {
 			}
 		break;
 
-		case 'dark':
-			html.style.cssText = "--main-color: black;";
-			html.style.cssText += "--main-light-color: white;";
-			html.style.cssText += "--main-light-color-lighter: #5adfbb;";
-			html.style.cssText += "--background-color: #1A1A1A;";
-			html.style.cssText += "--background-light-color: #212121;";
-			body.style.setProperty("color", "white !veryimportant;");
-			body.style.setProperty("background-color", "var(--background-light-color) !veryimportant;");
-			// police
-			body.style.setProperty("font-family", "sans-serif");
-			// image d'accueil
-			if (background) {	
-			background.style.setProperty("background-image", 'url("../ressources/img/accueil-dark.jpeg")');
-			}
-		break;
-
 		case 'braille':
 			// couleurs
 			html.style.cssText = "--main-color: black;";
