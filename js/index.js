@@ -272,8 +272,15 @@ function getSrcJs(relative_src) {
 }
 
 
-//Administration tab
 document.addEventListener("DOMContentLoaded", function() {
+    switchTabs();
+    searchEvents();
+});
+
+
+
+//Administration tab
+function switchTabs() {
     let url = window.location.href;
     if (url.includes('/administration/#/statistiques')) {
         $('#stac-tab').tab('show');
@@ -282,4 +289,24 @@ document.addEventListener("DOMContentLoaded", function() {
     } else if (url.includes('/administration/#/fichiers')) {
         $('#gesfi-tab').tab('show');
     }
-});
+}
+
+
+
+//Recherche
+function searchEvents() {
+    for (let inse of document.querySelectorAll(".search-input")) {
+        inse.addEventListener("keyup", function() {
+            searchTable(inse.getAttribute('data-target'), inse.value);
+        })
+    }
+}
+function searchTable(tableId, searchQuery) {
+    for (let row of document.querySelectorAll("#" + tableId + " tr")) {
+        if (row.innerHTML.includes(searchQuery) || row.innerHTML.includes('th style')) {
+            row.removeAttribute('style');
+        } else {
+            row.setAttribute('style', 'display: none;');
+        }
+    }
+}

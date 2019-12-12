@@ -36,6 +36,7 @@
                             if (chart.config.options.elements.center) {
                                 //Get ctx from string
                                 var ctx = chart.chart.ctx;
+
                                 //Get options from the center object in options
                                 var centerConfig = chart.config.options.elements.center;
                                 var fontStyle = centerConfig.fontStyle || 'Arial';
@@ -45,15 +46,19 @@
                                 var sidePaddingCalculated = (sidePadding/100) * (chart.innerRadius * 2)
                                 //Start with a base font of 30px
                                 ctx.font = "30px " + fontStyle;
+
                                 //Get the width of the string and also the width of the element minus 10 to give it 5px side padding
                                 var stringWidth = ctx.measureText(txt).width;
                                 var elementWidth = (chart.innerRadius * 2) - sidePaddingCalculated;
+
                                 // Find out how much the font can grow in width.
                                 var widthRatio = elementWidth / stringWidth;
                                 var newFontSize = Math.floor(30 * widthRatio);
                                 var elementHeight = (chart.innerRadius * 2);
+
                                 // Pick a new font size so it will not be larger than the height of label.
                                 var fontSizeToUse = Math.min(newFontSize, elementHeight);
+
                                 //Set font settings to draw it correctly.
                                 ctx.textAlign = 'center';
                                 ctx.textBaseline = 'middle';
@@ -61,17 +66,21 @@
                                 var centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2) + 30;
                                 ctx.font = fontSizeToUse+"px " + fontStyle;
                                 ctx.fillStyle = color;
+
                                 //Draw text in center
                                 ctx.fillText(txt, centerX, centerY);
                             }
                             }
                         });
+
                         <?php
+
                         $pourcentage = round((getSize($_SESSION['Data']['id'], $connection) / $_SESSION['Data']['quota']) * 100, 2);
                         $pourcentage = ($pourcentage == 0) ? "0.00" : $pourcentage;
                         $occupe = round(getSize($_SESSION['Data']['id'], $connection)/(10**6), 2);
                         $restant = round($_SESSION['Data']['quota']/(10**6) - getSize($_SESSION['Data']['id'], $connection)/(10**6), 2);
                         $restant = ($occupe < $_SESSION['Data']['quota']/(10**6)) ? $restant : 0;
+
                         if ($pourcentage > 100) {
                             $couleur = "#ee5253";
                         } elseif ($pourcentage > 80) {
@@ -81,7 +90,9 @@
                         } else {
                             $couleur = "#54a0ff";
                         }
+
                         ?>
+
                         var options = {
                             maintainAspectRatio: false,
                             rotation: 1 * Math.PI,
@@ -178,7 +189,17 @@
 
                     <?php if (!(isset($_GET['sp']) && $_GET['sp'] == "grid")) { ?>
 
-                    <table class="table">
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text label-icon" id="icon_search"><i class="fas fa-search"></i></span>
+                        </div>
+                        <input type="text" class="form-control search-input" placeholder="Rechercher..." aria-describedby="icon_search" data-target="file_table" />
+                    </div>
+
+
+
+                    <table class="table" id="file_table">
                         <thead class="thead">
                             <th style="width:1%;"><i class="far fa-file"></i></th>
                             <th style="width:auto;">Nom du fichier &nbsp;
@@ -187,16 +208,19 @@
                             <?php } else { ?>
                             <a href="/espace-utilisateur/sort-by-name-desc"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "original_name/ASC") {echo("active"); } ?>" title="Trier par nom"></i></a>
                             <?php } ?></th>
-                            <th style="width:10%;" class="d-none d-lg-table-cell">Taille du fichier &nbsp;<a href="/espace-utilisateur/sort-by-size"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "size/DESC") {echo("active"); } ?>" title="Trier par taille"></i></a></th>
-                            <th style="width:10%;" class="d-none d-lg-table-cell">Date &nbsp;<a href="/espace-utilisateur/sort-by-date"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "id/DESC") {echo("active"); } ?>" title="Trier par date"></i></a></th>
-                            <th style="width:10%;" class="d-none d-lg-table-cell">Téléchargements &nbsp;<a href="/espace-utilisateur/sort-by-dl"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "download_count/DESC") {echo("active"); } ?>" title="Trier nombre de téléchargements"></i></a></th>
-                            <th style="width:16%;">Actions</th>
+                            <th style="width:15%;" class="d-none d-lg-table-cell">Taille du fichier &nbsp;<a href="/espace-utilisateur/sort-by-size"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "size/DESC") {echo("active"); } ?>" title="Trier par taille"></i></a></th>
+                            <th style="width:15%;" class="d-none d-lg-table-cell">Date &nbsp;<a href="/espace-utilisateur/sort-by-date"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "id/DESC") {echo("active"); } ?>" title="Trier par date"></i></a></th>
+                            <th style="width:17%;" class="d-none d-lg-table-cell">Téléchargements &nbsp;<a href="/espace-utilisateur/sort-by-dl"><i class="fas fa-sort sort <?php if ($_SESSION['table_files_sort'] == "download_count/DESC") {echo("active"); } ?>" title="Trier nombre de téléchargements"></i></a></th>
+                            <th style="width:13%;">Actions</th>
                             <th style="width:2%;"><a href='#' data-toggle='modal' data-target='#modalDeleteMultipleFiles' onclick='editModalDeleteMultipleFiles()'><i class='fas fa-trash-alt delete'></i></a></th>
                         </thead>
                     <?php } ?>
                         <?php
+
+
                         $key = $_SESSION['UserPassword'];
                         $files = getFiles($_SESSION['Data']['id'], $connection, $_SESSION['table_files_sort']);
+
                         if (isset($_GET["sp"])) {
                             if ($_GET['sp'] == "sort-by-name-desc") {
                                 foreach ($files as $file) {
@@ -217,16 +241,21 @@
                                 $files = $filesArrayObject;
                             }
                         }
+
                         $table = "";
                         $grid = "<div class='row'>";
                         $count = 0;
+
                         foreach($files as $file){
                             $path = $file["path"];
+
                             $originalName = decryptText($file["original_name"], $key, $file["salt"], null, false);
                             $originalName = htmlspecialchars($originalName);
                             $originalName = str_replace("'", "&apos;", $originalName);
                             $originalName = str_replace("\"", '&quot;', $originalName);
+
                             $originalName = (strlen($originalName) > 60) ? substr($originalName, 0, 57) . "..." : $originalName;
+
                             //Colonne Nom
                             $table .=  "<tr><td>" . "<img style='width: 18px;' alt='Fichier' src='" . extensionImage(explode(".", decryptText($file["original_name"], $key, $file["salt"], null, false))[count(explode(".", decryptText($file["original_name"], $key, $file["salt"], null, false))) - 1]) . "' />" . "</td>\n";
                             $table .=  "<td><span title='" . htmlspecialchars(decryptText($file["original_name"], $key, $file["salt"], null, false)) . "'>" . $originalName . "</span></td>\n";
@@ -250,19 +279,28 @@
                                 $grid .= "<div class='row'>";
                                 $count = 1;
                             }
+
                             $extension = explode(".", decryptText($file["original_name"], $key, $file["salt"], null, false))[count(explode(".", decryptText($file["original_name"], $key, $file["salt"], null, false))) - 1];
                             $fileImg = extensionImage($extension);
+
+
+
                             $originalName = (strlen($originalName) > 19) ? substr($originalName, 0, 16) . "..." : $originalName;
                             $grid .= "<div class='col-lg-1 item-grid'><a href='#' style='color: #000;' data-toggle='modal' data-target='#modalShareLink' onclick='editModalShare(\"" . generateShareLink($_SESSION['UserPassword'], $file['id'], $connection) . "\")'>" .
                                      "<h3 title='" . htmlspecialchars(decryptText($file["original_name"], $key, $file["salt"], null, false)) . "'>" . $originalName . "</h3>\n" .
                                      "<img src='" . $fileImg . "' alt='Logo' /><br />\n" .
                                      "</a></div>";
+
+
+
                         }
+
                         if (isset($_GET['sp']) && $_GET['sp'] == "grid") {
                             echo($grid . "</div>");
                         } else {
                             echo($table);
                         }
+
                         ?>
 
                     <?php if (!(isset($_GET['sp']) && $_GET['sp'] == "grid")) { ?>

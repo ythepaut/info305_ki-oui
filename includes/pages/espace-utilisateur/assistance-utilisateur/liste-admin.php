@@ -74,7 +74,16 @@
                     <h4 class="panel-title">Mes demandes assignées / Demandes en attente d'assignation</h4>
 
 
-                    <table class="table">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text label-icon" id="icon_search"><i class="fas fa-search"></i></span>
+                        </div>
+                        <input type="text" class="form-control search-input" placeholder="Rechercher..." aria-describedby="icon_search" data-target="assis_table" />
+                    </div>
+                    <br />
+
+
+                    <table class="table" id="assis_table">
                         <thead class="thead">
                             <th style="width:auto;">Sujet</th>
                             <th style="width:19%;" class='d-none d-lg-table-cell'>Date</th>

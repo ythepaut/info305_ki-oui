@@ -1,8 +1,18 @@
 <div class="row">
     <div class="col panel-outline">
+
+        <br />
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text label-icon" id="icon_search"><i class="fas fa-search"></i></span>
+            </div>
+            <input type="text" class="form-control search-input" placeholder="Rechercher..." aria-describedby="icon_search" data-target="user_table" />
+        </div>
+        <br />
+
         <?php 
         $query = mysqli_query($connection, "SELECT * FROM kioui_accounts");
-        $res = "<table class='table'>";
+        $res = "<table class='table' id='user_table'>";
         $res .= "<thead class='thead'>";
 
         $res .= "<th style='width:15%;'>Nom de l'utilisateur</th>";

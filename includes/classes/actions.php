@@ -1333,7 +1333,7 @@ function createTicket($subject, $message, $connection, $em) {
 
     if (isValidSession($connection)) {
 
-        if (isset($subject, $message) && strlen($subject) > 3 && strlen($message) > 3 && strlen($subject) < 200) {
+        if (isset($subject, $message) && strlen($subject) > 3 && strlen($message) > 3 && strlen($message) < 2000 && strlen($subject) < 200) {
 
             $ticketStatus = "OPEN";
             $ticketPriority = "MEDIUM";
@@ -1373,7 +1373,7 @@ function createTicket($subject, $message, $connection, $em) {
 
 
 /**
- * Fonction qui crée un ticket de support
+ * Fonction qui envoie un message à un ticket de support
  * (Formulaire AJAX)
  *
  * @param string              $id                   - ID du ticket
@@ -1399,7 +1399,7 @@ function respondTicket($id, $message, $connection, $em) {
 
         if ($ticket['status'] == "OPEN" || $ticket['status'] == "RESPONDED") {
 
-            if (isset($message) && strlen($message) > 3) {
+            if (isset($message) && strlen($message) > 3 && strlen($message) < 2000) {
 
                 $oldConversationArray = json_decode($ticket['conversation'], true);
 
