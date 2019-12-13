@@ -10,6 +10,9 @@ ErrorDocument 404 https://ki-oui.com/404
 ErrorDocument 403 https://ki-oui.com/403
 ErrorDocument 401 https://ki-oui.com/401
 
+#Redirections
+RewriteRule ^extension$ /espace-utilisateur/assistance/documentation/extension [R=301,L]
+
 #Actions de formulaire GET
 RewriteRule ^logout/?$ includes/classes/actions.php?action=logout [L]
 RewriteRule ^dl-data/([A-Za-z0-9-]+)/([A-Za-z0-9-]+)?$ includes/classes/actions.php?action=download-data&download-data_file=$1&download-data_extension=$2 [L]
