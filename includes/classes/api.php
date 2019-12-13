@@ -19,6 +19,7 @@ require_once(getcwd() . '/PHPMailer/PHPMailerAutoload.php');
  * ERROR_UNKNOWN                    -       Erreur inconnue
  * ERROR_INVALID_CREDENTIALS        -       Identifiants incorrects
  * ERROR_ACCOUNT_INACCESSIBLE       -       Compte suspendu / Non validé / En attente de suppression / Niveau d'acces invalide
+ * ERROR_NONEXISTENT_FILE           -       Fichier inéxistant
  */
 
 if (!isset($_SERVER['HTTPS'])) {
@@ -39,6 +40,9 @@ switch ($action) {
         break;
     case "upload":
         die(json_encode(uploadFile($query, $connection), JSON_PRETTY_PRINT));
+        break;
+    case "getfilestats":
+        die(json_encode(getFileStats($query, $connection), JSON_PRETTY_PRINT));
         break;
 
     default:
@@ -155,6 +159,46 @@ function uploadFile($query, $connection) {
         } elseif (!isset($query['key'])) {
             $result = array("status" => "error", "error" => "ERROR_INVALID_ARGUMENT", "verbose" => "Missing or invalid argument `key`.");
         }
+    }
+
+    return $result;
+
+}
+
+
+/**
+ * Fonction retourne des informations sur un fichier
+ * (Requete API - Extension)
+ * 
+ * @param array             $query              -   Requete API
+ * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php          
+ * 
+ * @return array
+ */
+function getFileStats($query, $connection) {
+
+    $result = array("status" => "error", "error" => "ERROR_UNKNOWN", "verbose" => "An unknown error occured during the process. This is our fault.");
+
+    if (isset($query['fileid'])) {
+
+        //Recuperation des données
+        $dbquery = $connection->prepare("SELECT path,size,upload_date,download_count,content_hash FROM kioui_files WHERE path = ?");
+        $dbquery->bind_param("s", $query['fileid']);
+        $dbquery->execute();
+        $dbresult = $dbquery->get_result();
+        $dbquery->close();
+        $fileData = $dbresult->fetch_assoc();
+
+        if ($fileData['size'] != "") {
+
+            $result = array("status" => "success", "message" => "Data acquired.", "downloads" => $fileData['download_count'], "uploadDate" => $fileData['upload_date'], "size" => $fileData['size'], "hash" => $fileData['content_hash']);
+
+        } else {
+            $result = array("status" => "error", "error" => "ERROR_NONEXISTENT_FILE", "verbose" => "File does not exist.");
+        }
+
+    } else {
+        $result = array("status" => "error", "error" => "ERROR_INVALID_ARGUMENT", "verbose" => "Missing or invalid argument `fileid`.");
     }
 
     return $result;

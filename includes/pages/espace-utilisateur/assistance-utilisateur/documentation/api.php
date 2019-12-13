@@ -43,15 +43,38 @@ Voici quelques exemples de reponse :<br />
     <p><b>Paramètres :</b><br />
         &nbsp;&nbsp;&nbsp;&nbsp;action = "upload"<br />
         &nbsp;&nbsp;&nbsp;&nbsp;token : Jeton d'accès de l'utilisateur<br />
-        &nbsp;&nbsp;&nbsp;&nbsp;key : Clé de l'utilisateu<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;key : Clé de l'utilisateur<br />
         &nbsp;&nbsp;&nbsp;&nbsp;filename : Nom du fichier<br />
         &nbsp;&nbsp;&nbsp;&nbsp;data : Données du fichier à téléverser<br />
     </p>
     <p><b>Valeurs de retour (en cas de succès) :</b><br />
         &nbsp;&nbsp;&nbsp;&nbsp;status : Information sur la requête (succès, erreur)<br />
-        &nbsp;&nbsp;&nbsp;&nbsp;message : Message d'information sur la requête.<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;message : Message d'information sur la requête<br />
     </p>
     <p><b>Exemple de requête GET :</b><br /><br />
         &nbsp;&nbsp;&nbsp;&nbsp;<kbd style="padding: 0.6em;">GET https://ki-oui.com/api/?action=upload&token={TOKEN}&key={KEY}&filename=test.txt&data=test</kbd><br />
+    </p>
+</div>
+
+<br /><hr /><br />
+
+<div>
+    <h5><b>ACQUISITION DES STATISTIQUES D'UN FICHIER</b></h5>
+
+    <p>Permet d'acquérir des statistiques sur un fichier.</p>
+    <p><b>Paramètres :</b><br />
+        &nbsp;&nbsp;&nbsp;&nbsp;action = "getfilestats"<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;fileid : Nom unique du fichier<br />
+    </p>
+    <p><b>Valeurs de retour (en cas de succès) :</b><br />
+        &nbsp;&nbsp;&nbsp;&nbsp;status : Information sur la requête (succès, erreur)<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;message : Message d'information sur la requête<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;downloads : Nombre de téléchargements du fichier<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;uploadDate : Date d'envoie du fichier (format Unix)<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;size : Taille du fichier (octets)<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;hash : Hash du fichier<br />
+    </p>
+    <p><b>Exemple de requête GET :</b><br /><br />
+        &nbsp;&nbsp;&nbsp;&nbsp;<kbd style="padding: 0.6em;">GET https://ki-oui.com/api/?action=getfilestats&fileid=Of5gm1sktLk67lQf</kbd><br />
     </p>
 </div>
