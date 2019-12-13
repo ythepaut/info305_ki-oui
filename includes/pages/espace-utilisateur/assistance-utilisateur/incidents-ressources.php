@@ -11,8 +11,9 @@
 
                     <ul style="list-style-type: none;">
 
-                        <li><a href="#" class="link">Comment mes données sont chiffrées ?</a></li>
-                        <li><a href="#" class="link">Comment controler mes données ?</a></li>
+                        <li><a href="/espace-utilisateur/assistance/documentation/modele-chiffrement" class="link">Comment mes données sont chiffrées ?</a></li>
+                        <li><a href="/espace-utilisateur/assistance/documentation/api" class="link">Documentation de l'API</a></li>
+                        <li><a href="/espace-utilisateur/assistance/documentation/extension" class="link">Télécharger notre extension de navigateur</a></li>
 
                     </ul>
 

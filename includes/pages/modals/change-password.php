@@ -61,8 +61,8 @@
                         <div style="display: none;" id="hint_change-password"></div>
                         <br />
                         <?php
-                        $eta = round(getSize($_SESSION['Data']['id'], $connection)/(500000000));
-                        $eta = ($eta > 1) ? $eta . " minutes" : $eta . "minute";
+                        $eta = round(getSize($_SESSION['Data']['id'], $connection)/(500000000) + 1);
+                        $eta = ($eta > 1) ? $eta . " minutes" : $eta . " minute";
                         ?>
                         <span style='font-size: 15px;'><i class="fas fa-info-circle info"></i> &nbsp;Temps éstimé de l'opération : <?php echo($eta); ?>. Merci de ne pas fermer la fenetre pendant l'operation.</span>
                         
