@@ -22,7 +22,7 @@
                         <br />
 
                         <form id="directDownloadForm" action="<?php echo(getSrc('./includes/classes/actions.php')); ?>" method="POST" class="ajax" style="text-align: center;">
-                            <input type="hidden" name="action" value="download-file"  />
+                            <input type="hidden" name="action" value="download-file" />
                             <input type="hidden" name="filename" value="" id="path-directdownload" />
                             <input type="hidden" name="filekey" value="" id="key-directdownload" />
 

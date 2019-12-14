@@ -613,7 +613,7 @@ function disableU2F($passwd, $connection) {
                 $query->close();
 
                 $result = "SUCCESS#Double authentification par clé physique désactivée avec succès.#/espace-utilisateur/compte";
-                
+
             } else {
                 $result = "ERROR_INVALID_CREDENTIALS#Mot de passe invalide.";
             }
@@ -1003,6 +1003,8 @@ function upload($connection) {
 
 function downloadAction($connection, $fileName, $fileKey) {
     list($content, $originalName) = unzipCryptedFile($connection, $fileName, $fileKey);
+
+    
 
     if ($content === null) {
         return "Clé invalide";
@@ -1651,7 +1653,7 @@ function verifEmail($token, $connection) {
 /**
  * Fonction qui modifie le niveau d'accès d'un utilisateur
  * (Formulaire AJAX)
- * 
+ *
  * @param string            $newAccessLevel     - Nouveau niveua d'accès de l'utilisateur
  * @param integer           $userId             - Identifiant de l'utilisateur
  * @param mysqlconnection   $connection         - Connexion BDD effectuée dans le fichier config-db.php
@@ -1691,7 +1693,7 @@ function changeAccessLevel($newAccessLevel, $userId, $connection) {
 /**
  * Fonction qui modifie le statut d'un utilisateur
  * (Formulaire AJAX)
- * 
+ *
  * @param string            $newStatus          - Nouveau statut de l'utilisateur
  * @param integer           $userId             - Identifiant de l'utilisateur
  * @param mysqlconnection   $connection         - Connexion BDD effectuée dans le fichier config-db.php
@@ -1711,7 +1713,7 @@ function changeStatus($newStatus, $userId, $connection) {
                 $query->bind_param("si", $newStatus, $userId);
                 $query->execute();
                 $query->close();
-                
+
                 $result = "SUCCESS#Le statut a bien été modifié.#/espace-utilisateur/administration/#/utilisateurs";
 
             } else {
@@ -1723,7 +1725,7 @@ function changeStatus($newStatus, $userId, $connection) {
         }
 
     }
-    
+
     return $result;
 }
 
@@ -1794,10 +1796,10 @@ function changeQuota($unit, $newQuota, $userId, $connection) {
 
 /**
  * Fonction qui change le sel d'un fichier (formulaire AJAX)
- * 
+ *
  * @param integer           $fileId             -   l'identifiant du fichier
  * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php
- * 
+ *
  * @return string
  */
 function changeFileSalt($fileId, $connection) {
@@ -1825,11 +1827,11 @@ function changeFileSalt($fileId, $connection) {
 
             if ($fileOwner == $_SESSION['Data']['id']) {
                 $newSalt = randomString(16);
-                
+
                 updateEncryption($fileData['original_name'], $_SESSION["UserPassword"], $connection, null, $newSalt);
 
                 $_SESSION['Data']['salt'] = $newSalt;
-                
+
                 $result = "SUCCESS#Clé du fichier changée avec succès.#/espace-utilisateur/accueil";
             }
         }
