@@ -979,7 +979,9 @@ function upload($connection) {
         var_dump($usedSpace);
     }
     else {
-        $password = $_SESSION["UserPassword"];
+        $salt = randomString(32);
+
+        $password = hash('sha512', $_SESSION["UserPassword"] . $salt);
 
         for ($i=0; $i<$nbFiles; $i++) {
             if ($_FILES["files"]["error"][$i] == UPLOAD_ERR_OK && is_uploaded_file($_FILES["files"]["tmp_name"][$i])) {
@@ -987,7 +989,7 @@ function upload($connection) {
                 $content = file_get_contents($_FILES["files"]["tmp_name"][$i]);
                 $size = $_FILES["files"]["size"][$i];
 
-                $newFileName = createCryptedZipFile($connection, $content, $size, $password, $originalName);
+                $newFileName = createCryptedZipFile($connection, $content, $size, $password, $originalName, $newName = randomString(16) ,$forceSalt = $salt);
             }
         }
 

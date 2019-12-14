@@ -218,12 +218,12 @@
                         <?php
 
 
-                        $key = $_SESSION['UserPassword'];
                         $files = getFiles($_SESSION['Data']['id'], $connection, $_SESSION['table_files_sort']);
 
                         if (isset($_GET["sp"])) {
                             if ($_GET['sp'] == "sort-by-name-desc") {
                                 foreach ($files as $file) {
+                                    $key = hash('sha512', $_SESSION["UserPassword"] . $file['salt']);
                                     $file["original_name"] = decryptText($file["original_name"], $key, $file["salt"], null, false);
                                 }
                                 $filesArrayObject = new ArrayObject($files);
@@ -234,6 +234,7 @@
                                 }
                             } else if ($_GET['sp'] == "sort-by-name-asc") {
                                 foreach ($files as $file) {
+                                    $key = hash('sha512', $_SESSION["UserPassword"] . $file['salt']);
                                     $file["original_name"] = decryptText($file["original_name"], $key, $file["salt"], null, false);
                                 }
                                 $filesArrayObject = new ArrayObject($files);
@@ -249,6 +250,7 @@
                         foreach($files as $file){
                             $path = $file["path"];
 
+                            $key = hash('sha512', $_SESSION["UserPassword"] . $file['salt']);
                             $originalName = decryptText($file["original_name"], $key, $file["salt"], null, false);
                             $originalName = htmlspecialchars($originalName);
                             $originalName = str_replace("'", "&apos;", $originalName);

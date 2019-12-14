@@ -78,3 +78,24 @@ Voici quelques exemples de reponse :<br />
         &nbsp;&nbsp;&nbsp;&nbsp;<kbd style="padding: 0.6em;">GET https://ki-oui.com/api/?action=getfilestats&fileid=Of5gm1sktLk67lQf</kbd><br />
     </p>
 </div>
+
+<br /><hr /><br />
+
+<div>
+    <h5><b>VÉRIFICATION DE LA CLÉ D'UN FICHIER</b></h5>
+
+    <p>Permet de vérifier si la clé de chiffrement d'un fichier est correct.</p>
+    <p><b>Paramètres :</b><br />
+        &nbsp;&nbsp;&nbsp;&nbsp;action = "isvalidkey"<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;fileid : Nom unique du fichier<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;filekey : Clé de chiffrement du fichier<br />
+    </p>
+    <p><b>Valeurs de retour (en cas de succès) :</b><br />
+        &nbsp;&nbsp;&nbsp;&nbsp;status : Information sur la requête (succès, erreur)<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;message : Message d'information sur la requête<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;valid : "true" ou "false" selon la validité de la clé<br />
+    </p>
+    <p><b>Exemple de requête GET :</b><br /><br />
+        &nbsp;&nbsp;&nbsp;&nbsp;<kbd style="padding: 0.6em;">GET https://ki-oui.com/api/?action=isvalidkey&fileid=Of5gm1sktLk67lQf&filekey=0123456789abcdef</kbd><br />
+    </p>
+</div>
