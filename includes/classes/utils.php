@@ -89,7 +89,7 @@ function decryptText($cryptedText, $password, $salt, $hash = null, $raw = true) 
  *
  * @return  string          $newName            -   Nouveau nom du fichier
  */
-function createCryptedZipFile($connection, $content, $size, $password, $oldName, $newName = null) {
+function createCryptedZipFile($connection, $content, $size, $password, $oldName, $newName = null, $forceSalt = null) {
     $compt = 0;
     if ($newName === null) {
         do {
@@ -112,8 +112,8 @@ function createCryptedZipFile($connection, $content, $size, $password, $oldName,
     }
     $zipText = file_get_contents(UPLOAD_DIR.$newName);
 
-    list($oldName, $salt, $hash) = encryptText($oldName, $password, null, false);
-    list($encryptedText, $salt, $hash) = encryptText($zipText, $password, $salt);
+    list($oldName, $salt, $hash) = encryptText($oldName, $password, $salt = $forceSalt, false);
+    list($encryptedText, $salt, $hash) = encryptText($zipText, $password, ($forceSalt == null) ? $salt : $forceSalt);
 
     $uploadDate = time();
 
@@ -539,7 +539,7 @@ function generateDlLink($password, $fileId, $connection, $base = "dl") {
         $file = $result->fetch_assoc();
         //génération du lien
         $fileName = $file['path'];
-        $filePassword = $_SESSION['UserPassword'];
+        $filePassword = hash('sha512', $_SESSION['UserPassword'] . $file['salt']);
         $result= "https://ki-oui.com/" . $base . "/" . $fileName . "/" . $filePassword;
     } else {
         $result = "ERROR_MISSING_VARIABLES#Veuillez entrer toutes les variables.";

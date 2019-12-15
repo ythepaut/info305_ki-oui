@@ -979,7 +979,9 @@ function upload($connection) {
         var_dump($usedSpace);
     }
     else {
-        $password = $_SESSION["UserPassword"];
+        $salt = randomString(32);
+
+        $password = hash('sha512', $_SESSION["UserPassword"] . $salt);
 
         for ($i=0; $i<$nbFiles; $i++) {
             if ($_FILES["files"]["error"][$i] == UPLOAD_ERR_OK && is_uploaded_file($_FILES["files"]["tmp_name"][$i])) {
@@ -987,7 +989,7 @@ function upload($connection) {
                 $content = file_get_contents($_FILES["files"]["tmp_name"][$i]);
                 $size = $_FILES["files"]["size"][$i];
 
-                $newFileName = createCryptedZipFile($connection, $content, $size, $password, $originalName);
+                $newFileName = createCryptedZipFile($connection, $content, $size, $password, $originalName, $newName = randomString(16) ,$forceSalt = $salt);
             }
         }
 
@@ -1140,10 +1142,12 @@ function forgotPassword($email, $backupKey, $passwd, $passwd2, $connection) {
                         $newUserKey = hash('sha512', $passwd . $userData['salt']);
 
                         foreach ($files as $file) {
-                            list($content, $name) = unzipCryptedFile($connection, $file['path'], $oldUserKey);
-                            createCryptedZipFile($connection, $content, $file['size'], $newUserKey, $name);
-                            //Suppresion du fichier
-                            deleteFile($file['id'], $connection);
+                            try {
+                                $res = updateEncryption($file["original_name"], hash("sha512", $oldUserKey.$file['salt']), $connection, hash("sha512", $newUserKey.$file['salt']));
+                            } catch (Exception $e) {
+                                $result = "ERROR#".$e;
+                                $error = True;
+                            }
                         }
 
                         $new_password_salted_hashed = password_hash(hash('sha512', hash('sha512', $passwd . $userData['salt'])), PASSWORD_DEFAULT, ['cost' => 12]);
@@ -1225,25 +1229,29 @@ function changePassword($oldPassword, $newPassword, $newPasswordBis, $connection
                         $newUserKey = hash('sha512', $newPassword . $userData['salt']);
 
                         foreach ($files as $file) {
-                            list($content, $name) = unzipCryptedFile($connection, $file['path'], $oldUserKey);
-                            createCryptedZipFile($connection, $content, $file['size'], $newUserKey, $name);
-                            //Suppresion du fichier
-                            deleteFile($file['id'], $connection);
+                            try {
+                                $res = updateEncryption($file["original_name"], hash("sha512", $oldUserKey.$file['salt']), $connection, hash("sha512", $newUserKey.$file['salt']));
+                            } catch (Exception $e) {
+                                $result = "ERROR#".$e;
+                                $error = True;
+                            }
                         }
 
-                        //Obtention MDP a insérer
-                        $new_password_salted_hashed = password_hash(hash('sha512', hash('sha512', $newPassword . $userData['salt'])), PASSWORD_DEFAULT, ['cost' => 12]);
-                        //Changement MDP DBB
-                        $query = $connection->prepare("UPDATE kioui_accounts SET password = ? WHERE id = ?");
-                        $query->bind_param("si", $new_password_salted_hashed, $userData['id']);
-                        $query->execute();
-                        $query->close();
+                        if (!isset($error)){
+                            //Obtention MDP a insérer
+                            $new_password_salted_hashed = password_hash(hash('sha512', hash('sha512', $newPassword . $userData['salt'])), PASSWORD_DEFAULT, ['cost' => 12]);
+                            //Changement MDP DBB
+                            $query = $connection->prepare("UPDATE kioui_accounts SET password = ? WHERE id = ?");
+                            $query->bind_param("si", $new_password_salted_hashed, $userData['id']);
+                            $query->execute();
+                            $query->close();
 
-                        //Mise à jour de la session
-                        $_SESSION['UserPassword'] = hash('sha512', $newPassword . $userData['salt']);
-
-                        $result = "SUCCESS#Votre mot de passe a été modifié avec succès.#/espace-utilisateur/compte";
-
+                            //Mise à jour de la session
+                            $_SESSION['UserPassword'] = hash('sha512', $newPassword . $userData['salt']);
+                            
+                            
+                            $result = "SUCCESS#Votre mot de passe a été modifié avec succès.#/espace-utilisateur/compte";
+                        }
                     } else {
                         $result = "ERROR_INVALID_PASSWD2#Les deux mots de passe doivent correspondre.";
                     }
@@ -1826,9 +1834,10 @@ function changeFileSalt($fileId, $connection) {
             $userData = $result->fetch_assoc();
 
             if ($fileOwner == $_SESSION['Data']['id']) {
-                $newSalt = randomString(16);
 
-                updateEncryption($fileData['original_name'], $_SESSION["UserPassword"], $connection, null, $newSalt);
+                $newSalt = randomString(32);
+                
+                updateEncryption($fileData['original_name'], hash('sha512', $_SESSION["UserPassword"].$fileData["salt"]), $connection, hash('sha512', $_SESSION["UserPassword"].$newSalt), $newSalt);
 
                 $_SESSION['Data']['salt'] = $newSalt;
 

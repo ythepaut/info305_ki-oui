@@ -44,6 +44,9 @@ switch ($action) {
     case "getfilestats":
         die(json_encode(getFileStats($query, $connection), JSON_PRETTY_PRINT));
         break;
+    case "isvalidkey":
+        die(json_encode(isValidKey($query, $connection), JSON_PRETTY_PRINT));
+        break;
 
     default:
         die(json_encode(array("status" => "error", "error" => "ERROR_INVALID_ARGUMENT", "verbose" => "Missing or invalid argument `action`."), JSON_PRETTY_PRINT));
@@ -168,7 +171,6 @@ function uploadFile($query, $connection) {
 
 /**
  * Fonction retourne des informations sur un fichier
- * (Requete API - Extension)
  * 
  * @param array             $query              -   Requete API
  * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php          
@@ -206,9 +208,56 @@ function getFileStats($query, $connection) {
 }
 
 
+/**
+ * Fonction retourne si la clé d'un fichier est valide
+ * 
+ * @param array             $query              -   Requete API
+ * @param mysqlconnection   $connection         -   Connexion BDD effectuée dans le fichier config-db.php          
+ * 
+ * @return array
+ */
+function isValidKey($query, $connection) {
+
+    $result = array("status" => "error", "error" => "ERROR_UNKNOWN", "verbose" => "An unknown error occured during the process. This is our fault.");
+
+    if (isset($query['fileid'], $query['filekey'])) {
+
+        //Recuperation des données
+        $dbquery = $connection->prepare("SELECT salt FROM kioui_files WHERE path = ?");
+        $dbquery->bind_param("s", $query['fileid']);
+        $dbquery->execute();
+        $dbresult = $dbquery->get_result();
+        $dbquery->close();
+        $fileData = $dbresult->fetch_assoc();
+
+        if ($fileData['salt'] != "") {
+
+            $content = unzipCryptedFile($connection, $query['fileid'], $query['filekey']);
+
+            if ($content['name'] != "") {
+                $result = array("status" => "success", "message" => "Key is valid.", "valid" => true);
+            } else {
+                $result = array("status" => "success", "message" => "Key is not valid.", "valid" => false);
+            }
 
 
+        } else {
 
+            $result = array("status" => "error", "error" => "ERROR_NONEXISTENT_FILE", "verbose" => "File does not exist.");
+        }
+
+    } else {
+
+        if (!isset($query['fileid'])) {
+            $result = array("status" => "error", "error" => "ERROR_INVALID_ARGUMENT", "verbose" => "Missing or invalid argument `fileid`.");
+        } elseif (!isset($query['filekey'])) {
+            $result = array("status" => "error", "error" => "ERROR_INVALID_ARGUMENT", "verbose" => "Missing or invalid argument `filekey`.");
+        }
+    }
+
+    return $result;
+
+}
 
 
 ?>
