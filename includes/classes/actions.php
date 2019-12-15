@@ -144,7 +144,7 @@ switch ($action) {
             $_SESSION["error"] = downloadAction($connection, $fileName, $fileKey);
         }
 
-        header("location:/share-file");
+        // header("location:/share-file");
 
         break;
 
@@ -1006,8 +1006,6 @@ function upload($connection) {
 function downloadAction($connection, $fileName, $fileKey) {
     list($content, $originalName) = unzipCryptedFile($connection, $fileName, $fileKey);
 
-    
-
     if ($content === null) {
         return "Clé invalide";
     }
@@ -1248,8 +1246,8 @@ function changePassword($oldPassword, $newPassword, $newPasswordBis, $connection
 
                             //Mise à jour de la session
                             $_SESSION['UserPassword'] = hash('sha512', $newPassword . $userData['salt']);
-                            
-                            
+
+
                             $result = "SUCCESS#Votre mot de passe a été modifié avec succès.#/espace-utilisateur/compte";
                         }
                     } else {
@@ -1836,7 +1834,7 @@ function changeFileSalt($fileId, $connection) {
             if ($fileOwner == $_SESSION['Data']['id']) {
 
                 $newSalt = randomString(32);
-                
+
                 updateEncryption($fileData['original_name'], hash('sha512', $_SESSION["UserPassword"].$fileData["salt"]), $connection, hash('sha512', $_SESSION["UserPassword"].$newSalt), $newSalt);
 
                 $_SESSION['Data']['salt'] = $newSalt;
