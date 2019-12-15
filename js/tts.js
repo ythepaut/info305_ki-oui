@@ -1,6 +1,11 @@
 var synth;
 
-var muted = true;
+if (readCookie('tts') == 'on') {
+    var muted = false;
+} else {
+    var muted = true;
+}
+
 var voices;
 var voice_fr;
 
@@ -168,4 +173,13 @@ function toggleTTS(value) {
         var res = true;
     }
     return res;
+}
+
+
+// modification du bouton au chargement
+button = document.getElementById("tts");
+if (muted) {
+    button.innerHTML = 'Désactivé';
+} else {
+    button.innerHTML = 'Activé';
 }
