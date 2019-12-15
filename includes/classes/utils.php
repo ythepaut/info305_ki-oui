@@ -69,7 +69,7 @@ function decryptText($cryptedText, $password, $salt, $hash = null, $raw = true) 
     }
     $initVector = substr($salt, 0, 16);
     $text = openssl_decrypt($cryptedText, AES_METHOD, $password . $salt, OPENSSL_RAW_DATA, $initVector);
-    if ($hash === null || hash_equals(hash_hmac('sha512', $text, $password . $salt, false), $hash)) {
+    if ($text !== false && ($hash === null || hash_equals(hash_hmac('sha512', $text, $password . $salt, false), $hash))) {
         return $text;
     } else {
         return null;
@@ -139,7 +139,7 @@ function createCryptedZipFile($connection, $content, $size, $password, $oldName,
  */
 function unzipCryptedFile($connection, $cryptedFileName, $key) {
     if (!file_exists(UPLOAD_DIR.$cryptedFileName)) {
-        return null;
+        return array(null, null);
     }
 
     $query = $connection->prepare("SELECT * FROM kioui_files WHERE path = ?");
@@ -176,13 +176,13 @@ function unzipCryptedFile($connection, $cryptedFileName, $key) {
 
 /**
  * Fonction qui actualise la clé ou le sel d'un fichier donné
- * 
- * @param   mysqlconnection $connection         -   Connection à la base de données SQL 
+ *
+ * @param   mysqlconnection $connection         -   Connection à la base de données SQL
  * @param   string          $cryptedFileName    -   le nom du fichier encrypté
  * @param   string          $userKey            -   la clé de décryptage de l'utilisateur
  * @param   string          $newUserKey         -   Facultatif: la nouvelle clé de cryptage de l'utilisateur
  * @param   string          $newSalt            -   Facultatif: le nouveau sel du fichier
- * 
+ *
  * @return  void
  */
 function updateEncryption($cryptedFileName, $userKey, $connection, $newKey = "", $newSalt = "") {
@@ -206,7 +206,7 @@ function updateEncryption($cryptedFileName, $userKey, $connection, $newKey = "",
             }
 
             $name = decryptText($fileData["original_name"], $userKey, $fileData["salt"], null, false);
-            
+
             $zipTextEncrypted = file_get_contents(UPLOAD_DIR.$fileData['path']);
             $zipText = decryptText($zipTextEncrypted, $userKey, $fileData["salt"], $fileData["hash"]);
 
@@ -214,7 +214,7 @@ function updateEncryption($cryptedFileName, $userKey, $connection, $newKey = "",
             if ($zipText !== null) {
                 //réencryptage des données
                 list($newName, $salt, $hash) = encryptText($name, $newKey, $newSalt, false);
-                list($encryptedText, $salt, $hash) = encryptText($zipText, $newKey, $salt); 
+                list($encryptedText, $salt, $hash) = encryptText($zipText, $newKey, $salt);
 
                 //update du contenu du fichier
                 file_put_contents(UPLOAD_DIR.$fileData['path'], $encryptedText);
@@ -540,7 +540,7 @@ function generateDlLink($password, $fileId, $connection, $base = "dl") {
         //génération du lien
         $fileName = $file['path'];
         $filePassword = hash('sha512', $_SESSION['UserPassword'] . $file['salt']);
-        $result= "https://ki-oui.com/" . $base . "/" . $fileName . "/" . $filePassword;
+        $result= "https://ki-oui.com/" . $base . "/" . $fileName . "/" . substr($filePassword, 0, 32);
     } else {
         $result = "ERROR_MISSING_VARIABLES#Veuillez entrer toutes les variables.";
     }
@@ -617,6 +617,8 @@ function downloadFile($content, $name = null, $from_string = false) {
 }
 
 function downloadFileOld($filename, $name, $mimeType='') {
+    throw new RuntimeException("Ne pas utiliser, obsolète");
+
     $size = filesize($filename);
     $name = rawurldecode($name);
 
@@ -928,6 +930,36 @@ function incrementStatLog($logtype, $connection) {
 
     }
 
+}
+
+/**
+ * Infos d'un fichier
+ *
+ * @param  string           $fileName       - Nom du fichier sur le disque
+ * @param  string           $fileKey        - Clé du fichier
+ * @param  mysqlconnection  $connection     - Connexion à la BDD
+ *
+ * @return array            nom déchiffré et taille d'un fichier, null en cas
+ *                          d'erreur
+ */
+function getFileInfos($fileName, $fileKey, $connection) {
+    $query = $connection->prepare("SELECT * FROM kioui_files WHERE path = ? ");
+    $query->bind_param("s", $fileName);
+    $query->execute();
+    $res = $query->get_result();
+    $query->close();
+    $fileData = $res->fetch_assoc();
+
+    if ($fileData === null) {
+        $name = null;
+        $size = null;
+    }
+    else {
+        $name = decryptText($fileData["original_name"], $fileKey, $fileData["salt"], null, false);
+        $size = $fileData["size"];
+    }
+
+    return array($name, $size);
 }
 
 ?>
