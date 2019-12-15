@@ -1140,10 +1140,12 @@ function forgotPassword($email, $backupKey, $passwd, $passwd2, $connection) {
                         $newUserKey = hash('sha512', $passwd . $userData['salt']);
 
                         foreach ($files as $file) {
-                            list($content, $name) = unzipCryptedFile($connection, $file['path'], $oldUserKey);
-                            createCryptedZipFile($connection, $content, $file['size'], $newUserKey, $name);
-                            //Suppresion du fichier
-                            deleteFile($file['id'], $connection);
+                            try {
+                                $res = updateEncryption($file["original_name"], hash("sha512", $oldUserKey.$file['salt']), $connection, hash("sha512", $newUserKey.$file['salt']));
+                            } catch (Exception $e) {
+                                $result = "ERROR#".$e;
+                                $error = True;
+                            }
                         }
 
                         $new_password_salted_hashed = password_hash(hash('sha512', hash('sha512', $passwd . $userData['salt'])), PASSWORD_DEFAULT, ['cost' => 12]);
