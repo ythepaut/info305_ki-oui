@@ -246,6 +246,7 @@ function login($email, $passwd, $remember = "off", $connection, $em) {
                 #Attribution des données de session
                 $_SESSION['Data'] = $userData;
                 $_SESSION['LoggedIn'] = true;
+                $_SESSION['LoginIP'] = $_SERVER['REMOTE_ADDR'];
                 $_SESSION['UserPassword'] = hash('sha512', $passwd . $userData['salt']);
 
                 incrementStatLog("RECONNECT", $connection);
