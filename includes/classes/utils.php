@@ -281,7 +281,7 @@ function refreshSession($connection) {
  */
 function isValidSession($connection) {
     refreshSession($connection);
-    return $_SESSION['Data']['status'] == "ALIVE" && $_SESSION['LoggedIn'] && $_SESSION['tfa'] == "trusted";
+    return $_SESSION['Data']['status'] == "ALIVE" && $_SESSION['LoggedIn'] && $_SESSION['tfa'] == "trusted" && $_SESSION['LoginIP'] == $_SERVER['REMOTE_ADDR'];
 }
 
 

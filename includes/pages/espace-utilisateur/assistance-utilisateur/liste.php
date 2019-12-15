@@ -50,7 +50,7 @@
                             $priority = "<span class='badge badge-danger'>Erreur</span>";
                             break;
                     }
-                    $subject = (strlen($ticket["subject"]) > 80) ? substr($ticket["subject"], 0, 77) . "..." : $ticket["subject"];
+                    $subject = (strlen($ticket["subject"]) > 45) ? substr($ticket["subject"], 0, 52) . "..." : $ticket["subject"];
                     //Colonne Sujet
                     $table .=  "<tr><td><a href='/espace-utilisateur/assistance/" . $ticket['id'] . "/' class='link' style='font-weight: bold; color: #212529;'><span title='" . htmlspecialchars($ticket["subject"]) . "'>" . htmlspecialchars($subject) . "</span></a></td>\n";
                     //Colonne Date

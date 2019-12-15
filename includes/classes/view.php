@@ -17,8 +17,7 @@ switch ($page) {
         break;
 
     case "espace-utilisateur":
-        if (isset($_SESSION['LoggedIn']) && $_SESSION['LoggedIn'] && $_SESSION['tfa'] == "trusted") {
-            refreshSession($connection);
+        if (isset($_SESSION['LoggedIn']) && $_SESSION['LoggedIn'] && $_SESSION['tfa'] == "trusted" && isValidSession($connection)) {
             $sousPage = (isset($_GET['sp']) ? $_GET['sp'] : "accueil");
             switch ($sousPage) {
                 case "compte":

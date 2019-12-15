@@ -52,7 +52,7 @@
                     $assigned = ($ticket['assigned'] == 0) ? "<span class='badge badge-warning'>En attente d'assignation</span>" : "<span class='badge badge-secondary'>Autre admin</span>";
                     $assigned = ($ticket['assigned'] == $_SESSION['Data']['id']) ? "<span class='badge badge-primary'>Assigné à moi</span>" : $assigned;
 
-                    $subject = (strlen($ticket["subject"]) > 80) ? substr($ticket["subject"], 0, 77) . "..." : $ticket["subject"];
+                    $subject = (strlen($ticket["subject"]) > 40) ? substr($ticket["subject"], 0, 37) . "..." : $ticket["subject"];
                     //Colonne Sujet
                     $table .=  "<tr><td><a href='/espace-utilisateur/assistance/" . $ticket['id'] . "/' class='link' style='font-weight: bold; color: #212529;'><span title='" . htmlspecialchars($ticket["subject"]) . "'>" . htmlspecialchars($subject) . "</span></a></td>\n";
                     //Colonne Date
