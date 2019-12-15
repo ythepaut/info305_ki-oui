@@ -1,6 +1,6 @@
 var synth;
 
-var muted = false;
+var muted = true;
 var voices;
 var voice_fr;
 
@@ -122,4 +122,50 @@ if (synth === undefined) {
 else {
     initVoices();
     cancelSound();
+}
+
+
+
+/**
+ * Fonction qui inverse le cookie du TTS en on ou off
+ * Exécute ensuite le passage du tts en on ou off
+ * 
+ * @return void
+ */
+function editModalTTS() {
+
+    readTTS = readCookie('tts');
+    switch (readTTS) {
+        case 'on':
+            createCookie('tts', 'off', false);
+            break;
+        case 'off':
+            createCookie('tts', 'on', false);
+            break;
+    }
+    var ttsCookie = readCookie('tts');
+    muted = toggleTTS(ttsCookie);
+    
+    button = document.getElementById("tts");
+    if (muted) {
+        button.innerHTML = 'Désactivé';
+    } else {
+        button.innerHTML = 'Activé';
+    }
+}
+
+/**
+ * Vrai si value est à 'off', faux si value est à 'on'
+ * 
+ * @param  {string} value
+ * @return {boolean}
+ */
+function toggleTTS(value) {
+    if (value == 'on') {
+        var res = false;
+    }
+    else if (value == 'off') {
+        var res = true;
+    }
+    return res;
 }

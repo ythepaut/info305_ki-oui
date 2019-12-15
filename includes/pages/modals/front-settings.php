@@ -54,6 +54,20 @@
 
                     </div>
 
+                    <hr/>
+
+                    <div class="row">
+
+                        <div class="col-lg-2">
+                            <h5>Narrateur</h5>
+                        </div>
+
+                        <div class="col-lg-2">
+                            <button id="tts" onclick="editModalTTS();">Désactivé</button>
+                        </div>
+
+                    </div>
+
 
                 </div>
             </div>
@@ -62,3 +76,4 @@
 </div>
 
 <script src="<?php echo(getSrc('./js/index.js')); ?>"></script>
+<script src="<?php echo(getSrc('./js/tts.js')); ?>"></script>
