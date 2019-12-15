@@ -8,7 +8,7 @@
                 <div class="row">
 
                     <div class="col-lg-12"  style="text-align: center;">
-                        <h4 class="modal-title">CHANGEMENT DE CLE</h4>
+                        <h4 class="modal-title">REGÉNÉRER LE LIEN DE PARTAGE</h4>
                     </div>
 
                     <div class="col-lg-2">
@@ -20,8 +20,9 @@
 
                        <form action="<?php echo(getSrc('./includes/classes/actions.php')); ?>" method="POST" class="ajax" style="text-align: center;">
 
-                        <span>Êtes-vous sûr de vouloir changer la clé de ce fichier ?</span>
+                        <span>Êtes-vous sûr de vouloir changer la clé de ce fichier ?</span><br />
                         <span>L'ancien lien ne sera plus utilisable.</span>
+                        <br />
                                 
                             <input type="hidden" class="form-control" id="change_salt-fileid" name="change_salt-fileid" value="{ID}" />
 

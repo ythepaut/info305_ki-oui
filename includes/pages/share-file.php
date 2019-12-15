@@ -1,49 +1,49 @@
 <div class="accueil container-fluid">
-    <div class="row justify-content-center">
-        <div class="col-5 align-self-center box" style="text-align:center;">
-            <span>Fichier à télécharger :</span><br />
-            <span style="text-align: center;" id="originalName-directdownload"></span>
-            <br />
+    <div class="row justify-content-center" style="min-height: 75vh;">
 
-            <?php
 
-            if (isset($_SESSION["error"])) {
-                if ($_SESSION["error"] == "ok") {
-                    echo("<h2>Ok</h2>");
-                }
-                else {
-                    echo("<h2>Erreur : ".$_SESSION["error"]."</h2>");
-                }
-            }
 
-            $_SESSION["error"] = null;
+        <div class="dlpage col-lg-4 row">
+            
+            <div class="col-lg-3">
+                <h1><i class="fas fa-download"></i></h1>
+            </div>
 
-            ?>
+            <div class="col-lg-auto">
+            </div>
 
-            <form action="<?php echo(getSrc('./includes/classes/actions.php')); ?>" method="POST"  id="directDownloadForm" enctype="multipart/form-data">
-                <input type="hidden" name="action" value="download-file" />
+            <div class="col-lg-8">
+                <span style="font-size: 1.5rem;" id="originalName-directdownload">{NOM DU FICHIER}</span>&nbsp;&nbsp;&nbsp;<span class='badge badge-secondary' title='Taille'>0 Mo</span>
 
-                <?php
-                    if (isset($_GET["filename"])) {
-                        $fileName = $_GET["filename"];
-                    }
-                    else {
-                        $fileName = "";
-                    }
+                <br />
 
-                    if (isset($_GET["filekey"])) {
-                        $fileKey = $_GET["filekey"];
-                    }
-                    else {
-                        $fileKey = "";
-                    }
+                <form action="<?php echo(getSrc('./includes/classes/actions.php')); ?>" method="POST"  id="directDownloadForm" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="download-file" />
 
-                    echo('<input type="hidden" name="filename" value="' . $fileName . '" id="path-directdownload" />');
-                    echo('<input type="hidden" name="filekey" value="' . $fileKey . '" id="key-directdownload" />');
-                ?>
+                    <?php
+                        if (isset($_GET["filename"])) {
+                            $fileName = $_GET["filename"];
+                        } else {
+                            $fileName = "";
+                        }
 
-                <input type="submit" value="Télécharger" />
-            </form>
+                        if (isset($_GET["filekey"])) {
+                            $fileKey = $_GET["filekey"];
+                        } else {
+                            $fileKey = "";
+                        }
+
+                        echo('<input type="hidden" name="filename" value="' . $fileName . '" id="path-directdownload" />');
+                        echo('<input type="hidden" name="filekey" value="' . $fileKey . '" id="key-directdownload" />');
+                    ?>
+
+                    <input type="submit" value="Télécharger" />
+
+                </form>
+                
+            </div>
+
         </div>
+
     </div>
 </div>

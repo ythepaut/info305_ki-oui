@@ -269,10 +269,10 @@
                             //Colonne Date
                             $table .=  "<td class='d-none d-lg-table-cell'>" . $file["download_count"] . "</td>\n";
                             //Colonne Action
-                            $table .=  "<td>" . "<a href='#' data-toggle='modal' data-target='#modalChangeSalt' onclick='editModalChangeSalt(" . $file['id'] . ")'><i class='fas fa-retweet edit'></i></a>" . "&nbsp; &nbsp; &nbsp; &nbsp;" .
-                                                "<a href='#' data-toggle='modal' data-target='#modalShareLink' onclick='editModalShare(\"" . generateShareLink($_SESSION['UserPassword'], $file['id'], $connection) . "\")'><i class='fas fa-share-alt edit'></i></a>" . "&nbsp; &nbsp; &nbsp; &nbsp;" .
-                                                "<a href='#' data-toggle='modal' data-target='#modalDirectDownload' onclick='editModalDirectDownload(".'"'."$path".'"'.", ".'"'."$key".'"'.", ".'"'.$originalName.'"'.")'><i class='fas fa-download edit'></i></a>" . "&nbsp; &nbsp; &nbsp; &nbsp;" .
-                                                "<a href='#' data-toggle='modal' data-target='#modalDeleteFile' onclick='editModalDelete(" . $file['id'] . ")'><i class='fas fa-trash-alt delete'></i></a>" .
+                            $table .=  "<td>" . "<a href='#' title='Télécharger le fichier' data-toggle='modal' data-target='#modalDirectDownload' onclick='editModalDirectDownload(".'"'."$path".'"'.", ".'"'."$key".'"'.", ".'"'.$originalName.'"'.")'><i class='fas fa-download edit'></i></a>" . "&nbsp; &nbsp; &nbsp;" .
+                                                "<a href='#' title='Obtenir le lien de partage' data-toggle='modal' data-target='#modalShareLink' onclick='editModalShare(\"" . generateShareLink($_SESSION['UserPassword'], $file['id'], $connection) . "\")'><i class='fas fa-share-alt edit'></i></a>" . "&nbsp; &nbsp; &nbsp;" .
+                                                "<a href='#' title='Regénérer le lien de partage' data-toggle='modal' data-target='#modalChangeSalt' onclick='editModalChangeSalt(" . $file['id'] . ")'><i class='fas fa-retweet edit'></i></a>" . "&nbsp; &nbsp; &nbsp;" .
+                                                "<a href='#' title='Supprimer le fichier' data-toggle='modal' data-target='#modalDeleteFile' onclick='editModalDelete(" . $file['id'] . ")'><i class='fas fa-trash-alt delete'></i></a>" .
                                                 "</td>\n";
                             $table .=  "<td class='d-none d-lg-table-cell'><div class=\"custom-control custom-checkbox\"><input type=\"checkbox\" class=\"custom-control-input checkbox-delete-files\" name=\"" . $originalName . "\" id=\"checkbox-delete-files" . $file['id'] . "\" value=\"" . $file['id'] . "\" /><label class=\"custom-control-label\" for=\"checkbox-delete-files" . $file['id'] . "\"></label></div></td>\n";
                             //Affichage grille

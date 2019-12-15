@@ -196,9 +196,25 @@ div.errorpage h1 i {
 }
 @keyframes errorblink {  
     0% { color: #e64735; }
-    50% { color: #df5b4d; }
+    50% { color: #e06a5d; }
     100% { color: #e64735; }
   }
+
+/*Page de telechargement*/
+
+
+
+div.dlpage {
+	box-shadow: 0 3px 5px rgba(0,0,0,0.1);
+	margin: 100px 100px 400px 100px;
+    padding: 50px 75px;
+}
+
+div.dlpage h1 {
+	font-size: 72px;
+	color: var(--main-light-color);
+}
+
 
 /* Inputs */
 

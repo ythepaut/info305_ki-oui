@@ -12,38 +12,27 @@
                         <h4 class="modal-title">LIEN DE TÉLÉCHARGEMENT</h4>
                     </div>
 
-                    <div class="col-lg-1">
 
-                    </div>
 
                     <div class="col-lg">
 
 
-                        <span>Lien de téléchargement :</span>
+                        <span>Cliquez sur le lien pour le copier, puis partagez le avec vos contact.</span>
                         <br />
 
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
                                 <span class="input-group-text label-icon" id="icon_login_sharelink"><i class="fas fa-link"></i></span>
                             </div>
-                            <input type="text" class="form-control" aria-describedby="icon_login_sharelink" id="input-sharelink" value="<?php echo("{LIEN}"); ?>" readonly />
+                            <input type="text" class="form-control" aria-describedby="icon_login_sharelink" id="input-sharelink" value="<?php echo("{LIEN}"); ?>" readonly onclick="this.select();document.execCommand('copy');"  tabindex="0" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="bottom" data-content="Lien copié !" />
                         </div>
 
                         <br />
-                        <br />
-
-
-                        <div style="text-align: center;">
-                            <button type="button" data-dismiss="modal">Fermer</button>
-                        </div>
 
 
 
                     </div>
 
-                    <div class="col-lg-1">
-
-                    </div>
 
 
 
@@ -57,3 +46,9 @@
 
     </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    $('#input-sharelink').popover();
+})
+</script>
