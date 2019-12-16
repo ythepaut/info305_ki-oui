@@ -134,12 +134,14 @@ else {
 /**
  * Fonction qui inverse le cookie du TTS en on ou off
  * Exécute ensuite le passage du tts en on ou off
+ * Ainsi que le changement de bouton dans le modal
  * 
  * @return void
  */
 function editModalTTS() {
 
     readTTS = readCookie('tts');
+
     switch (readTTS) {
         case 'on':
             createCookie('tts', 'off', false);
@@ -148,9 +150,11 @@ function editModalTTS() {
             createCookie('tts', 'on', false);
             break;
     }
+
     var ttsCookie = readCookie('tts');
     muted = toggleTTS(ttsCookie);
     
+    // modification du bouton après changement
     button = document.getElementById("tts");
     if (muted) {
         button.innerHTML = 'Désactivé';

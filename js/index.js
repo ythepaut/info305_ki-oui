@@ -229,7 +229,7 @@ function changeTheme(themeCookie) {
 		break;
 	}
 }
-// Exécution de la fonciton ci-dessus
+// Exécution de la fonciton ci-dessus au chargement
 themeCookie = readCookie('theme');
 changeTheme(themeCookie);
 
