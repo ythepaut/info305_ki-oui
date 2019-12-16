@@ -1,6 +1,6 @@
 # KI-OUI
 
-KI-OUI est un outil de partage de fichier ultra-simple et complet.
+KI-OUI est un outil de partage de fichier ultra-simple, complet et sécurisé.
 
 **Site internet**
 
