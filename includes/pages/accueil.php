@@ -41,9 +41,9 @@
 	<div class="row ligne1">
 
 		<div class="inner col-lg-4">
-			<h2>Chiffrement de bout en bout</h2>
+			<h2>Fichiers téléversés chiffrés</h2>
 			<i class="fas fa-lock"></i>
-			<p>Chez Ki-Oui, les données de vos fichiers sont cryptées.<br />Vous seul avez la main sur vos données.</p>
+			<p>Chez Ki-Oui, les données de vos fichiers sont cryptées.<br />Vous, et vous seul pouvez décrypter vos fichiers.</p>
 		</div>
 
         <div class="inner col-lg-4">
